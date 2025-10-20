@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Silver Stock - Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="add-stock-gold.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <header>
+        <h1>Add Silver Stock</h1>
+        <a href="silver-stock.html" class="back-button">Back</a>
+    </header>
+    <main>
+        <!-- Toggle Switch for Mass Entry -->
+        <div class="entry-toggle">
+            <span>Single Entry</span>
+            <label class="switch">
+                <input type="checkbox" id="massEntrySwitch">
+                <span class="slider"></span>
+            </label>
+            <span>Mass Entry</span>
+        </div>
+
+        <!-- Form Container for Single/Mass Entry -->
+        <div id="formContainer">
+            <!-- Single Entry Form (initially visible) -->
+            <form action="/add-stock-silver" method="POST" id="stockForm">
+                <h2>Single Entry</h2>
+                <label for="silverType">Silver Type:</label>
+                <select id="silverType" name="silverType" required>
+                    <option value="">Select Silver Type</option>
+                <option value="Lakshmi Mukha">Lakshmi Mukha</option>
+                <option value="Kamakshi Deepa">Kamakshi Deepa</option>
+                <option value="Thali">Thali</option>
+                <option value="Time Lamp">Time Lamp</option>
+                <option value="Gante">Gante</option>
+                <option value="Tube Nandadeepa">Tube Nandadeepa</option>
+                <option value="Panchapala">Panchapala</option>
+                <option value="Dull Muggu Deepa">Dull Muggu Deepa</option>
+                <option value="Round top Deepa">Round top Deepa</option>
+                <option value="Single Face Deepa">Single Face Deepa</option>
+                <option value="Five Face Deepa">Five Face Deepa</option>
+                <option value="Tube Samevu">Tube Samevu</option>
+                <option value="Plain Chombu">Plain Chombu</option>
+                <option value="Astalaxmi Chombi">Astalaxmi Chombi</option>
+                <option value="Gajalaxmi Chombu">Gajalaxmi Chombu</option>
+                <option value="Flower Basket">Flower Basket</option>
+                <option value="Plate">Plate</option>
+                <option value="Bowl">Bowl</option>
+                <option value="Glass">Glass</option>
+                <option value="Kunkuma Bharani">Kunkuma Bharani</option>
+                <option value="Neelanjana">Neelanjana</option>
+                <option value="Aarthi Plate">Aarthi Plate</option>
+                <option value="Spoon">Spoon</option>
+                <option value="Banana Tree">Banana Tree</option>
+                <option value="Tulasi Tree">Tulasi Tree</option>
+                <option value="Kashi Gindi">Kashi Gindi</option>
+                <option value="Joint Kunkum Bowl">Joint Kunkum Bowl</option>
+                <option value="Fancy Deepa">Fancy Deepa</option>
+                <option value="Mango Leaf">Mango Leaf</option>
+                <option value="Laddu Putti">Laddu Putti</option>
+                <option value="Silver Idol">Silver Idol</option>
+                <option value="Karpura Arathi">Karpura Arathi</option>
+                <option value="Silver Items">Silver Items</option>
+                <option value="Silver Bracelet">Silver Bracelet</option>
+                <option value="Bhindhige">Bhindhige</option>
+                </select>
+                
+                <label for="quantity">Quantity (in gm):</label>
+                <input type="number" id="quantity" name="quantity" step="0.01" required>
+                
+                <!-- Hidden field to capture the current date -->
+                <input type="hidden" id="dateAdded" name="dateAdded">
+                
+                <button type="submit">Add Stock</button>
+            </form>
+        </div>
+
+        <!-- Mass Entry Forms (Initially hidden) -->
+        <div id="massEntryForms" style="display:none;">
+            <h2>Mass Entry</h2>
+            <div class="form-set">
+                <form action="/add-stock-silver-mass" method="POST" class="stockForm">
+                    <label for="massSilverType">Silver Type:</label>
+                    <select id="massSilverType" name="silverType" required>
+                        <option value="">Select Silver Type</option>
+                        <option value="Kalchain 8 Number">Kalchain 8 Number</option>
+                        <option value="Kalchain 8.5 Number">Kalchain 8.5 Number</option>
+                        <option value="Kalchain 9 Number">Kalchain 9 Number</option>
+                        <option value="Kalchain 9.5 Number">Kalchain 9.5 Number</option>
+                        <option value="Kalchain 10 Number">Kalchain 10 Number</option>
+                        <option value="Kalchain 10.5 Number">Kalchain 10.5 Number</option>
+                        <option value="Kalchain 11 Number">Kalchain 11 Number</option>
+                        <option value="Kalchain 7 Number">Kalchain 7 Number</option>
+                        <option value="Kalchain 7.5 Number">Kalchain 7.5 Number</option>
+                        <option value="Kalchain 6 Number">Kalchain 6 Number</option>
+                        <option value="Kalchain 6.5 Number">Kalchain 6.5 Number</option>
+                        <option value="Kalchain 5 Number">Kalchain 5 Number</option>
+                        <option value="Kalchain 5 Number">Kalchain 5.5 Number</option>
+                        <option value="Halgada">Halgada</option>
+                        <option value="Kaikatt">Kaikatt</option>
+                        <option value="Kalungra Gatti">Kalungra Gatti</option>
+                        <option value="Kalungra Fancy">Kalungra Fancy</option>
+
+                        <option value="Lingadkayi">Lingadkayi</option>
+                    </select>
+                    
+                    <label for="massQuantity">Quantity (in gm):</label>
+                    <input type="number" id="massQuantity" name="quantity" step="0.01" required>
+                    
+                    <!-- Hidden field to capture the current date -->
+                    <input type="hidden" id="massDateAdded" name="dateAdded">
+
+                    <button type="submit">Add Stock</button>
+
+                </form>
+            </div>            
+            <!-- Button to submit all mass entry forms -->
+        </div>
+
+        <!-- Success message -->
+        <div id="message" class="success-message" style="display:none;">Data added successfully!</div>
+    </main>
+
+    <script>
+        // Set the current date in the hidden input field
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateAddedField = document.getElementById('dateAdded');
+            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            dateAddedField.value = currentDate;
+
+            // Set the current date in the mass entry hidden input field
+            const massDateAddedField = document.getElementById('massDateAdded');
+            massDateAddedField.value = currentDate;
+
+            // Check if the success parameter is present in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success')) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                    // Remove the success parameter from the URL after 3 seconds
+                    const newURL = window.location.href.split('?')[0];
+                    window.history.replaceState({}, document.title, newURL);
+                }, 3000);
+            }
+        });
+
+        // Toggle between Single and Mass Entry
+        const switchButton = document.getElementById('massEntrySwitch');
+        const formContainer = document.getElementById('formContainer');
+        const massEntryForms = document.getElementById('massEntryForms');
+
+        switchButton.addEventListener('change', () => {
+            if (switchButton.checked) {
+                formContainer.style.display = 'none';  // Hide single entry form
+                massEntryForms.style.display = 'block'; // Show mass entry forms
+            } else {
+                formContainer.style.display = 'block'; // Show single entry form
+                massEntryForms.style.display = 'none';  // Hide mass entry forms
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+/* Container Styles */
+.container {
+    max-width: 800px;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin-top: 100px; /* Adjusted for header and navbar */
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #17a2b8; /* Teal color */
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #17a2b8; /* Teal color */
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #0056b3; /* Darker blue on focus */
+}
+
+/* Button Styles */
+.action-btn {
+    background-color: #17a2b8; /* Teal color */
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Table Styles */
+.summary-table, .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.summary-table th, .items-table th {
+    background-color: #007bff; /* Primary blue */
+    color: white;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.summary-table td, .items-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+.items-table tbody tr:nth-child(even) {
+    background-color: #e9ecef; /* Light grey */
+}
+
+.items-table tbody tr:hover {
+    background-color: #dee2e6; /* Slightly darker grey */
+}
+
+/* Section Title Styles */
+h2 {
+    font-size: 2rem;
+    color: #495057; /* Dark grey */
+    margin: 20px 0;
+}
+
+/* Message Styles */
+.message {
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+.success-message {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.info-message {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+/* Beautiful Return Button Styling */
+.return-btn {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Smooth gradient */
+    border: none;
+    color: white;
+    padding: 12px 30px; /* Comfortable padding */
+    border-radius: 50px; /* Fully rounded corners for a pill shape */
+    font-size: 1.2rem; /* Larger font size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer;
+    text-transform: uppercase; /* Uppercase for prominence */
+    letter-spacing: 1.2px; /* Slight letter spacing */
+    box-shadow: 0 5px 15px rgba(255, 126, 95, 0.4); /* Soft shadow for depth */
+    transition: all 0.3s ease-in-out; /* Smooth transition on hover */
+    position: relative;
+    overflow: hidden; /* For the inner gradient hover effect */
+}
+
+.return-btn:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.6s ease-in-out;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0); /* Hidden circle initially */
+}
+
+.return-btn:hover:before {
+    transform: translate(-50%, -50%) scale(1); /* Expands circle on hover */
+}
+
+.return-btn:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* Reversed gradient on hover */
+    box-shadow: 0 8px 20px rgba(255, 126, 95, 0.6); /* Elevated shadow on hover */
+    transform: translateY(-4px); /* Slight lift on hover */
+}
+
+.return-btn:active {
+    transform: translateY(2px); /* Push down effect on click */
+    box-shadow: 0 4px 12px rgba(255, 126, 95, 0.4); /* Smaller shadow on click */
+}
+
+.return-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 126, 95, 0.3); /* Glow effect on focus */
+}
+
+.return-btn:disabled {
+    background: #ccc; /* Muted color for disabled state */
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #666; /* Muted text color */
+}

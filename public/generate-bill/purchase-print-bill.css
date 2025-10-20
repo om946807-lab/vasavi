@@ -1,0 +1,388 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f7f7f7;
+
+}
+.container {
+    background-color: white;
+    width: 70%;
+    max-width: 1200px;
+    padding: 40px;
+    border: 1.5px solid #000;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    margin: 60px auto;
+    position: relative; /* Position relative for logo positioning */
+}
+
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    height: 145px;
+}
+.header {
+    text-align: center;
+}
+
+.store-header {
+    text-align: center;
+    color: #aa0e0e;
+}
+
+.contact-info {
+    text-align: center;
+    color: #555;
+    margin-bottom: 10px;
+    margin-left: 120px;
+}
+.double-divider {
+    border-top: 3px double #000;
+    margin-bottom: 20px ;
+}
+
+.bill-details {
+    margin-bottom: 20px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #555;
+}
+
+.centered {
+    text-align: center;
+    margin: 10px 0;
+}
+.original-bill {
+    position: absolute;
+    top: 5px; 
+    right: 20px; 
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d9534f; 
+    background-color: rgba(255, 255, 255, 0.8); 
+    padding: 10px 15px;
+    border: 2px solid #d9534f;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); 
+    text-transform: uppercase;
+    font-family: 'Segoe UI', sans-serif; 
+    z-index: 1; 
+}
+.container:hover {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.store-header {
+    text-align: center;
+}
+
+.store-header h1 {
+    margin: -5px;
+    margin-left: 120px;
+    font-size: 2.5em;
+    color: #aa0e0e;
+    font-family: 'Lobster', cursive; /* Apply the stylish font */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow for depth */
+    margin-bottom: 15px;
+
+}
+
+.contact-info {
+    text-align: center;
+    color: #555;
+    margin-bottom: 10px;
+    margin-left: 120px;
+
+}
+
+.double-divider {
+    border-top: 3px double #000;
+    margin-top: 10px;
+}
+
+.details-box {
+    border: 1px solid #000;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    display: flex; /* Flexbox for side-by-side layout */
+    justify-content: space-between;
+}
+
+.store-details,
+.customer-details {
+    width: 48%;
+    border-right: 2px solid #000; /* Partition line */
+}
+
+.customer-details {
+    text-align: left; /* Align customer details to the right */
+    border-right: none; /* Remove right border for last section */
+}
+
+.store-details p {
+    margin: 2px;
+}
+
+.date-section {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.amount-in-words {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+.amount-in-words span {
+    color: #ff0000;
+    font-weight: bold; /* Bold text */
+
+}
+
+.signature-section {
+    text-align: right;
+    margin-top: 40px;
+}
+
+.signature-section p {
+    display: inline-block;
+    margin: 0;
+    padding: 5px;
+    border-top: 1px solid #000;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #555;
+}
+
+.centered {
+    text-align: center; /* Center text */
+    margin-left: 120px;
+
+}
+header {
+background: linear-gradient(135deg, #007bff, #0056b3); /* Gradient for modern look */
+color: white;
+padding: 20px;
+text-align: center;
+border-bottom: 5px solid #0056b3;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+position: relative;
+border-radius: 0 0 15px 15px;
+}
+.back-button {
+position: absolute; /* Absolute positioning */
+top: 20px; /* Adjust as needed */
+right: 20px; /* Adjust as needed */
+background-color: #c76414 ; /* Blue background color */
+color: white; /* White text color */
+padding: 10px 20px; /* Padding around the text */
+border-radius: 5px; /* Rounded corners */
+text-decoration: none; /* Remove underline */
+font-size: 1em; /* Font size */
+font-weight: bold; /* Bold text */
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+}
+
+.back-button:hover {
+background-color: #0056b3; /* Darker blue on hover */
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+}
+
+.back-button:active {
+background-color: #004080; /* Even darker blue when clicked */
+}
+.print-button {
+    position: absolute; /* Absolute positioning */
+    top: 20px; /* Adjust as needed */
+    right: 110px; /* Adjust as needed */
+    background-color: #c76414 ; /* Blue background color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding around the text */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    font-size: 1em; /* Font size */
+    font-weight: bold; /* Bold text */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+    }
+    
+    .print-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+    }
+    
+    .print-button:active {
+    background-color: #004080; /* Even darker blue when clicked */
+    }
+header h1 {
+margin: 0;
+font-size: 36px;
+font-weight: 700;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+}
+
+@font-face {
+    font-family: 'Lobster';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/lobster/v30/neILzCirqoswsqX9zoKmMw.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table, th, td {
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95em;
+    transition: background-color 0.2s ease;
+}
+
+td {
+    color: #444;
+    font-weight: bold;
+}
+
+td:hover {
+    background-color: #f8f9fa;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #1a2634;
+}
+/* Container for table and total section to control layout */
+.content-container {
+    display: flex;          /* Using flexbox to align children side by side */
+    justify-content: space-between;  /* Spacing between the two sections */
+    gap: 20px;              /* Adds space between the table and total section */
+    align-items: flex-start;  /* Align the items to the top */
+}
+
+/* Table Section Styling */
+.table-container {
+    width: 50%;  /* Table takes up 50% of the page width */
+    margin-left: 0;  /* Align the table to the left side */
+}
+
+
+/* Total Section Styling */
+.total-section {
+    text-align: right;    /* Align the content of the total section to the right */
+    font-size: 1.2em;     /* Adjust the font size */
+    margin-bottom: 20px;  /* Space below this section */
+    width: 40%;           /* Ensure total section takes up 40% of the space */
+}
+
+.total-section span {
+    color: #007bff;
+    font-weight: bold;
+
+}
+#halfWidthBillSummary {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95em;
+    transition: background-color 0.2s ease;
+}
+
+#halfWidthBillSummary td {
+    color: #444;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#halfWidthBillSummary td:hover {
+    background-color: #f8f9fa;
+}
+
+#halfWidthBillSummary th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #1a2634;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.total-balance {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: right;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.total-balance strong {
+    color: #007bff;
+}
+
+.total-balance span {
+    color: #db0b0b;
+}
+@media print {
+    body::before {
+        content: "SRI VASAVI JEWELLERS";
+        position: fixed;
+        top: 50%;
+        left: 44%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 4.5em;
+        color: rgba(0, 0, 0, 0.15); /* Increased opacity for thicker appearance */
+        white-space: nowrap;
+        z-index: -1;
+        width: 100%;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        font-weight: 900; /* Increased from bold to 900 for thicker text */
+        pointer-events: none;
+        -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1); /* Added stroke for extra thickness */
+    }
+}
+
+

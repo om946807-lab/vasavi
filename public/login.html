@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <style>
+        .timer {
+            color: red;
+            font-size: 1.2em;
+            margin-top: 10px;
+            display: none; /* Ensure it's hidden initially */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <a href="/" class="home-btn">Home</a>
+        <h1>Login</h1>
+
+        <div id="adminLogin" class="login-form active">
+            <form id="loginForm" action="/login" method="post">
+                <input type="text" placeholder="Admin Username" name="username" required>
+                <input type="password" placeholder="Admin Password" name="password" required>
+                <input type="hidden" name="role" value="admin">
+                <input type="hidden" name="csrf_token" value="your_csrf_token_here">
+                <input type="submit" value="Login">
+            </form>
+            <div id="lockoutMessage" class="timer"></div> <!-- Remove the display:none from here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to display the lockout timer
+        function displayLockoutTimer(duration) {
+            const lockoutMessage = document.getElementById('lockoutMessage');
+            lockoutMessage.style.display = 'block'; // Show the message
+            let timeRemaining = duration;
+
+            const timerInterval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    lockoutMessage.innerText = ''; // Clear the message after time is up
+                    lockoutMessage.style.display = 'none'; // Hide the message
+                } else {
+                    const minutes = Math.floor(timeRemaining / 60);
+                    const seconds = timeRemaining % 60;
+                    lockoutMessage.innerText = `You are locked out. Please try again in ${minutes} minutes and ${seconds} seconds.`;
+                    timeRemaining--;
+                }
+            }, 1000);
+        }
+
+        // Check if the user is locked out
+        const isLockedOut = localStorage.getItem('lockedOut');
+
+        if (isLockedOut) {
+            const remainingTime = Math.max(0, parseInt(isLockedOut) - Math.floor(Date.now()));
+            const lockoutDuration = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+            if (remainingTime > 0) {
+                displayLockoutTimer(Math.floor(remainingTime / 1000)); // Convert milliseconds to seconds
+                document.getElementById('loginForm').style.display = 'none'; // Hide the login form
+            } else {
+                // If the lockout period is over, remove the lockout key
+                localStorage.removeItem('lockedOut');
+            }
+        }
+
+        // Example of client-side input validation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            var username = this.querySelector('input[name="username"]').value;
+            var password = this.querySelector('input[name="password"]').value;
+
+            if (!username || !password) {
+                alert('Username and password are required!');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 800px; /* Max width of the container */
+    margin: 20px auto; /* Center the container */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px; /* Space between form elements */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding for inputs */
+    border: 1px solid #ccc; /* Border style */
+    border-radius: 4px; /* Rounded corners */
+}
+
+input:focus,
+select:focus {
+    border-color: #007bff; /* Highlight border on focus */
+    outline: none; /* Remove default outline */
+}
+
+.required {
+    color: red; /* Red color for required fields */
+}
+
+.btn {
+    background-color: #007bff; /* Button color */
+    color: #ffffff; /* Button text color */
+    padding: 10px 15px; /* Button padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+.summary {
+    margin-top: 20px; /* Space above summary */
+    padding: 10px; /* Padding for summary */
+    border: 1px solid #ccc; /* Border for summary */
+    background-color: #f1f1f1; /* Background color */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px; /* Reduce padding on small screens */
+    }
+
+    .btn {
+        width: 100%; /* Full width buttons on small screens */
+        margin-bottom: 10px; /* Space between buttons */
+    }
+}
+
+.hidden {
+    display: none; /* Hide element */
+}
+
+.visible {
+    display: block; /* Show element */
+}
+
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(90deg, #09032b, #2E7D32); /* Green gradient background */
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-bottom: 4px solid #ff4b5c; /* Bold border for emphasis */
+    font-family: 'Segoe UI', sans-serif; /* Modern font */
+}
+
+.header-title {
+    font-size: 24px; /* Increased font size for better visibility */
+    font-weight: bold; /* Make the title bold */
+}
+
+.back-button {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #ff4b5c, #ff6f61); /* Gradient background */
+    border-radius: 30px; /* More pronounced rounded corners */
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    font-weight: bold; /* Make the text stand out */
+    font-size: 16px; /* Slightly larger font size for the button */
+}
+
+.back-button:hover {
+    background: linear-gradient(45deg, #ff6f61, #ff4b5c);
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Optional: Add some responsive design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column; /* Stack elements on smaller screens */
+        align-items: flex-start;
+    }
+    .back-button {
+        width: 100%; /* Make button full width on small screens */
+        text-align: center; /* Center text in the button */
+    }
+}

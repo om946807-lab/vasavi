@@ -1,0 +1,299 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.container {
+    background-color: white;
+    width: 100%;
+    max-width: 1000px;
+    padding: 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    margin: 40px auto;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+.store-header {
+    text-align: center;
+    color: #dc2626;
+}
+
+.store-header h1 {
+    margin: 0;
+    margin-left: 140px;
+    font-size: 2.8em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.5px;
+}
+
+.contact-info {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 15px;
+    margin-left: 140px;
+    font-size: 0.95em;
+    letter-spacing: 0.3px;
+}
+
+.double-divider {
+    border: none;
+    height: 4px;
+    background: linear-gradient(to right, transparent, #dc2626, transparent);
+    margin: 20px 0;
+    opacity: 0.2;
+}
+
+.details-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8fafc;
+}
+
+.store-details,
+.customer-details {
+    width: 48%;
+    padding: 15px;
+}
+
+.store-details {
+    border-right: 1px solid #e2e8f0;
+}
+
+.store-details p,
+.customer-details p {
+    margin: 8px 0;
+    color: #475569;
+    font-size: 0.95em;
+}
+
+.date-section {
+    text-align: right;
+    margin: 20px 0;
+    color: #475569;
+    font-size: 0.95em;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 30px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+th {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    color: white;
+    padding: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 0.95em;
+    background-color: white;
+    transition: background-color 0.2s ease;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #f8fafc;
+}
+
+.total-section {
+    text-align: right;
+    font-size: 1.1em;
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.total-section span {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.amount-in-words {
+    font-size: 1.1em;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.amount-in-words span {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.signature-section {
+    text-align: right;
+    margin-top: 40px;
+    color: #475569;
+}
+
+.signature-section p {
+    display: inline-block;
+    margin: 0;
+    padding: 10px 30px;
+    border-top: 2px solid #e2e8f0;
+    font-size: 0.95em;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+.centered {
+    text-align: center;
+    margin-left: 140px;
+}
+
+header {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    color: white;
+    padding: 24px;
+    text-align: center;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.back-button,
+.print-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: #dc2626;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.print-button {
+    position: absolute;
+    top: 20px;
+    right: 140px;
+}
+
+.back-button:hover,
+.print-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
+    background-color: #fef2f2;
+}
+
+.original-bill {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #dc2626;
+    background-color: #fef2f2;
+    padding: 8px 16px;
+    border: 2px solid #dc2626;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media print {
+    body::before {
+        content: "SRI VASAVI JEWELLERS";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 4em;
+        color: rgba(220, 38, 38, 0.1);
+        white-space: nowrap;
+        z-index: -1;
+        width: 100%;
+        text-align: center;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+    .container {
+        box-shadow: none;
+        border: none;
+    }
+
+    .back-button,
+    .print-button {
+        display: none;
+    }
+}

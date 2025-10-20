@@ -1,0 +1,242 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to right, #e0f7fa, #fff3e0);
+    color: #333;
+    /* padding: 20px; */
+    margin: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    background: linear-gradient(90deg, #09032b, #2E7D32);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-bottom: 4px solid #ff4b5c;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.back-button {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #ff4b5c, #ff6f61);
+    border-radius: 30px;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background: linear-gradient(45deg, #ff6f61, #ff4b5c);
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+    font-size: 3em;
+    color: rgb(218, 21, 21);
+    margin: 25px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto; /* Increased margin to create space below the header */
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+label {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    display: block;
+    color: #4CAF50;
+    font-weight: 700;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.table-container {
+    display: none; /* Hide initially */
+    margin-top: 20px;
+    animation: slideDown 0.5s ease;
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Prevent border radius from being cut off */
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Prevent border radius from being cut off */
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background: linear-gradient(90deg, #3f3c50, #2E7D32); /* Green gradient background */
+    color: white;
+    font-weight: 700;
+}
+
+tr:hover {
+    background-color: rgba(76, 175, 80, 0.1); /* Subtle hover effect */
+    transition: background-color 0.3s;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-title {
+        margin-bottom: 10px;
+    }
+    
+    h1 {
+        font-size: 2.5em;
+    }
+    
+    select {
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}
+/* Alternate Style for the View Items Button */
+
+
+/* Gradient Style for the View Items Button */
+.view-items-btn-gradient {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Beautiful gradient from purple to blue */
+    color: white; /* White text */
+    padding: 10px 16px; /* Slightly larger padding for a more premium feel */
+    border: none; /* Remove border */
+    border-radius: 50px; /* Fully rounded button */
+    font-size: 14px; /* Adjust font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-family: 'Roboto', sans-serif; /* Font */
+    font-weight: bold; /* Bold font for emphasis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow for a floating effect */
+    transition: all 0.3s ease; /* Smooth transitions */
+    letter-spacing: 0.8px; /* Slight letter spacing for clarity */
+}
+
+.view-items-btn-gradient:hover {
+    background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%); /* Reverse the gradient on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Increase shadow on hover for depth */
+    transform: translateY(-2px); /* Lift the button slightly on hover */
+}
+
+.view-items-btn-gradient:focus {
+    outline: none; /* Remove outline on focus */
+    box-shadow: 0 0 10px rgba(38, 128, 235, 0.8); /* Blue glow on focus */
+}
+
+.view-items-btn-gradient:active {
+    transform: translateY(1px); /* Slight press down effect */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Reduce shadow on active */
+}
+/* Items Table Design */
+.items-table {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners are applied to the table */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    background-color: #fff; /* Set a white background for the table */
+}
+
+.items-table th {
+    background-color: #4a00e0; /* Dark purple background for the header */
+    color: white; /* White text color */
+    padding: 12px;
+    text-align: left; /* Align text to the left */
+    font-weight: bold; /* Make the header text bold */
+}
+
+.items-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd; /* Light gray border for rows */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.items-table tr:hover td {
+    background-color: #f5f5f5; /* Light gray background on row hover */
+}
+
+.items-table tr:last-child td {
+    border-bottom: none; /* Remove border for the last row */
+}
+
+.items-table th:first-child, .items-table td:first-child {
+    border-left: 4px solid #6a11cb; /* Left border for the first column */
+}
+
+.items-table th:last-child, .items-table td:last-child {
+    border-right: 4px solid #6a11cb; /* Right border for the last column */
+}

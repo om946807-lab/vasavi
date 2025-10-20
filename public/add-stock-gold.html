@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Gold Stock - Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="add-stock-gold.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <header>
+        <h1>Add Gold Stock</h1>
+        <a href="gold-stock.html" class="back-button">Back</a>
+    </header>
+    <main>
+        <!-- Toggle Switch for Mass Entry -->
+        <div class="entry-toggle">
+            <span>Single Item</span>
+            <label class="switch">
+                <input type="checkbox" id="massEntrySwitch">
+                <span class="slider"></span>
+            </label>
+            <span>Mass Items</span>
+        </div>
+
+        <!-- Form Container for Single/Mass Entry -->
+        <div id="formContainer">
+            <!-- Single Entry Form (initially visible) -->
+            <form action="/add-stock" method="POST" id="stockForm">
+                <h2>Single Item</h2>
+                <label for="goldType">Gold Type:</label>
+                <select id="goldType" name="goldType" required>
+                    <option value="">Select Gold Type</option>
+                    <option value="Earrings">Earrings</option>
+                    <option value="Round Tops">Round Tops</option>
+                    <option value="Tops">Tops</option>
+                    <option value="Bendali">Bendali</option>
+                    <option value="Bendali Jhumki">Bendali Jhumki</option>
+                    <option value="Antique Jhumki">Antique Jhumki</option>
+                    <option value="Baali">Baali</option>
+                    <option value="Studs">Studs</option>
+                    <option value="Short Necklace">Short Necklace</option>
+                    <option value="Short Necklace with Earrings">Short Necklace with Earrings</option>
+                    <option value="Long Necklace">Long Necklace</option>
+                    <option value="Antique Mala">Antique Mala</option>
+                    <option value="Beads Hara">Beads Hara</option>
+                    <option value="Bormala">Bormala</option>
+                    <option value="Melgundu">Melgundu</option>
+                    <option value="Tikimani">Tikimani</option>
+                    <option value="Jeeramani">Jeeramani</option>
+                    <option value="Kattani">Kattani</option>
+                    <option value="Patti Katani">Patti Katani</option>
+                    <option value="Dorr">Dorr</option>
+                    <option value="Gundina Tikki">Gundina Tikki</option>
+                    <option value="Neck Chain">Neck Chain</option>
+                    <option value="Lockets">Lockets</option>
+                    <option value="Doouble Hook">Doouble Hook</option>
+                    <option value="Pendent set">Pendent set</option>
+                    <option value="Box Ring">Box Ring</option>
+                    <option value="Baby Ring">Baby Ring</option>
+                    <option value="Matil">Matil</option>
+                    <option value="Muruvu">Muruvu</option>
+                    <option value="Bugudi">Bugudi</option>
+                    <option value="Tali">Tali</option>
+                    <option value="Tali Set">Tali Set</option>
+                    <option value="Mangalsuthra">Mangalsuthra</option>
+                    <option value="Short Mangalsuthra">Short Mangalsuthra</option>
+                    <option value="Bajuband">Bajuband</option>
+                    <option value="Diamond Ring">Diamond Ring</option>
+                    <option value="Diamond Earring">Diamond Earring</option>
+                    <option value="Nose Pin">Nose Pin</option>
+                    <option value="Bracelet">Bracelet</option>
+                    <option value="Gold Suttu">Gold Suttu</option>
+                    <option value="Gold Biscuit">Gold Biscuit</option>
+                    <option value="Gundu Drops">Gundu Drops</option>
+                    <option value="Taali Gundu">Taali Gundu</option>
+                    <option value="Gundu Drops Plate">Gundu Drops Plate</option>
+                    <option value="Gold Items">Gold Items</option>
+                    <option value="Ring">Ring</option>
+                    <option value="Ring(91.6%-22 carat)">Ring(91.6%)</option>
+    
+    
+                    <option value="Earrings(91.6%-22 carat)">Earrings(91.6%-22 carat)</option>
+                    <option value="Round Tops(91.6%-22 carat)">Round Tops(91.6%-22 carat)</option>
+                    <option value="Tops(91.6%-22 carat)">Tops(91.6%-22 carat)</option>
+                    <option value="Bendali(91.6%-22 carat)">Bendali(91.6%-22 carat)</option>
+                    <option value="Bendali Jhumki(91.6%-22 carat)">Bendali Jhumki(91.6%-22 carat)</option>
+                    <option value="Antique Jhumki(91.6%-22 carat)">Antique Jhumk(91.6%-22 carat)</option>
+                    <option value="Baali(91.6%-22 carat)">Baali(91.6%-22 carat)</option>
+                    <option value="Studs(91.6%-22 carat)">Studs(91.6%-22 carat)</option>
+                    <option value="Short Necklace(91.6%-22 carat)">Short Necklace(91.6%-22 carat)</option>
+                    <option value="Short Necklace with Earrings(91.6%-22 carat)">Short Necklace with Earrings(91.6%-22 carat)</option>
+                    <option value="Long Necklace(91.6%-22 carat)">Long Necklace(91.6%-22 carat)</option>
+                    <option value="Antique Mala(91.6%-22 carat)">Antique Mala(91.6%-22 carat)</option>
+                    <option value="Beads Hara(91.6%-22 carat)">Beads Hara(91.6%-22 carat)</option>
+                    <option value="Bormala(91.6%-22 carat)">Bormala(91.6%-22 carat)</option>
+                    <option value="Melgundu(91.6%-22 carat)">Melgundu(91.6%-22 carat)</option>
+                    <option value="Tikimani(91.6%-22 carat)">Tikimani(91.6%-22 carat)</option>
+                    <option value="Jeeramani(91.6%-22 carat)">Jeeramani(91.6%-22 carat)</option>
+                    <option value="Kattani(91.6%-22 carat)">Kattani(91.6%-22 carat)</option>
+                    <option value="Patti Katani(91.6%-22 carat)">Patti Katani(91.6%-22 carat)</option>
+                    <option value="Dorr(91.6%-22 carat)">Dorr(91.6%-22 carat)</option>
+                    <option value="Gundina Tikki(91.6%-22 carat)">Gundina Tikki(91.6%-22 carat)</option>
+                    <option value="Neck Chain(91.6%-22 carat)">Neck Chain(91.6%-22 carat)</option>
+                    <option value="Lockets(91.6%-22 carat)">Lockets(91.6%-22 carat)</option>
+                    <option value="Doouble Hook(91.6%-22 carat)">Doouble Hook(91.6%-22 carat)</option>
+                    <option value="Pendent set(91.6%-22 carat)">Pendent set(91.6%-22 carat)</option>
+                    <option value="Box Ring(91.6%-22 carat)">Box Ring(91.6%-22 carat)</option>
+                    <option value="Baby Ring(91.6%-22 carat)">Baby Ring(91.6%-22 carat)</option>
+                    <option value="Matil(91.6%-22 carat)">Matil(91.6%-22 carat)</option>
+                    <option value="Muruvu(91.6%-22 carat)">Muruvu(91.6%-22 carat)</option>
+                    <option value="Bugudi(91.6%-22 carat)">Bugudi(91.6%-22 carat)</option>
+                    <option value="Tali(91.6%-22 carat)">Tali(91.6%-22 carat)</option>
+                    <option value="Tali Set(91.6%-22 carat)">Tali Set(91.6%-22 carat)</option>
+                    <option value="Mangalsuthra(91.6%-22 carat)">Mangalsuthra(91.6%-22 carat)</option>
+                    <option value="Short Mangalsuthra(91.6%-22 carat)">Short Mangalsuthra(91.6%-22 carat)</option>
+                    <option value="Bajuband(91.6%-22 carat)">Bajuband(91.6%-22 carat)</option>
+                    <option value="Diamond Ring(91.6%-22 carat)">Diamond Ring(91.6%-22 carat)</option>
+                    <option value="Diamond Earring(91.6%-22 carat)">Diamond Earring(91.6%-22 carat)</option>
+                    <option value="Nose Pin(91.6%-22 carat)">Nose Pin(91.6%-22 carat)</option>
+                    <option value="Bracelet(91.6%-22 carat)">Bracelet(91.6%-22 carat)</option>
+                    <option value="Gold Suttu(91.6%-22 carat)">Gold Suttu(91.6%-22 carat)</option>
+                    <option value="Gold Biscuit(91.6%-22 carat)">Gold Biscuit(91.6%-22 carat)</option>
+                    <option value="Gundu Drops(91.6%-22 carat)">Gundu Drops(91.6%-22 carat)</option>
+                    <option value="Taali Gundu(91.6%-22 carat)">Taali Gundu(91.6%-22 carat)</option>
+                    <option value="Gundu Drops Plate(91.6%-22 carat)">Gundu Drops Plate(91.6%-22 carat)</option>
+                    <option value="Gold Items(91.6%-22 carat)">Gold Items(91.6%-22 carat)</option>
+                </select>
+                
+                <label for="quantity">Quantity (in gm):</label>
+                <input type="number" id="quantity" name="quantity" step="0.01" required>
+                
+                <!-- Hidden field to capture the current date -->
+                <input type="hidden" id="dateAdded" name="dateAdded">
+                
+                <button type="submit">Add Stock</button>
+            </form>
+        </div>
+
+        <!-- Mass Entry Forms (Initially hidden) -->
+        <div id="massEntryForms" style="display:none;">
+            <h2>Mass Items</h2>
+            <div class="form-set">
+                <form action="/add-stock-mass" method="POST" class="stockForm">
+                    <label for="goldType">Gold Type:</label>
+                    <select id="massGoldType" name="goldType" required>
+                        <option value="">Select Gold Type</option>
+                        <option value="24k Yellow Gold">24k Yellow Gold</option>
+                        <option value="22k Yellow Gold">22k Yellow Gold</option>
+                        <option value="18k Yellow Gold">18k Yellow Gold</option>
+                        <option value="14k Yellow Gold">14k Yellow Gold</option>
+                        <option value="24k White Gold">24k White Gold</option>
+                        <option value="22k White Gold">22k White Gold</option>
+                        <option value="18k White Gold">18k White Gold</option>
+                    </select>
+                    
+                    <label for="massQuantity">Quantity (in gm):</label>
+                    <input type="number" id="massQuantity" name="quantity" step="0.01" required>
+                    
+                    <!-- Hidden field to capture the current date -->
+                    <input type="hidden" id="massDateAdded" name="dateAdded">
+
+                    <button type="submit">Add Stock</button>
+
+                </form>
+            </div>            
+            <!-- Button to submit all mass entry forms -->
+        </div>
+
+        <!-- Success message -->
+        <div id="message" class="success-message" style="display:none;">Data added successfully!</div>
+    </main>
+
+    <script>
+        // Set the current date in the hidden input field
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateAddedField = document.getElementById('dateAdded');
+            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            dateAddedField.value = currentDate;
+
+            // Set the current date in the mass entry hidden input field
+            const massDateAddedField = document.getElementById('massDateAdded');
+            massDateAddedField.value = currentDate;
+
+            // Check if the success parameter is present in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success')) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                    // Remove the success parameter from the URL after 3 seconds
+                    const newURL = window.location.href.split('?')[0];
+                    window.history.replaceState({}, document.title, newURL);
+                }, 3000);
+            }
+        });
+
+        // Toggle between Single and Mass Entry
+        const switchButton = document.getElementById('massEntrySwitch');
+        const formContainer = document.getElementById('formContainer');
+        const massEntryForms = document.getElementById('massEntryForms');
+
+        switchButton.addEventListener('change', () => {
+            if (switchButton.checked) {
+                formContainer.style.display = 'none';  // Hide single entry form
+                massEntryForms.style.display = 'block'; // Show mass entry forms
+            } else {
+                formContainer.style.display = 'block'; // Show single entry form
+                massEntryForms.style.display = 'none';  // Hide mass entry forms
+            }
+        });
+    </script>
+</body>
+</html>

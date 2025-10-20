@@ -1,0 +1,453 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f9; /* Softer background */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header Styling */
+header {
+    background: linear-gradient(135deg, #007bff, #0056b3); /* Gradient for modern look */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 5px solid #0056b3;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    border-radius: 0 0 15px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Main Container */
+.container {
+    width: 70%;
+    max-width: 1200px;
+    background-color: white;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    margin: 60px auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.container:hover {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Section Headings */
+h2 {
+    color: #0056b3;
+    font-size: 30px;
+    border-bottom: 4px solid #007bff;
+    padding-bottom: 12px;
+    margin-bottom: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    border-radius: 2px;
+}
+
+/* Form Elements */
+label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #0056b3;
+    font-size: 18px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #ffffff;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 18px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+th {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+td {
+    background-color: #ffffff;
+    color: #333;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #e3f2fd;
+}
+
+/* Button Styling */
+button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+    outline: none;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+button:active {
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}
+
+/* Specific Button Styles */
+#generate-button {
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: #ffeb3b;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 12px;
+}
+
+#generate-button:hover {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+}
+
+#add-item-button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+#add-item-button:hover {
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: #fff;
+}
+
+/* Total Amount Section */
+.total-section {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.total-section label {
+    font-weight: bold;
+    margin-right: 15px;
+    color: #555;
+}
+
+.total-section span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background-color: #f1f1f1;
+    display: inline-block;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.update-button,
+.generate-button {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.update-button {
+    background: linear-gradient(135deg, #ffeb3b, #fbc02d);
+    color: #0056b3;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 12px;
+}
+
+.update-button:hover {
+    background: linear-gradient(135deg, #fbc02d, #ffeb3b);
+    color: #0056b3;
+}
+
+/* Field Headings (Labels) */
+label[for="billNumber"] {
+    font-weight: 600;
+    color: #0056b3;
+    font-size: 18px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Bill Number Span */
+#billNumber {
+    font-size: 20px;
+    color: #007bff;
+    font-weight: 700;
+    padding: 8px 12px;
+    background-color: #e0f2f1;
+    border: 1px solid #b2dfdb;
+    border-radius: 6px;
+    display: inline-block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Success Message Styling */
+.success-message {
+    margin: 30px auto;
+    max-width: 600px;
+    font-size: 20px;
+    color: #1b5e20;
+    text-align: center;
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4edda, #c8e6c9);
+    border: none;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+    transform-origin: center;
+}
+
+.success-message::before {
+    content: '✓';
+    position: absolute;
+    left: 20px;
+    font-size: 24px;
+    opacity: 0.8;
+    animation: checkmark 1s ease-in-out;
+}
+
+.success-message::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: shine 2s infinite;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .finalize-order, .advance-payment {
+    font-size: 1.2em; /* Increase button size */
+    padding: 10px 20px; /* Adjust padding for bigger buttons */
+    cursor: pointer;
+  }
+  
+  .finalize-order {
+    background-color: #4CAF50; /* Green for Finalize Order */
+    color: white;
+  }
+  
+  .advance-payment {
+    background-color: #007BFF; /* Blue for Advance Payment */
+    color: white;
+  }
+  
+  .finalize-order:hover, .advance-payment:hover {
+    opacity: 0.8; /* Slight hover effect */
+  }
+  .total-amount-container {
+    display: flex;
+    justify-content: space-between; /* Ensures buttons are on opposite sides */
+    margin-top: 20px;
+  }
+  
+  button#finalize-order {
+    font-size: 1.2em; /* Increase button size */
+    padding: 10px 20px; /* Increase padding */
+    background-color: #4CAF50; /* Style for Finalize Order */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button#advance-payment {
+    font-size: 1.2em; /* Increase button size */
+    padding: 10px 20px; /* Increase padding */
+    background-color: #007BFF; /* Style for Advance Payment */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button#finalize-order:hover, button#advance-payment:hover {
+    opacity: 0.8; /* Hover effect */
+  }
+  .order-total {
+    background-color: #f9f9f9; /* Light background for contrast */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: flex;
+    justify-content: space-around; /* Evenly distribute items */
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .order-total div {
+    text-align: center;
+  }
+  
+  .order-total strong {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    color: #333; /* Darker text color for readability */
+  }
+  
+  .order-total span {
+    font-size: 1.5em; /* Make amounts larger */
+    color: #4CAF50; /* Green color for financial data */
+    font-weight: bold;
+  }
+  
+  .order-total div:not(:last-child) {
+    border-right: 1px solid #e0e0e0; /* Divider between sections */
+    padding-right: 20px;
+    margin-right: 20px;
+  }
+  .back-button {
+    position: absolute; /* Absolute positioning */
+    top: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    background-color: #c76414 ; /* Blue background color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding around the text */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    font-size: 1em; /* Font size */
+    font-weight: bold; /* Bold text */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+  }
+  
+  .back-button:active {
+    background-color: #004080; /* Even darker blue when clicked */
+  }
+  
+

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Form</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <header>
+        <div class="header-title">Transaction Entry</div>
+        <a href="shop-purchase.html" class="back-button">Back</a>
+    </header>
+    <div class="container">
+        <h2>Transaction Type</h2>
+        
+        <label for="transaction-type">Select Type:</label>
+        <select id="transaction-type" required>
+            <option value="">-- Select Type --</option>
+            <option value="purchased">Purchased</option>
+            <option value="amount-given">Amount/fine Given</option>
+        </select>
+        
+        <!-- Purchased Section -->
+        <div id="purchased-section" class="item-fields" style="display: none;">
+            <label for="name">Name<span class="required">*</span></label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+            
+            <label for="num-items">Number of Items<span class="required">*</span></label>
+            <input type="number" id="num-items" placeholder="Enter number of items" required min="1">
+            
+            <button id="add-items-btn">Add Items</button>
+            
+            <div id="items-list"></div>
+        </div>
+
+        <!-- Amount Given Section -->
+        <div id="amount-given-section" class="item-fields" style="display: none;">
+            <label for="amount-given-name">Name<span class="required">*</span></label>
+            <input type="text" id="amount-given-name" placeholder="Enter your name" required>
+
+            <label for="amount-given-date">Date<span class="required">*</span></label>
+            <input type="date" id="amount-given-date" required>
+
+            <label for="amount-given-amount">Amount/Fine Given<span class="required">*</span></label>
+            <input type="text" id="amount-given-amount" placeholder="Enter amount given" required min="0>
+
+            <label for="amount-given-description">Description<span class="required">*</span></label>
+            <input type="text" id="amount-given-description" placeholder="Enter description" required>
+        </div>
+    
+        <button id="submit-btn" class="submit-btn" disabled>Submit</button>
+    </div>
+
+    <script>
+        let itemDetailsFilled = false;
+
+        const transactionType = document.getElementById('transaction-type');
+        const purchasedSection = document.getElementById('purchased-section');
+        const amountGivenSection = document.getElementById('amount-given-section');
+        const submitBtn = document.getElementById('submit-btn');
+        const addItemsBtn = document.getElementById('add-items-btn');
+        const itemsList = document.getElementById('items-list');
+
+        transactionType.addEventListener('change', function () {
+            resetForm();
+            if (this.value === 'purchased') {
+                purchasedSection.style.display = 'block';
+                amountGivenSection.style.display = 'none'; // Hide Amount Given section
+            } else if (this.value === 'amount-given') {
+                amountGivenSection.style.display = 'block'; // Show Amount Given section
+                purchasedSection.style.display = 'none'; // Hide Purchased section
+                checkAmountGivenFormCompletion(); // Check form completion for Amount Given
+            }
+        });
+
+        addItemsBtn.addEventListener('click', function () {
+            const numItems = document.getElementById('num-items').value;
+            itemsList.innerHTML = ''; // Clear previous items
+
+            for (let i = 1; i <= numItems; i++) {
+                const itemGroup = document.createElement('div');
+                itemGroup.classList.add('item-group');
+
+                itemGroup.innerHTML = `
+                        <h3>Item ${i}</h3>
+                        <label for="item-type-${i}">Item Type<span class="required">*</span></label>
+                        <select id="item-type-${i}" required>
+                            <option value="">-- Select Item Type --</option>
+                            <option value="gold">Gold</option>
+                            <option value="silver">Silver</option>
+                            
+                        </select>
+    
+                        <label for="item-name-${i}">Item Name<span class="required">*</span></label>
+                        <input type="text" id="item-name-${i}" placeholder="Enter item name" required>
+    
+                        <label for="quantity-${i}">Quantity<span class="required">*</span></label>
+                        <input type="number" id="quantity-${i}" placeholder="Enter quantity" required>
+    
+                        <label for="melting-${i}">Melting<span class="required">*</span></label>
+                        <input type="number" id="melting-${i}" placeholder="Enter melting" required>
+                    `;
+
+                itemsList.appendChild(itemGroup);
+            }
+
+            itemDetailsFilled = true;
+            checkFormCompletion();
+        });
+
+        // Event listeners for Amount Given fields
+        document.getElementById('amount-given-name').addEventListener('input', checkAmountGivenFormCompletion);
+        document.getElementById('amount-given-date').addEventListener('change', checkAmountGivenFormCompletion);
+        document.getElementById('amount-given-amount').addEventListener('input', checkAmountGivenFormCompletion);
+        document.getElementById('amount-given-description').addEventListener('input', checkAmountGivenFormCompletion);
+
+        document.getElementById('name').addEventListener('input', checkFormCompletion);
+        document.getElementById('num-items').addEventListener('input', checkFormCompletion);
+        itemsList.addEventListener('change', checkFormCompletion);
+
+        function resetForm() {
+            // Reset all input fields for both sections
+            document.getElementById('name').value = '';
+            document.getElementById('num-items').value = '';
+            document.getElementById('amount-given-name').value = '';
+            document.getElementById('amount-given-date').value = '';
+            document.getElementById('amount-given-amount').value = '';
+            document.getElementById('amount-given-description').value = '';
+
+            // Clear the items list
+            itemsList.innerHTML = '';
+            itemDetailsFilled = false;
+            submitBtn.disabled = true;
+
+
+            // Hide both sections
+            purchasedSection.style.display = 'none';
+            amountGivenSection.style.display = 'none';
+        }
+
+
+        function checkFormCompletion() {
+            const name = document.getElementById('name').value.trim();
+            const numItems = parseInt(document.getElementById('num-items').value, 10);
+
+            // Check if the name is filled and numItems is greater than 0
+            if (name === '' || isNaN(numItems) || numItems <= 0) {
+                submitBtn.disabled = true; // Disable the button if name is empty or numItems is not positive
+                return;
+            }
+
+            // Validate each item group
+            const allFieldsFilled = Array.from(itemsList.children).every(itemGroup => {
+                const itemType = itemGroup.querySelector('select').value;
+                const itemName = itemGroup.querySelector('input[id^="item-name"]').value.trim();
+                const quantity = itemGroup.querySelector('input[id^="quantity"]').value;
+                const melting = itemGroup.querySelector('input[id^="melting"]').value.trim();
+
+                // Check if all fields are filled
+                return itemType && itemName && quantity > 0 && melting;
+            });
+
+            submitBtn.disabled = !allFieldsFilled; // Disable if not all fields are filled
+        }
+
+        function checkAmountGivenFormCompletion() {
+            const name = document.getElementById('amount-given-name').value.trim();
+            const date = document.getElementById('amount-given-date').value;
+            const amountGiven = document.getElementById('amount-given-amount').value;
+            const description = document.getElementById('amount-given-description').value.trim();
+
+            // Check if all fields are filled
+            if (name && date && amountGiven  && description) {
+                submitBtn.disabled = false; // Enable the submit button if all fields are filled
+            } else {
+                submitBtn.disabled = true; // Disable the button if not all fields are filled
+            }
+        }
+
+        submitBtn.addEventListener('click', function () {
+            if (transactionType.value === 'purchased') {
+                const data = {
+                    name: document.getElementById('name').value,
+                    numItems: document.getElementById('num-items').value,
+                    items: []
+                };
+
+                for (let i = 1; i <= data.numItems; i++) {
+                    const item = {
+                        itemType: document.getElementById(`item-type-${i}`).value,
+                        itemName: document.getElementById(`item-name-${i}`).value,
+                        quantity: document.getElementById(`quantity-${i}`).value,
+                        melting: document.getElementById(`melting-${i}`).value
+                    };
+                    data.items.push(item);
+                }
+
+                // Send data to backend via POST request
+                fetch('/submit-transaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        alert('Transaction recorded successfully!');
+
+                        resetForm(); // Reset form after successful submission
+                        transactionType.value = ''; // Reset transaction type selection
+                        purchasedSection.style.display = 'none'; // Hide the purchased section after submission
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('There was an error recording the transaction.');
+                    });
+            } else if (transactionType.value === 'amount-given') {
+                const amountGivenData = {
+                    name: document.getElementById('amount-given-name').value,
+                    date: document.getElementById('amount-given-date').value,
+                    amountGiven: document.getElementById('amount-given-amount').value,
+                    description: document.getElementById('amount-given-description').value
+                };
+
+                // Send amount given data to backend via POST request
+                fetch('/submit-amount-given-transaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(amountGivenData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        alert('Amount given recorded successfully!');
+                        resetForm(); // Reset form after successful submission
+                        transactionType.value = ''; // Reset transaction type selection
+                        purchasedSection.style.display = 'none'; // Hide the purchased section after submission
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('There was an error recording the amount given.');
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

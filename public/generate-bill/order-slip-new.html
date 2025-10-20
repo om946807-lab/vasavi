@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Order Slip - Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="new-order-slip.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            let orderItems = [];
+            let totalOrderAmount = 0;
+            let advancePayment = 0;
+
+            // Get next order number
+            try {
+                const response = await fetch('/get-next-order-number');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('nextOrderNumber').textContent = `Order Number: ${data.nextOrderNumber}`;
+                }
+            } catch (error) {
+                console.error('Error fetching order number:', error);
+            }
+
+            window.openImageOptions = function (subItemId) {
+                // Create overlay
+                const overlay = document.createElement("div");
+                overlay.style.position = "fixed";
+                overlay.style.top = "0";
+                overlay.style.left = "0";
+                overlay.style.width = "100vw";
+                overlay.style.height = "100vh";
+                overlay.style.background = "rgba(0, 0, 0, 0.5)";
+                overlay.style.display = "flex";
+                overlay.style.justifyContent = "center";
+                overlay.style.alignItems = "center";
+                overlay.style.zIndex = "10000";
+
+                // Create modal
+                const modal = document.createElement("div");
+                modal.style.background = "#fff";
+                modal.style.padding = "30px";
+                modal.style.borderRadius = "12px";
+                modal.style.textAlign = "center";
+                modal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+
+                const title = document.createElement("h2");
+                title.innerText = "Choose an option:";
+                modal.appendChild(title);
+
+                // Camera Option
+                const cameraButton = document.createElement("button");
+                cameraButton.innerText = "📸 Open Camera";
+                styleButton(cameraButton, "#4CAF50");
+                cameraButton.onclick = () => {
+                    document.body.removeChild(overlay);
+                    openCamera(subItemId);
+                };
+                modal.appendChild(cameraButton);
+
+                // Upload from Device Option
+                const uploadButton = document.createElement("button");
+                uploadButton.innerText = "📁 Upload from Device";
+                styleButton(uploadButton, "#2196F3");
+                uploadButton.onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.getElementById(`file-input-${subItemId}`).click();
+                };
+                modal.appendChild(uploadButton);
+
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                overlay.addEventListener("click", (event) => {
+                    if (event.target === overlay) {
+                        document.body.removeChild(overlay);
+                    }
+                });
+            };
+
+            window.openCamera = function (subItemId) {
+                // Create camera overlay
+                const cameraOverlay = document.createElement("div");
+                cameraOverlay.style.position = "fixed";
+                cameraOverlay.style.top = "0";
+                cameraOverlay.style.left = "0";
+                cameraOverlay.style.width = "100vw";
+                cameraOverlay.style.height = "100vh";
+                cameraOverlay.style.background = "rgba(0, 0, 0, 0.5)";
+                cameraOverlay.style.display = "flex";
+                cameraOverlay.style.justifyContent = "center";
+                cameraOverlay.style.alignItems = "center";
+                cameraOverlay.style.zIndex = "10000";
+
+                // Create video preview
+                const cameraModal = document.createElement("div");
+                cameraModal.style.background = "#fff";
+                cameraModal.style.padding = "20px";
+                cameraModal.style.borderRadius = "12px";
+                cameraModal.style.textAlign = "center";
+                cameraModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+
+                const video = document.createElement("video");
+                video.style.width = "100%";
+                video.setAttribute("autoplay", "");
+                cameraModal.appendChild(video);
+
+                // Capture Button
+                const captureButton = document.createElement("button");
+                captureButton.innerText = "📸 Capture";
+                styleButton(captureButton, "#f44336");
+                captureButton.onclick = async () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const context = canvas.getContext("2d");
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = canvas.toDataURL("image/png");
+
+                    // Stop camera stream
+                    video.srcObject.getTracks().forEach(track => track.stop());
+
+                    // Show confirmation
+                    showCaptureConfirmation(imageData, subItemId, cameraOverlay);
+                };
+                cameraModal.appendChild(captureButton);
+
+                cameraOverlay.appendChild(cameraModal);
+                document.body.appendChild(cameraOverlay);
+
+                // Close overlay when clicking outside the modal
+                cameraOverlay.addEventListener("click", (event) => {
+                    if (event.target === cameraOverlay) {
+                        // Stop camera stream before closing
+                        if (video.srcObject) {
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                        }
+                        document.body.removeChild(cameraOverlay);
+                    }
+                });
+                // Start Camera Stream
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then((stream) => {
+                        video.srcObject = stream;
+                    })
+                    .catch((error) => {
+                        console.error("Camera access denied:", error);
+                        alert("Failed to access camera.");
+                        document.body.removeChild(cameraOverlay);
+                    });
+
+
+            };
+
+            function showCaptureConfirmation(imageData, subItemId, cameraOverlay) {
+                document.body.removeChild(cameraOverlay);
+
+                // Create preview modal
+                const confirmOverlay = document.createElement("div");
+                confirmOverlay.style.position = "fixed";
+                confirmOverlay.style.top = "0";
+                confirmOverlay.style.left = "0";
+                confirmOverlay.style.width = "100vw";
+                confirmOverlay.style.height = "100vh";
+                confirmOverlay.style.background = "rgba(0, 0, 0, 0.5)";
+                confirmOverlay.style.display = "flex";
+                confirmOverlay.style.justifyContent = "center";
+                confirmOverlay.style.alignItems = "center";
+                confirmOverlay.style.zIndex = "10000";
+
+                const confirmModal = document.createElement("div");
+                confirmModal.style.background = "#fff";
+                confirmModal.style.padding = "20px";
+                confirmModal.style.borderRadius = "12px";
+                confirmModal.style.textAlign = "center";
+                confirmModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+
+                const previewImage = document.createElement("img");
+                previewImage.src = imageData;
+                previewImage.style.maxWidth = "100%";
+                previewImage.style.borderRadius = "8px";
+                confirmModal.appendChild(previewImage);
+
+                // Retake Button
+                const retakeButton = document.createElement("button");
+                retakeButton.innerText = "🔄 Retake";
+                styleButton(retakeButton, "#ff9800");
+                retakeButton.onclick = () => {
+                    document.body.removeChild(confirmOverlay);
+                    openCamera(subItemId);
+                };
+                confirmModal.appendChild(retakeButton);
+
+                // Upload Button
+                const uploadButton = document.createElement("button");
+                uploadButton.innerText = "✅ Upload";
+                styleButton(uploadButton, "#4CAF50");
+                uploadButton.onclick = () => {
+                    orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+                    // Convert base64 to file and store it in pendingImages
+                    const imageFile = base64ToFile(imageData, `image-${subItemId}.png`);
+
+                    pendingImages.push({ file: imageFile, subItemId, orderId });
+                    document.body.removeChild(confirmOverlay);
+                    document.getElementById(`preview-${subItemId}`).src = imageData;
+                    document.getElementById(`preview-${subItemId}`).style.display = "block";
+                    showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
+                };
+                confirmModal.appendChild(uploadButton);
+
+                confirmOverlay.appendChild(confirmModal);
+                document.body.appendChild(confirmOverlay);
+
+                // Close overlay when clicking outside the modal
+                confirmOverlay.addEventListener("click", (event) => {
+                    if (event.target === confirmOverlay) {
+                        document.body.removeChild(confirmOverlay);
+                    }
+                });
+            }
+
+            window.handleImageSelection = function (event, subItemId) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageData = e.target.result;
+                    showImageConfirmation(imageData, file, subItemId);
+                };
+                reader.readAsDataURL(file);
+            };
+
+            function showImageConfirmation(imageData, file, subItemId) {
+                // Create confirmation modal
+                const confirmOverlay = document.createElement("div");
+                confirmOverlay.style.position = "fixed";
+                confirmOverlay.style.top = "0";
+                confirmOverlay.style.left = "0";
+                confirmOverlay.style.width = "100vw";
+                confirmOverlay.style.height = "100vh";
+                confirmOverlay.style.background = "rgba(0, 0, 0, 0.5)";
+                confirmOverlay.style.display = "flex";
+                confirmOverlay.style.justifyContent = "center";
+                confirmOverlay.style.alignItems = "center";
+                confirmOverlay.style.zIndex = "10000";
+
+                const confirmModal = document.createElement("div");
+                confirmModal.style.background = "#fff";
+                confirmModal.style.padding = "20px";
+                confirmModal.style.borderRadius = "12px";
+                confirmModal.style.textAlign = "center";
+                confirmModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+
+                const previewImage = document.createElement("img");
+                previewImage.src = imageData;
+                previewImage.style.maxWidth = "400px";
+                previewImage.style.borderRadius = "8px";
+                confirmModal.appendChild(previewImage);
+
+                // Cancel Button
+                const cancelButton = document.createElement("button");
+                cancelButton.innerText = "❌ Cancel";
+                styleButton(cancelButton, "#f44336");
+                cancelButton.onclick = () => document.body.removeChild(confirmOverlay);
+                confirmModal.appendChild(cancelButton);
+
+                // Confirm Button
+                const confirmButton = document.createElement("button");
+                confirmButton.innerText = "✅ Confirm Upload";
+                styleButton(confirmButton, "#4CAF50");
+                confirmButton.onclick = () => {
+                    document.body.removeChild(confirmOverlay);
+                    document.getElementById(`preview-${subItemId}`).src = imageData;
+                    document.getElementById(`preview-${subItemId}`).style.display = "block";
+
+                    const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+                    pendingImages.push({ file, subItemId, orderId });
+
+                    showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
+                };
+                confirmModal.appendChild(confirmButton);
+
+                confirmOverlay.appendChild(confirmModal);
+                document.body.appendChild(confirmOverlay);
+            }
+            function showCustomAlert(message, subItemId, type = "success") {
+                // Remove any existing alert
+                const existingAlert = document.getElementById("custom-alert");
+                if (existingAlert) {
+                    document.body.removeChild(existingAlert);
+                }
+
+                // Create alert container
+                const alertBox = document.createElement("div");
+                alertBox.id = "custom-alert";
+                alertBox.style.position = "fixed";
+                alertBox.style.top = "20px"; // Move to top
+                alertBox.style.right = "20px";
+                alertBox.style.padding = "15px 20px";
+                alertBox.style.background = type === "success" ? "#4CAF50" : "#f44336"; // Green for success, Red for error
+                alertBox.style.color = "#fff";
+                alertBox.style.borderRadius = "8px";
+                alertBox.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+                alertBox.style.fontSize = "16px";
+                alertBox.style.fontWeight = "bold";
+                alertBox.style.display = "flex";
+                alertBox.style.alignItems = "center";
+                alertBox.style.zIndex = "10000";
+                alertBox.style.transition = "all 0.3s ease-in-out";
+                alertBox.style.opacity = "0";
+
+                // Slide-in animation
+                alertBox.style.transform = "translateY(-50px)";
+                setTimeout(() => {
+                    alertBox.style.opacity = "1";
+                    alertBox.style.transform = "translateY(0)";
+                }, 10);
+
+                // Add icon
+                const icon = document.createElement("span");
+                icon.innerHTML = type === "success" ? "✅" : "❌";
+                icon.style.marginRight = "10px";
+                icon.style.fontSize = "18px";
+                alertBox.appendChild(icon);
+
+                // Add message text
+                const alertText = document.createElement("span");
+                alertText.innerHTML = `${message} <span style="color: ${type === "success" ? "#FFD700" : "#ADD8E6"};">(${subItemId})</span>`;
+                alertBox.appendChild(alertText);
+
+                // Append to body
+                document.body.appendChild(alertBox);
+
+                // Auto-close after 3 seconds
+                setTimeout(() => {
+                    alertBox.style.opacity = "0";
+                    alertBox.style.transform = "translateY(-50px)";
+                    setTimeout(() => {
+                        if (alertBox.parentNode) {
+                            document.body.removeChild(alertBox);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            // Style buttons for UI consistency
+            function styleButton(button, bgColor) {
+                button.style.padding = "15px 30px";
+                button.style.fontSize = "18px";
+                button.style.margin = "10px";
+                button.style.width = "250px";
+                button.style.border = "none";
+                button.style.background = bgColor;
+                button.style.color = "#fff";
+                button.style.borderRadius = "8px";
+                button.style.cursor = "pointer";
+                button.style.fontWeight = "bold";
+                button.style.transition = "0.3s";
+                button.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                button.onmouseover = () => (button.style.opacity = "0.8");
+                button.onmouseout = () => (button.style.opacity = "1");
+            }
+
+            // Form elements
+            const customerForm = document.getElementById('customerForm');
+            const orderForm = document.getElementById('orderForm');
+            const submitOrderButton = document.getElementById('submitOrderButton');
+            const orderSummary = document.getElementById('orderSummary').getElementsByTagName('tbody')[0];
+            const finalizeOrderButton = document.getElementById('finalizeOrderButton');
+            const advancePaymentButton = document.getElementById('advancePaymentButton');
+
+            // Add item to order
+            let subItemCounter = 1; // Initialize sub-item counter
+
+            submitOrderButton.addEventListener('click', function () {
+                const itemType = document.getElementById('itemType').value;
+                const itemName = document.getElementById('itemName').value;
+                const quantity = parseFloat(document.getElementById('quantity').value);
+                const amountPerGram = parseFloat(document.getElementById('amountPerGram').value);
+                const makingCharges = parseFloat(document.getElementById('makingCharges').value) || 0;
+                const wastage = parseFloat(document.getElementById('wastage').value) || 0;
+                const itemDescription = document.getElementById('itemDescription').value;
+
+                if (!itemType || !itemName || !quantity || !amountPerGram || !makingCharges) {
+                    showWarning("Please fill in all required fields");
+
+                    return;
+                }
+                const subItemId = `a${subItemCounter++}`;
+
+                const totalAmount = calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage);
+
+                const item = {
+                    subItemId,
+                    itemType,
+                    itemName,
+                    quantity,
+                    amountPerGram,
+                    makingCharges,
+                    wastage,
+                    itemDescription,
+                    totalAmount,
+                };
+
+                orderItems.push(item);
+                addItemToTable(item);
+                updateTotalAmount();
+                orderForm.reset();
+            });
+
+            // Calculate total amount for an item
+            function calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage) {
+                const baseAmount = quantity * amountPerGram;
+                const wastageAmount = (baseAmount * wastage) / 100;
+                return baseAmount + wastageAmount + makingCharges;
+            }
+
+            // Add item to summary table
+            function addItemToTable(item) {
+                const row = orderSummary.insertRow();
+                const imageInputId = `imageUpload-${item.subItemId}`;
+
+                row.innerHTML = `
+            <td>${item.subItemId}</td>
+            <td>${item.itemType}</td>
+            <td>${item.itemName}<br><small>${item.itemDescription}</small></td>
+            <td>${item.quantity}</td>
+            <td>₹${item.amountPerGram.toFixed(2)}</td>
+            <td>₹${item.makingCharges.toFixed(2)}</td>
+            <td>${item.wastage !== 0 ? item.wastage + '%' : '-'}</td>
+            <td>₹${item.totalAmount.toFixed(2)}</td>
+            <td>
+                <button onclick="openImageOptions('${item.subItemId}')">Upload Image</button>
+                <input type="file" id="file-input-${item.subItemId}" accept="image/*" style="display: none;" onchange="handleImageSelection(event, '${item.subItemId}')">
+                <img id="preview-${item.subItemId}" style="max-width: 50px; display: none; margin-top: 5px;">
+            </td>
+            <td><button onclick="removeItem(this)">Remove</button></td>
+        `;
+            }
+            // Remove item from order
+            window.removeItem = function (button) {
+                const row = button.parentNode.parentNode;
+                const index = row.rowIndex - 1;
+
+                // Get the subItemId from the row (assuming it's stored in a data attribute or inside a cell)
+                const subItemId = row.getAttribute("data-subitem-id") || row.cells[0].textContent.trim();
+
+                // Remove the item from orderItems
+                orderItems.splice(index, 1);
+
+                // Remove the corresponding row from the order summary table
+                orderSummary.deleteRow(index);
+
+                // Remove pending images associated with this subItemId
+                pendingImages = pendingImages.filter(img => img.subItemId !== subItemId);
+
+                // Remove image preview if it exists
+                const previewImage = document.getElementById(`preview-${subItemId}`);
+                if (previewImage) {
+                    previewImage.remove();
+                }
+
+                // Remove any additional elements related to the image preview
+                const fileInput = document.getElementById(`file-input-${subItemId}`);
+                if (fileInput) {
+                    fileInput.remove();
+                }
+
+                // Update total amount after removal
+                updateTotalAmount();
+            };
+
+
+            function updateTotalAmount() {
+                totalOrderAmount = orderItems.reduce((sum, item) => sum + item.totalAmount, 0);
+                document.getElementById('totalAmount').textContent = `₹${totalOrderAmount.toFixed(2)}`;
+                updateBalanceAmount();
+            }
+
+            // Handle advance payment
+            advancePaymentButton.addEventListener('click', function () {
+                // Create modal elements
+                const modalOverlay = document.createElement('div');
+                modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(12px);
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        `;
+
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+            background: linear-gradient(165deg, #ffffff, #f5f7fa);
+            padding: 48px;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 520px;
+            width: 94%;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
+                        0 12px 32px -8px rgba(0,0,0,0.2),
+                        inset 0 2px 6px rgba(255,255,255,0.9);
+            transform: translateY(0);
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255,255,255,0.22);
+        `;
+
+                modalContent.innerHTML = `
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideIn {
+                    from { transform: translateY(-40px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .payment-input {
+                    width: 100%;
+                    padding: 16px;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 16px;
+                    font-size: 18px;
+                    margin: 24px 0;
+                    outline: none;
+                    transition: all 0.3s;
+                }
+                .payment-input:focus {
+                    border-color: #007bff;
+                    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+                }
+                .modal-btn {
+                    padding: 16px 32px;
+                    border: none;
+                    border-radius: 100px;
+                    cursor: pointer;
+                    font-weight: 700;
+                    font-size: 17px;
+                    transition: all 0.3s;
+                    margin: 0 8px;
+                }
+                .modal-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+                }
+            </style>
+            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800;">Enter Advance Payment</h3>
+            <input type="number" class="payment-input" id="advancePaymentInput" placeholder="Enter amount">
+            <div>
+                <button id="confirmPayment" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white;">
+                    Confirm
+                </button>
+                <button id="cancelPayment" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
+                    Cancel
+                </button>
+            </div>
+        `;
+
+                document.body.appendChild(modalOverlay);
+                modalOverlay.appendChild(modalContent);
+
+                const closeModal = () => modalOverlay.remove();
+
+                document.getElementById('cancelPayment').onclick = closeModal;
+
+                document.getElementById('confirmPayment').onclick = () => {
+                    const input = document.getElementById('advancePaymentInput');
+                    const amount = parseFloat(input.value);
+
+                    if (amount && !isNaN(amount) && amount > 0) {
+                        advancePayment = amount;
+                        document.getElementById('advancePaymentDisplay').textContent = `₹${advancePayment.toFixed(2)}`;
+                        updateBalanceAmount();
+                        closeModal();
+                    }
+                };
+
+                modalOverlay.onclick = (e) => {
+                    if (e.target === modalOverlay) closeModal();
+                };
+            });
+
+            // Update balance amount
+            function base64ToFile(base64String, fileName) {
+                const byteCharacters = atob(base64String.split(',')[1]); // Remove metadata
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const file = new Blob([byteArray], { type: 'image/png' });
+                return new File([file], fileName, { type: 'image/png' });
+            }
+
+            function updateBalanceAmount() {
+                const balanceAmount = totalOrderAmount - advancePayment;
+                document.getElementById('balanceAmountDisplay').textContent = `₹${balanceAmount.toFixed(2)}`;
+            }
+
+            let pendingImages = [];
+
+            window.uploadImage = function (event, subItemId) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+
+                if (!orderId) {
+                    alert('Order ID not found!');
+                    return;
+                }
+                pendingImages.push({ file, subItemId, orderId });
+
+                alert(`Image selected for ${subItemId}. It will be uploaded when the order is finalized.`);
+            };
+            function showWarning(message) {
+    // Remove existing modal if any
+    const existingModal = document.getElementById("warning-modal");
+    if (existingModal) existingModal.remove();
+
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.id = "warning-modal";
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100vw";
+    overlay.style.height = "100vh";
+    overlay.style.background = "rgba(0, 0, 0, 0.6)";
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "10000";
+    overlay.style.animation = "fadeIn 0.3s ease-in-out";
+
+    // Create modal box with glassmorphism effect
+    const modal = document.createElement("div");
+    modal.style.background = "rgba(255, 255, 255, 0.2)";
+    modal.style.backdropFilter = "blur(12px)";
+    modal.style.color = "#fff";
+    modal.style.padding = "30px";
+    modal.style.borderRadius = "15px";
+    modal.style.boxShadow = "0px 10px 30px rgba(0, 0, 0, 0.3)";
+    modal.style.textAlign = "center";
+    modal.style.fontSize = "18px";
+    modal.style.fontFamily = "'Poppins', sans-serif";
+    modal.style.maxWidth = "400px";
+    modal.style.position = "relative";
+    modal.style.border = "1px solid rgba(255, 255, 255, 0.3)";
+    modal.style.animation = "popUp 0.3s ease-out forwards";
+
+    // Warning Icon
+    const warningIcon = document.createElement("div");
+    warningIcon.innerHTML = "⚠️";
+    warningIcon.style.fontSize = "50px";
+    warningIcon.style.marginBottom = "15px";
+    warningIcon.style.animation = "bounce 1s infinite";
+    modal.appendChild(warningIcon);
+
+    // Warning Text
+    const warningText = document.createElement("p");
+    warningText.innerText = message;
+    warningText.style.marginBottom = "20px";
+    warningText.style.fontSize = "18px";
+    warningText.style.color = "#f8f8f8";
+    warningText.style.lineHeight = "1.6";
+    modal.appendChild(warningText);
+
+    // OK Button
+    const okButton = document.createElement("button");
+    okButton.innerText = "OK";
+    okButton.style.background = "linear-gradient(135deg, #ff7e5f, #feb47b)";
+    okButton.style.color = "#fff";
+    okButton.style.border = "none";
+    okButton.style.padding = "12px 28px";
+    okButton.style.borderRadius = "30px";
+    okButton.style.cursor = "pointer";
+    okButton.style.fontSize = "16px";
+    okButton.style.fontWeight = "600";
+    okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
+    okButton.style.transition = "all 0.3s ease-in-out";
+    
+    okButton.onmouseover = () => {
+        okButton.style.transform = "scale(1.05)";
+        okButton.style.boxShadow = "0 6px 20px rgba(255, 126, 95, 0.5)";
+    };
+    okButton.onmouseleave = () => {
+        okButton.style.transform = "scale(1)";
+        okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
+    };
+
+    okButton.onclick = () => {
+        document.body.removeChild(overlay);
+    };
+
+    modal.appendChild(okButton);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Allow pressing Enter to confirm
+    document.addEventListener("keydown", function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            document.body.removeChild(overlay);
+            document.removeEventListener("keydown", handleKeyPress);
+        }
+    });
+}
+
+// Add Soft Animations
+const styleSheet = document.createElement("style");
+styleSheet.innerHTML = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes popUp {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+`;
+document.head.appendChild(styleSheet);
+
+
+            async function finalizeOrder() {
+                const customerName = document.getElementById('customerName').value;
+                const customerPhone = document.getElementById('customerPhone').value;
+
+                // **Replace alert with this stylish warning modal**
+                if (!customerName) {
+                    showWarning("Please fill Customer Name.");
+                    return;
+                }
+
+                if (!customerPhone) {
+                    showWarning("Please fill Customer phone number.");
+                    return;
+                }
+
+                if (orderItems.length === 0) {
+                    showWarning("Please add at least one item.");
+                    return;
+                }
+
+                const orderData = {
+                    customerName,
+                    customerPhone,
+                    orderDate: new Date().toISOString(),
+                    items: orderItems.map(item => ({
+                        subItemId: item.subItemId,
+                        itemType: item.itemType,
+                        itemName: item.itemName,
+                        quantity: item.quantity,
+                        amountPerGram: item.amountPerGram,
+                        makingCharges: item.makingCharges,
+                        wastage: item.wastage,
+                        itemDescription: item.itemDescription,
+                        totalAmount: item.totalAmount,
+                    })),
+                    totalAmount: totalOrderAmount,
+                    advancePayment,
+                    balanceAmount: totalOrderAmount - advancePayment
+                };
+
+                try {
+                    // 1️⃣ Upload images first
+                    for (const { file, subItemId, orderId } of pendingImages) {
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        formData.append('subItemId', subItemId);
+                        formData.append('orderId', orderId);
+
+                        const imgResponse = await fetch('/upload-item-image', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!imgResponse.ok) {
+                            throw new Error(`Image upload failed for ${subItemId}`);
+                            console.error('🚨 Error:', error);
+
+                        }
+                        console.log(`✅ Image uploaded for ${subItemId}`);
+                    }
+
+                    // 2️⃣ Submit order after successful image uploads
+                    const orderResponse = await fetch('/generate-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (orderResponse.ok) {
+                        const result = await orderResponse.json();
+                        console.log(result.message);
+                        const successMessage = document.createElement('div');
+                        successMessage.className = 'success-message';
+                        successMessage.textContent = 'Order successfully placed✅';
+                        document.querySelector('.container').appendChild(successMessage);
+
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                            window.open(`print-bill.html?orderNumber=${result.orderId}`, '_blank');
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+
+                        }, 2000);
+                    } else {
+                        throw new Error('Failed to generate order');
+                    }
+                } catch (error) {
+                    console.error('🚨 Error:', error);
+                    alert('Failed to create order. Please try again.');
+                }
+            }
+            finalizeOrderButton.addEventListener('click', finalizeOrder);
+        });
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>New Order Slip</h1>
+        <a href="order-slip.html" class="back-button">Back</a>
+    </header>
+
+    <div class="container">
+        <div id="nextOrderNumber"
+            style="font-size: 2.2em; font-weight: 700; margin: 30px 0; color: #1a237e; text-shadow: 2px 2px 8px rgba(0,0,0,0.15); padding: 20px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-left: 6px solid #2962ff; border-radius: 12px; box-shadow: 0 8px 16px rgba(41,98,255,0.15); position: relative; overflow: hidden; transition: all 0.3s ease;">
+            <div
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%); background-size: 30px 30px; animation: shine 2s linear infinite;">
+            </div>
+            <span style="position: relative; z-index: 1;">Order Number:</span>
+        </div>
+        <style>
+            @keyframes shine {
+                0% {
+                    background-position: 0 0;
+                }
+
+                100% {
+                    background-position: 60px 0;
+                }
+            }
+        </style>
+        <h2>Customer Details</h2>
+        <form id="customerForm">
+            <label for="customerName">Customer Name</label>
+            <input type="text" id="customerName" name="customerName" required>
+
+            <label for="customerPhone">Customer Phone</label>
+            <input type="text" id="customerPhone" name="customerPhone" required>
+        </form>
+
+        <h2>Order Details <span id="orderNumber">Order 1</span></h2>
+        <form id="orderForm">
+            <label for="itemType">Item Type</label>
+            <select id="itemType" name="itemType" required>
+                <option value="">Select Item Type</option>
+                <option value="gold">Gold</option>
+                <option value="silver">Silver</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="itemName">Item Name</label>
+            <input type="text" id="itemName" name="itemName" required>
+
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" min="1" step="0.01" required>
+
+            <label for="amountPerGram">Amount per Gram</label>
+            <input type="number" id="amountPerGram" name="amountPerGram" min="0" step="0.01" required>
+
+            <label for="makingCharges">Making Charges</label>
+            <input type="number" id="makingCharges" name="makingCharges" min="0" step="0.01">
+
+            <label for="wastage">Wastage (%)</label>
+            <input type="number" id="wastage" name="wastage" min="0" step="0.01">
+
+            <label for="itemDescription">Item Description</label>
+            <input type="text" id="itemDescription" name="itemDescription">
+
+            <button type="button" id="submitOrderButton">Add Item</button>
+        </form>
+
+
+        <h2>Order Summary</h2>
+        <table id="orderSummary">
+            <thead>
+                <tr>
+                    <th>Sub item id</th>
+                    <th>Item Type</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Amount per Gram</th>
+                    <th>Making Charges</th>
+                    <th>Wastage</th>
+                    <th>Total Amount</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Items will be added here -->
+            </tbody>
+        </table>
+
+        <div class="order-total">
+            <div>
+                <strong>Total Amount:</strong>
+                <span id="totalAmount">₹0.00</span>
+            </div>
+            <div>
+                <strong>Advance Payment:</strong>
+                <span id="advancePaymentDisplay">₹0.00</span>
+            </div>
+            <div>
+                <strong>Balance Amount:</strong>
+                <span id="balanceAmountDisplay">₹0.00</span>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button type="button" id="advancePaymentButton">Advance Payment</button>
+            <button type="button" id="finalizeOrderButton">Finalize Order</button>
+        </div>
+
+    </div>
+</body>
+
+</html>

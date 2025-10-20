@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Slip - Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="print-bill.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+    <style>
+        .payment-details-row {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .payment-history-container {
+            flex: 1;
+            min-width: 350px;
+            background: #f9f9f9;
+            padding: 12px;
+            /* border: 1px solid #ccc; */
+            border-radius: 8px;
+        }
+
+        #paymentHistoryTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #paymentHistoryTable th,
+        #paymentHistoryTable td {
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Order Slip</h1>
+        <a href="order-slip.html" class="back-button">Back</a>
+        <button id="print-btn" class="print-button">Print</button>
+    </header>
+
+    <div class="container">
+        <div class="original-bill">Order Slip</div>
+
+        <img src="gold.png" alt="Logo" class="logo">
+        <p class="centered">||Sri Vasavi Prasanna||</p>
+
+        <div class="store-header">
+            <h1>SRI VASAVI JEWELLERS</h1>
+        </div>
+        <div class="contact-info">
+            Bagalkot Road, Near Police Station, Mudgal-584125<br>
+            Phone: 7022269436
+        </div>
+        <div class="double-divider"></div>
+        <div class="details-box">
+            <div class="store-details">
+                <h2>Store Details</h2>
+                <p>SRI VASAVI JEWELLERS</p>
+                <p>Bagalkot Road, Near Police Station</p>
+                <p>Mudgal-584125</p>
+                <p>Phone: 7022269436</p>
+            </div>
+            <div class="customer-details">
+                <h2>Customer Details</h2>
+                <p><strong>Order No:</strong> <span id="orderNumber"></span></p>
+                <p><strong>Name:</strong> <span id="customerName"></span></p>
+                <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
+                <p><strong>Date:</strong> <span id="orderDate"></span></p>
+            </div>
+        </div>
+
+        <!-- Bill Table -->
+        <h2>Bill Details</h2>
+        <table id="billTable">
+            <thead>
+                <tr>
+                    <th>Item Type</th>
+                    <th>Item Name</th>
+                    <th>Weight(gm)</th>
+                    <th>Amount per Gram</th>
+                    <th>Making Charges</th>
+                    <th>Wastage</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- ✅ Flex wrapper for layout only -->
+        <div class="payment-details-row">
+            <!-- Payment table -->
+            <div class="payment-history-container">
+                <h2>Payment Details</h2>
+                <table id="paymentHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Sub ID</th>
+                            <th>Amount</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- ✅ Your original total section remains untouched -->
+            <div class="total-section">
+                <p><strong>Total Amount:</strong> ₹<span id="totalAmount"></span></p>
+                <p><strong>Advance Payment:</strong> ₹<span id="advancePayment"></span></p>
+                <p><strong>Balance Amount:</strong> ₹<span id="balanceAmount"></span></p>
+            </div>
+        </div>
+
+
+
+
+        <div class="amount-in-words">
+            <p><strong>Amount in Words:</strong> <span id="amountInWords"></span></p>
+        </div>
+
+        <div class="signature-section">
+            <p>Owner's Signature</p>
+        </div>
+        <div class="double-divider"></div>
+        <div class="footer">Thank you for visiting Vasavi Jewellers! Visit Again</div>
+    </div>
+
+    <script>
+        document.getElementById('print-btn').addEventListener('click', function () {
+            const printContents = document.querySelector('.container').innerHTML;
+            const originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload();
+        });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${day}-${month}-${year}`;
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-IN').format(num);
+        }
+
+        function convertNumberToWords(amount) {
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+                'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+                'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            const scales = ['', 'Thousand', 'Lakh', 'Crore'];
+
+            function convertChunk(number) {
+                let words = '';
+                const hundred = Math.floor(number / 100);
+                number %= 100;
+                const ten = Math.floor(number / 10);
+                const one = number % 10;
+
+                if (hundred) words += ones[hundred] + ' Hundred ';
+                if (ten > 1) {
+                    words += tens[ten] + ' ';
+                    if (one) words += ones[one] + ' ';
+                } else if (ten === 1) {
+                    words += ones[number] + ' ';
+                } else if (one) {
+                    words += ones[one] + ' ';
+                }
+                return words.trim();
+            }
+
+            if (amount === 0) return 'Zero';
+
+            let words = '';
+            let scaleIndex = 0;
+
+            while (amount > 0) {
+                let chunk = scaleIndex === 0 ? amount % 1000 : amount % 100;
+                if (chunk > 0) words = convertChunk(chunk) + ' ' + scales[scaleIndex] + ' ' + words;
+                amount = Math.floor(amount / (scaleIndex === 0 ? 1000 : 100));
+                scaleIndex++;
+            }
+
+            return words.trim() + ' Only';
+        }
+
+        async function fetchPaymentHistory(orderId) {
+            try {
+                const res = await fetch(`/get-advance-history/${orderId}`);
+                const history = await res.json();
+                const tbody = document.querySelector('#paymentHistoryTable tbody');
+                tbody.innerHTML = '';
+
+                if (history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3">No payments made yet.</td></tr>`;
+                } else {
+                    history.forEach(payment => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${payment.sub_id}</td>
+                            <td>₹${formatNumber(payment.amount.toFixed(2))}</td>
+                            <td>${formatDate(payment.date)}</td>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load payment history:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const orderNumber = new URLSearchParams(window.location.search).get('orderNumber');
+            if (!orderNumber) {
+                console.error('No order number found in the URL');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/fetch-order/${orderNumber}`);
+                if (response.ok) {
+                    const orderDetails = await response.json();
+
+                    document.getElementById('orderNumber').textContent = orderNumber;
+                    document.getElementById('customerName').textContent = orderDetails.customer_name;
+                    document.getElementById('customerPhone').textContent = orderDetails.customer_phone;
+                    document.getElementById('orderDate').textContent = formatDate(orderDetails.order_date);
+
+                    const billTableBody = document.querySelector('#billTable tbody');
+                    orderDetails.items.forEach(item => {
+                        const row = billTableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${item.item_type}</td>
+                            <td>${item.item_name}${item.item_description ? ' - ' + item.item_description : ''}</td>
+                            <td>${item.quantity.toFixed(2)}</td>
+                            <td>₹${formatNumber(item.amount_per_gram.toFixed(2))}</td>
+                            <td>₹${formatNumber(item.making_charges.toFixed(2))}</td>
+                            <td>${item.wastage}%</td>
+                            <td>₹${formatNumber(item.total_amount.toFixed(2))}</td>
+                        `;
+                    });
+
+                    document.getElementById('totalAmount').textContent = formatNumber(orderDetails.subtotal.toFixed(2));
+                    document.getElementById('advancePayment').textContent = formatNumber(orderDetails.advance_payment.toFixed(2));
+                    document.getElementById('balanceAmount').textContent = formatNumber(orderDetails.balance_amount.toFixed(2));
+                    document.getElementById('amountInWords').textContent = convertNumberToWords(orderDetails.subtotal);
+
+                    await fetchPaymentHistory(orderNumber);
+                } else {
+                    console.error('Failed to fetch order details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

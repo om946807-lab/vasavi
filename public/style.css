@@ -1,0 +1,188 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Login Container Styles */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px 30px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    /* Adding subtle inner shadow for hallow effect */
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-container:before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    z-index: -1;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Home Button Styles */
+.home-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #007bff;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.home-btn:hover {
+    background: #0056b3;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Login Header Styles */
+.login-container h1 {
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    color: #333;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Switch Buttons Styles */
+.login-switch {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.login-switch button {
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    flex: 1;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.login-switch button.active {
+    background: #0056b3;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-switch button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Login Form Styles */
+.login-form {
+    max-width: 450px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    display: none; /* Hide forms initially */
+    transition: opacity 0.3s ease-in-out;
+}
+
+.login-form.active {
+    display: block; /* Show active form */
+}
+
+.login-form input {
+    width: calc(100% - 20px);
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.1em;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.login-form input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+.login-form input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.login-form input[type="submit"]:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 20px;
+    }
+
+    .login-container h1 {
+        font-size: 2em;
+    }
+
+    .login-switch button {
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+
+    .login-form {
+        padding: 15px;
+    }
+
+    .login-form input,
+    .login-form input[type="submit"] {
+        font-size: 1em;
+    }
+}
+
+.timer {
+    color: red;
+    font-size: 1.2em;
+    margin-top: 10px;
+}

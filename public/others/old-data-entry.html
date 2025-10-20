@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old data Entry -Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="old-data-entry.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <header>
+        <div class="header-title">Old Data Entry</div>
+        <a href="others.html" class="back-button">Back</a>
+    </header>
+
+
+    <div class="container">
+        <h2>Customer Billing Information</h2>
+        <form id="billingForm">
+            <!-- Customer Name -->
+            <div class="form-group">
+                <label for="customerName">Customer Name <span class="required">*</span></label>
+                <input type="text" id="customerName" name="customerName" placeholder="Enter Customer Name" required>
+            </div>
+
+            <!-- Customer Phone -->
+            <div class="form-group">
+                <label for="customerPhone">Customer Phone <span class="required">*</span></label>
+                <input type="tel" id="customerPhone" name="customerPhone" placeholder="Enter Customer Phone" required>
+            </div>
+
+            <!-- Date -->
+            <div class="form-group">
+                <label for="billDate">Date <span class="required">*</span></label>
+                <input type="date" id="billDate" name="billDate" required>
+            </div>
+
+            <!-- Dropdown for Deposit/Balance -->
+            <div class="form-group">
+                <label for="transactionType">Transaction Type <span class="required">*</span></label>
+                <select id="transactionType" name="transactionType" onchange="handleTransactionType()" required>
+                    <option value="">Select Transaction Type</option>
+                    <option value="deposit">Deposit</option>
+                    <option value="balance">Balance</option>
+                </select>
+            </div>
+
+            <!-- Deposit Section -->
+            <div id="depositSection" class="hidden">
+                <div class="form-group">
+                    <label for="amountDeposited">Amount Deposited (₹) <span class="required">*</span></label>
+                    <input type="number" id="amountDeposited" name="amountDeposited" placeholder="Enter Amount Deposited" required>
+                </div>
+            </div>
+
+            <!-- Balance Section -->
+            <div id="balanceSection" class="hidden">
+                <div class="form-group">
+                    <label for="billNumber">Bill Number <span class="required">*</span></label>
+                    <input type="text" id="billNumber" name="billNumber" placeholder="Enter Bill Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="totalAmountBalance">Total Amount (₹) <span class="required">*</span></label>
+                    <input type="number" id="totalAmountBalance" name="totalAmountBalance" placeholder="Enter Total Amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="amountPaid">Amount Paid (₹) <span class="required">*</span></label>
+                    <input type="number" id="amountPaid" name="amountPaid" placeholder="Enter Amount Paid" required>
+                </div>
+                <div class="form-group">
+                    <label for="balanceAmount">Balance Amount (₹)</label>
+                    <input type="number" id="balanceAmount" name="balanceAmount" readonly>
+                </div>
+                <button type="button" class="btn" onclick="updateBalance()">Update Balance</button>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" class="btn" onclick="submitForm()">Submit</button>
+        </form>
+
+        <!-- Summary -->
+        <div class="summary" id="summary">
+        </div>
+    </div>
+
+    <script>
+        function handleTransactionType() {
+            const transactionType = document.getElementById('transactionType').value;
+            const depositSection = document.getElementById('depositSection');
+            const balanceSection = document.getElementById('balanceSection');
+            
+            // Hide both sections initially
+            depositSection.classList.add('hidden');
+            balanceSection.classList.add('hidden');
+
+            // Show the appropriate section based on the selection
+            if (transactionType === 'deposit') {
+                depositSection.classList.remove('hidden');
+            } else if (transactionType === 'balance') {
+                balanceSection.classList.remove('hidden');
+            }
+        }
+
+        function updateBalance() {
+            const totalAmount = parseFloat(document.getElementById('totalAmountBalance').value);
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+
+            if (!isNaN(totalAmount) && !isNaN(amountPaid)) {
+                const balance = totalAmount - amountPaid;
+                document.getElementById('balanceAmount').value = balance;
+            } else {
+                alert('Please enter valid amounts.');
+            }
+        }
+
+        function submitForm() {
+            const transactionType = document.getElementById('transactionType').value;
+
+            // Gather common customer information
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const billDate = document.getElementById('billDate').value;
+
+            if (transactionType === 'balance') {
+                const billNumber = document.getElementById('billNumber').value;
+                const totalAmountBalance = document.getElementById('totalAmountBalance').value;
+                const amountPaid = document.getElementById('amountPaid').value;
+                const balanceAmount = document.getElementById('balanceAmount').value;
+
+                // Validate fields
+                if (!customerName || !customerPhone || !billDate || !billNumber || !totalAmountBalance || !amountPaid || !balanceAmount) {
+                    alert('Please fill in all fields.');
+                    return;
+                }
+
+                // Send data to the server
+                fetch('/submit-billing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        billDate,
+                        billNumber,
+                        totalAmountBalance,
+                        amountPaid,
+                        balanceAmount,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    resetForm();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            } else if (transactionType === 'deposit') {
+                const amountDeposited = document.getElementById('amountDeposited').value;
+
+                // Validate fields
+                if (!customerName || !customerPhone || !billDate || !amountDeposited) {
+                    alert('Please fill in all fields.');
+                    return;
+                }
+
+                // Send data to the server
+                fetch('/submit-deposit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        depositDate: billDate,
+                        amountDeposited,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    resetForm();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('billingForm').reset();
+            document.getElementById('balanceSection').classList.add('hidden');
+            document.getElementById('depositSection').classList.add('hidden');
+            document.getElementById('transactionType').selectedIndex = 0; // Reset dropdown
+        }
+    </script>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .required {
+            color: red;
+        }
+        .btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silver Stock - Sri Vasavi Jewellers</title>
+  <link rel="stylesheet" href="gold-stock.css" />
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <style>
+    /* --- Password Modal --- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: linear-gradient(145deg, #f8f8f8, #e0e0e0);
+      border: 2px solid silver;
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      padding: 30px;
+      width: 320px;
+      font-family: "Poppins", sans-serif;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-box h2 {
+      color: silver;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+    }
+
+    .modal-box input[type="password"] {
+      width: 85%;
+      padding: 10px;
+      border: 1px solid silver;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    .modal-box button {
+      background-color: silver;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 5px;
+    }
+
+    .modal-box button:hover {
+      background-color: #a9a9a9;
+      transform: scale(1.05);
+    }
+
+    .error-text {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    /* --- Silver Key Animation --- */
+    #keyUnlockAnimation {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: silver;
+      font-family: "Poppins", sans-serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      text-shadow: 0 0 10px rgba(192, 192, 192, 0.7);
+    }
+
+    @keyframes rotateKey {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(20deg) scale(1.1); }
+      50% { transform: rotate(-20deg) scale(1.1); }
+      75% { transform: rotate(15deg) scale(1.05); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    #unlockKey.animate {
+      animation: rotateKey 1s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px silver);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Silver Stock</h1>
+    <a href="/admin-welcome" class="back-button">Back</a>
+  </header>
+
+  <div class="tile-container">
+    <div class="tile">
+      <a href="add-stock-silver.html" class="tile">
+        <h2>Add Stock</h2>
+      </a>
+    </div>
+
+    <!-- 🔒 Password-protected tile -->
+    <div class="tile" id="viewStockTile">
+      <h2>View Stock</h2>
+    </div>
+
+    <div class="tile">
+      <a href="view-sold-silver.html" class="tile">
+        <h2>Sold Silver Stock</h2>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🔐 Password Modal -->
+  <div class="modal-overlay" id="passwordModal">
+    <div class="modal-box">
+      <h2>🔐 Enter Password</h2>
+      <input type="password" id="passwordInput" placeholder="Enter password" />
+      <p class="error-text" id="errorMsg">Invalid password. Try again.</p>
+      <div>
+        <button id="submitPassword">Submit</button>
+        <button id="cancelModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔑 Key Unlock Animation -->
+  <div id="keyUnlockAnimation">
+    <svg
+      id="unlockKey"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      width="120"
+      height="120"
+      fill="silver"
+    >
+      <path
+        d="M501.1 10.9c-14.6-14.6-38.3-14.6-52.9 0l-120.6 120.6c-8.8 8.8-12.6 21.2-10.2 33.4l-143.4 143.4C141.2 337.6 128 350.8 128 368v16h-48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h48v48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-48h48c8.8 0 16-7.2 16-16v-48h16c17.2 0 30.4-13.2 32.6-30.9l143.4-143.4c12.2 2.4 24.6-1.4 33.4-10.2L501.1 63.8c14.6-14.6 14.6-38.3 0-52.9z"
+      />
+    </svg>
+    <p style="margin-top: 15px">🔓 Unlocking access...</p>
+  </div>
+
+  <script>
+    const modal = document.getElementById("passwordModal");
+    const passwordInput = document.getElementById("passwordInput");
+    const errorMsg = document.getElementById("errorMsg");
+    const submitBtn = document.getElementById("submitPassword");
+    const cancelBtn = document.getElementById("cancelModal");
+    const overlay = document.getElementById("keyUnlockAnimation");
+    const key = document.getElementById("unlockKey");
+
+    // Show modal on click
+    document.getElementById("viewStockTile").addEventListener("click", () => {
+      modal.style.display = "flex";
+      passwordInput.value = "";
+      errorMsg.style.display = "none";
+      passwordInput.focus();
+    });
+
+    // Close modal
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Click outside to close
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    // Submit password
+    submitBtn.addEventListener("click", async () => {
+      const password = passwordInput.value.trim();
+      if (!password) return;
+
+      const res = await fetch("/verify-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        modal.style.display = "none";
+        overlay.style.display = "flex";
+        key.classList.add("animate");
+
+        setTimeout(() => {
+          key.classList.remove("animate");
+          overlay.style.display = "none";
+          window.location.href = "view-stock-silver.html";
+        }, 3000); // 3 seconds animation
+      } else {
+        errorMsg.style.display = "block";
+        passwordInput.value = "";
+      }
+    });
+
+    // Press Enter to submit
+    passwordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitBtn.click();
+    });
+  </script>
+</body>
+</html>

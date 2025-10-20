@@ -1,0 +1,256 @@
+/* Base styling for the entire page */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+.success-message {
+    display: none; /* Hidden by default */
+    padding: 15px;
+    background-color: #4CAF50; /* Fresh green background */
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+    transition: opacity 0.5s ease;
+}
+
+/* Keyframes for fade-in and fade-out animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px); /* Slight upward movement */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px); /* Slight downward movement */
+    }
+}
+
+/* Header styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #2c3e50;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-bottom: 4px solid #e74c3c;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Back button styling */
+.back-button {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Main content styling */
+main {
+    max-width: 600px;
+    margin: 80px auto 20px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+select, input[type="text"], input[type="number"] {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease;
+}
+
+select:focus, input[type="text"]:focus, input[type="number"]:focus {
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+    outline: none;
+}
+
+/* Button styling */
+button {
+    padding: 12px 20px;
+    background-color: #27ae60;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #229954;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Success message styling */
+.success-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #2ecc71; /* Green background for success */
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s; /* Fade in and fade out animation */
+}
+
+/* Keyframes for fade-in and fade-out */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+       
+.entry-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.entry-toggle span {
+    margin: 0 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    letter-spacing: 1.2px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 45px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 45px;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 35px;
+    width: 35px;
+    left: 5px;
+    bottom: 5px;
+    background: linear-gradient(145deg, #fff, #f0f0f0);
+    border-radius: 50%;
+    transition: 0.4s ease;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3), inset 0 5px 8px rgba(255, 255, 255, 0.6);
+}
+
+input:checked + .slider {
+    background: linear-gradient(145deg, #ff6ec4, #7873f5);
+    box-shadow: 0 0 30px rgba(255, 110, 196, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+input:checked + .slider:before {
+    transform: translateX(35px);
+    background: linear-gradient(145deg, #ff6ec4, #7873f5);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3), inset 0 5px 8px rgba(255, 255, 255, 0.6);
+    animation: glow 1.5s infinite alternate;
+}
+
+.slider:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+input:checked + .slider:hover {
+    box-shadow: 0 15px 30px rgba(255, 110, 196, 1), inset 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 110, 196, 0.6), inset 0 4px 6px rgba(255, 255, 255, 0.3);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 110, 196, 1), inset 0 6px 8px rgba(255, 255, 255, 0.4);
+    }
+}
+
+.slider.round {
+    border-radius: 45px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+
+/* Success message styling */
+.success-message {
+    color: green;
+    font-size: 16px;
+    margin-top: 20px;
+}

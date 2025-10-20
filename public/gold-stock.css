@@ -1,0 +1,102 @@
+/* Enhanced Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #eaeaea; /* Light gray background for a softer look */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-bottom: 4px solid #ff4b5c; /* Bolder border to emphasize the header */
+}
+
+.back-button {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #ff4b5c, #ff6f61);
+    border-radius: 12px; /* Rounded corners for a modern look */
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    font-weight: bold; /* Make the text stand out */
+}
+
+.back-button:hover {
+    background: linear-gradient(45deg, #ff6f61, #ff4b5c);
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tile-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    padding: 30px;
+    flex-wrap: wrap;
+}
+
+.tile {
+    background: #ffffff;
+    border-radius: 16px; /* Larger border radius for a smoother appearance */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    width: 260px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid #ff4b5c; /* Subtle border to define the tile */
+}
+
+.tile:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    background: #f9f9f9; /* Slight background change on hover */
+}
+
+.tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease;
+}
+
+.tile:hover::before {
+    opacity: 0;
+}
+
+.tile h2 {
+    font-size: 1.6rem;
+    color: #333;
+    margin: 0;
+    z-index: 1;
+    position: relative;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Light shadow for text */
+}
+
+.tile-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: bold; /* Bold text for emphasis */
+}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Enter Bill Number</h1>
+        <input type="text" id="billNumberInput" placeholder="Enter Bill Number" />
+        <button class="action-btn fetch-btn" onclick="fetchBillDetails()">Fetch Bill</button>
+        <div id="billDetails" class="bill-details"></div>
+        <div id="messages"></div> <!-- Div to display messages -->
+    </div>
+
+    <script>
+        function displayMessage(type, message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageType = {
+                success: 'success-message',
+                error: 'error-message',
+                info: 'info-message'
+            };
+            messagesDiv.innerHTML = `<div class="message ${messageType[type]}">${message}</div>`;
+        }
+
+        async function fetchBillDetails() {
+            const billNumber = document.getElementById('billNumberInput').value;
+            if (!billNumber) {
+                displayMessage('error', 'Please enter a bill number');
+                return;
+            }
+
+            const billDetailsDiv = document.getElementById('billDetails');
+            billDetailsDiv.innerHTML = ''; // Clear previous results
+
+            // Show searching message
+            displayMessage('info', 'Searching for bill details...');
+
+            try {
+                // Fetch the bill details
+                const billResponse = await fetch(`/bill-details/${billNumber}`);
+                if (!billResponse.ok) {
+                    displayMessage('error', 'Failed to fetch bill details');
+                    return;
+                }
+
+                const billData = await billResponse.json();
+                if (!billData || Object.keys(billData).length === 0) {
+                    displayMessage('info', 'Bill Not Found or not generated.');
+                    return;
+                }
+
+                // Display bill summary
+                billDetailsDiv.innerHTML = `
+                        <h2>Bill Summary</h2>
+                        <table class="summary-table">
+                            <tr><th>Customer Name</th><td>${billData.customer_name || 'N/A'}</td></tr>
+                            <tr><th>Bill Number</th><td>${billData.bill_number || 'N/A'}</td></tr>
+                            <tr><th>Date</th><td>${billData.bill_date || 'N/A'}</td></tr>
+                            <tr><th>Total Amount</th><td>₹${billData.subtotal || '0'}</td></tr>
+                            <tr><th>Old Gold/Silver Amount</th><td>₹${billData.oldGold || '0'}</td></tr>
+                            <tr><th>Discount</th><td>₹${billData.discount || '0'}</td></tr>
+                            <tr><th>Amount Paid</th><td>₹${billData.amount_paid || '0'}</td></tr>
+                            <tr><th>Balance Amount</th><td>₹${billData.balance_amount || '0'}</td></tr>
+                        </table>
+                    `;
+
+                // Update message to show bill found
+                displayMessage('success', 'Bill details found successfully');
+
+                // Fetch bill items
+                const itemsResponse = await fetch(`/billitems1/${billNumber}`);
+                if (!itemsResponse.ok) {
+                    displayMessage('error', 'Could not fetch bill items');
+                    return;
+                }
+
+                const itemsData = await itemsResponse.json();
+                if (itemsData.length === 0) {
+                    displayMessage('info', 'Bill Found but No Items are Associated With this Bill.');
+                    return;
+                }
+
+                // Display the items in a table
+                billDetailsDiv.innerHTML += `
+                        <h2>Items</h2>
+                        <table class="items-table styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Item id</th>
+                                    <th>Sub item id</th>
+                                    <th>Item Type</th>
+                                    <th>Item Name</th>
+                                    <th>Quantity</th>
+                                    <th>Amount</th>
+                                    <th>Return</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsData.map(item => `
+                                    <tr>
+                                        <td>${item.item_id || 'N/A'}</td>
+                                        <td>${item.sub_item_id || 'N/A'}</td>
+                                        <td>${item.item_type || 'N/A'}</td>
+                                        <td>${item.item_name || 'N/A'}</td>
+                                        <td>${item.quantity || '0'}</td>
+                                        <td>₹${item.total_amount || '0'}</td>
+                                        <td><button class="return-btn" onclick="returnItem('${billData.bill_number}', '${item.item_id}', '${item.item_type}', '${item.item_name}', ${item.quantity}, ${item.total_amount},'${item.sub_item_id}')">Return</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+
+                // Update message to show complete success
+                displayMessage('success', 'Bill and items loaded successfully');
+
+            } catch (error) {
+                displayMessage('error', `Error: ${error.message}`);
+                console.error('Error:', error);
+            }
+        }
+
+        // Handle return button click
+        async function returnItem(billNumber, itemId, itemType, itemName, quantity, totalAmount, subItemId) {
+            // Validate inputs
+            if (!billNumber || !itemId || !itemType || !itemName || !quantity || !totalAmount) {
+                displayMessage('error', 'Missing required item information');
+                return;
+            }
+
+            displayMessage('info', `Processing return for ${itemName}...`);
+
+            const updatedAmount = parseFloat(prompt(`Enter amount to update for ${itemName}:`));
+            if (isNaN(updatedAmount) || updatedAmount < 0) {
+                displayMessage('error', 'Invalid amount entered. Please enter a valid positive amount.');
+                return;
+            }
+
+            const newOGamount = parseFloat(prompt(`Enter new Old Gold/Silver Amount for ${itemName}:`));
+            if (isNaN(newOGamount) || newOGamount < 0) {
+                displayMessage('error', 'Invalid amount entered. Please enter a valid positive amount.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/return-item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        billNumber,
+                        itemId,
+                        itemType,
+                        itemName,
+                        quantity,
+                        totalAmount,
+                        subItemId,
+                        updatedAmount,
+                        newOGamount,
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to return item');
+                }
+
+                displayMessage('success', `Item (${itemName}) successfully returned.`);
+
+                // Refresh bill details after a short delay
+                setTimeout(() => {
+                    displayMessage('info', 'Refreshing bill details...');
+                    setTimeout(fetchBillDetails, 500);
+                }, 1000);
+
+            } catch (error) {
+                displayMessage('error', `Error returning item: ${error.message}`);
+                console.error('Error:', error);
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

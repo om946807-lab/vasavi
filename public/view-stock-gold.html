@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Stock Gold -Sri Vasavi Jewellers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="view-stock-gold.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>View Stock Gold</h1>
+        <a href="gold-stock.html" class="back-button">Back</a>
+    </header>
+
+    <main>
+        <div class="entry-toggle">
+            <span>Single Item</span>
+            <label class="switch">
+                <input type="checkbox" id="massViewSwitch" onchange="toggleView()">
+                <span class="slider"></span>
+            </label>
+            <span>Mass Items</span>
+        </div>
+    
+        <div id="tableContainer">
+            <div id="singleViewTable">
+                <i class="fas fa-print print-icon" onclick="printTable()" title="Print Table"></i>
+                <h1 class="gold-stock-heading">Gold Stock - Shield Items</h1>
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Gold Type</th>
+                            <th>Weight (in gm)</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                            <th>Delete</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here dynamically -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td id="totalWeight">Total: 0.00 gm</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div id="totalItems" class="total-items">Total Items Sold: 0</div>
+            </div>
+    
+            <!-- Mass View (initially hidden) -->
+            <div id="massViewTable" style="display:none;">
+                <i class="fas fa-print print-icon" onclick="printTable()" title="Print Table"></i>
+                <h1 class="gold-stock-heading">Gold Stock - Items</h1>
+                <table id="massStockTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Gold Type</th>
+                            <th>Weight (in gm)</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                            <th>Delete</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data for mass view will be populated dynamically here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td id="massTotalWeight">Total: 0.00 gm</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div id="massTotalItems" class="total-items">Total Items : 0</div>
+            </div>
+    
+            <div id="message" class="success-message" style="display:none;">Data added successfully!</div>
+        </div>
+    </main>
+
+    <script>
+         function toggleView() {
+        const singleView = document.getElementById('singleViewTable');
+        const massView = document.getElementById('massViewTable');
+        const isMassView = document.getElementById('massViewSwitch').checked;
+
+        if (isMassView) {
+            singleView.style.display = 'none';
+            massView.style.display = 'block';
+        } else {
+            singleView.style.display = 'block';
+            massView.style.display = 'none';
+        }
+    }
+        
+    document.addEventListener('DOMContentLoaded', () => {
+            // Function to fetch and display stock data
+            const fetchStockData = async (url, tableBodySelector, totalWeightElementId, totalItemsElementId, messageDivId,isMass=false) => {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+
+                    const tableBody = document.querySelector(tableBodySelector);
+                    const messageDiv = document.getElementById(messageDivId);
+                    const totalWeightElement = document.getElementById(totalWeightElementId);
+                    const totalItemsElement = document.getElementById(totalItemsElementId);
+                    let totalWeight = 0;
+                    let totalItems = 0;
+
+                    // Check if there's any data
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6">No stock data available</td></tr>';
+                        messageDiv.textContent = 'No stock data available';
+                        messageDiv.style.display = 'block';
+                        totalWeightElement.textContent = 'Total: 0.00 gm';
+                        totalItemsElement.textContent = 'Total Items: 0';
+                        return;
+                    }
+
+                    // Populate the table with data
+                    data.forEach(stock => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td>${stock.id}</td>
+                            <td>${stock.gold_type}</td>
+                            <td>${stock.quantity}</td>
+                            <td>${formatDate(stock.date_added)}</td>
+                            <td><button class="generate-tag-button" onclick="generateTag(${stock.id}, '${stock.silver_type}', ${stock.quantity})">Generate Tag</button></td>
+                            <td><button class="delete-button" onclick="deleteStock(${stock.id}, ${isMass})">Delete</button></td>
+                            <td><button class="edit-button" onclick="editStock(${stock.id}, ${stock.quantity},${isMass})">Edit</button></td> <!-- Edit button -->
+                        `;
+                        tableBody.appendChild(row);
+
+                        // Calculate totals
+                        totalWeight += parseFloat(stock.quantity);
+                        totalItems++;
+                    });
+
+                    // Display success message and update totals
+                    messageDiv.textContent = 'Data loaded successfully';
+                    messageDiv.style.display = 'block';
+                    totalWeightElement.textContent = `Total: ${totalWeight.toFixed(2)} gm`;
+                    totalItemsElement.textContent = `Total Items: ${totalItems}`;
+                } catch (error) {
+                    console.error('Error fetching stock data:', error);
+                    document.querySelector(tableBodySelector).innerHTML = '<tr><td colspan="6">Failed to load stock data</td></tr>';
+                    const messageDiv = document.getElementById(messageDivId);
+                    messageDiv.textContent = 'Failed to load stock data';
+                    messageDiv.style.display = 'block';
+                }
+            };
+
+            // Fetch mass stock data
+            fetchStockData('/view-stock-data-mass', '#massStockTable tbody', 'massTotalWeight', 'massTotalItems', 'message',true);
+
+            // Fetch regular stock data
+            fetchStockData('/view-stock-data', '#stockTable tbody', 'totalWeight', 'totalItems', 'message',false);
+        });
+
+        function generateTag(id, goldType, quantity) {
+            const tagContent = `
+                <div style="width: 2in; height: 1in; border: 1px solid #000; padding: 5px; box-sizing: border-box;">
+                    <h2 style="font-size: 0.8em; margin: 0;">Gold Tag</h2>
+                    <p style="font-size: 0.7em; margin: 2px 0;"><strong>ID:</strong> ${id}</p>
+                    <p style="font-size: 0.7em; margin: 2px 0;"><strong>Gold Type:</strong> ${goldType}</p>
+                    <p style="font-size: 0.7em; margin: 2px 0;"><strong>Weight (in gm):</strong> ${quantity}</p>
+                </div>
+            `;
+            const tagWindow = window.open('', '', 'height=100,width=200');
+            tagWindow.document.write('<html><head><title>Print Tag</title>');
+            tagWindow.document.write('<style>body { font-family: Arial, sans-serif; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; } </style>');
+            tagWindow.document.write('</head><body>');
+            tagWindow.document.write(tagContent);
+            tagWindow.document.write('<button onclick="window.print()" style="display: block; margin-top: 10px; padding: 5px 10px; border: none; background-color: #007bff; color: #fff; border-radius: 5px; cursor: pointer;">Print</button>');
+            tagWindow.document.write('</body></html>');
+            tagWindow.document.close();
+        }
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+        function printTable() {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            const content = document.querySelector('main').innerHTML;
+            printWindow.document.write('<html><head><title>Print</title>');
+            printWindow.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid #ddd; padding: 10px; text-align: center; font-family: Verdana, sans-serif; font-size: 14px;} th {background: #007bff; color: #fff;} td:nth-child(3) {width: 20%;} </style>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(content);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+        async function deleteStock(id, isMass = false) {
+            // Create modal elements
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.85);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                backdrop-filter: blur(12px);
+                animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: linear-gradient(165deg, #ffffff, #f5f7fa);
+                padding: 48px;
+                border-radius: 32px;
+                text-align: center;
+                max-width: 520px;
+                width: 94%;
+                box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
+                            0 12px 32px -8px rgba(0,0,0,0.2),
+                            inset 0 2px 6px rgba(255,255,255,0.9);
+                transform: translateY(0);
+                animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                border: 1px solid rgba(255,255,255,0.22);
+                cursor: default;
+                position: relative;
+                overflow: hidden;
+            `;
+
+            modalContent.innerHTML = `
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideIn {
+                        from { transform: translateY(-40px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.08); }
+                        100% { transform: scale(1); }
+                    }
+                    @keyframes glow {
+                        0% { box-shadow: 0 0 5px rgba(255,71,87,0.5); }
+                        50% { box-shadow: 0 0 20px rgba(255,71,87,0.8); }
+                        100% { box-shadow: 0 0 5px rgba(255,71,87,0.5); }
+                    }
+                    .modal-btn {
+                        padding: 16px 32px;
+                        border: none;
+                        border-radius: 100px;
+                        cursor: pointer;
+                        font-weight: 700;
+                        font-size: 17px;
+                        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                        transform: scale(1);
+                        margin: 0 12px;
+                        letter-spacing: 0.5px;
+                        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .modal-btn:hover {
+                        transform: scale(1.05) translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+                    }
+                    .modal-btn:active {
+                        transform: scale(0.98);
+                    }
+                </style>
+                <div style="font-size: 82px; margin-bottom: 28px; animation: pulse 2.5s infinite;">🗑️</div>
+                <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800;">Delete Stock Item</h3>
+                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
+                    Are you sure you want to delete this stock item? This action cannot be undone.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 24px;">
+                    <button id="cancelDelete" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
+                        Cancel
+                    </button>
+                    <button id="confirmDelete" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white; animation: glow 2s infinite;">
+                        Delete Stock
+                    </button>
+                </div>
+            `;
+
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+
+            // Handle modal actions
+            return new Promise((resolve) => {
+                const closeModal = () => {
+                    modalOverlay.style.animation = 'fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                    modalContent.style.animation = 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                    setTimeout(() => {
+                        modalOverlay.remove();
+                        resolve(false);
+                    }, 380);
+                };
+
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) {
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    }
+                });
+
+                document.getElementById('cancelDelete').onclick = closeModal;
+
+                document.getElementById('confirmDelete').onclick = async () => {
+                    const url = isMass ? `/delete-stock-gold-mass/${id}` : `/delete-stock-gold/${id}`;
+                    
+                    try {
+                        const response = await fetch(url, { method: 'DELETE' });
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        const data = await response.json();
+                        
+                        if (data.success || data.message.includes('successfully')) {
+                            const tableBody = isMass ? document.querySelector('#massStockTable tbody') : document.querySelector('#stockTable tbody');
+                            const row = tableBody.querySelector(`tr[data-id="${id}"]`);
+                            if (row) {
+                                row.remove();
+                            }
+
+                            modalContent.innerHTML = `
+                                <div style="font-size: 82px; margin-bottom: 28px; color: #2ecc71;">✓</div>
+                                <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2ecc71; font-weight: 800;">Success!</h3>
+                                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
+                                    Stock item has been successfully deleted.
+                                </p>
+                                <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white;">
+                                    Close
+                                </button>
+                            `;
+                            
+                            document.getElementById('closeModal').onclick = closeModal;
+                        } else {
+                            throw new Error(data.message || 'Failed to delete stock on the server');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting stock:', error);
+                        modalContent.innerHTML = `
+                            <div style="font-size: 82px; margin-bottom: 28px; color: #ff4757;">⚠️</div>
+                            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #ff4757; font-weight: 800;">Error</h3>
+                            <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
+                                Failed to delete stock item: ${error.message}
+                            </p>
+                            <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white;">
+                                Close
+                            </button>
+                        `;
+                        
+                        document.getElementById('closeModal').onclick = closeModal;
+                    }
+                };
+            });
+        }
+
+    async function editStock(stockId, currentWeight, isMass = false) {
+        // Create modal elements
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(12px);
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        `;
+
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: linear-gradient(165deg, #ffffff, #f5f7fa);
+            padding: 48px;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 520px;
+            width: 94%;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
+                        0 12px 32px -8px rgba(0,0,0,0.2),
+                        inset 0 2px 6px rgba(255,255,255,0.9);
+            transform: translateY(0);
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255,255,255,0.22);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        `;
+
+        modalContent.innerHTML = `
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideIn {
+                    from { transform: translateY(-40px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+                .modal-btn {
+                    padding: 16px 32px;
+                    border: none;
+                    border-radius: 16px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform: scale(1);
+                    margin: 0 12px;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+                    position: relative;
+                    overflow: hidden;
+                }
+                .modal-btn:before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(
+                        90deg,
+                        transparent,
+                        rgba(255,255,255,0.2),
+                        transparent
+                    );
+                    transition: 0.5s;
+                }
+                .modal-btn:hover:before {
+                    left: 100%;
+                }
+                .modal-btn:hover {
+                    transform: scale(1.05) translateY(-2px);
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+                }
+                .modal-btn:active {
+                    transform: scale(0.98);
+                }
+                .weight-input {
+                    width: 100%;
+                    padding: 20px;
+                    margin: 24px 0;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 16px;
+                    font-size: 18px;
+                    transition: all 0.3s;
+                    background: white;
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+                }
+                .weight-input:focus {
+                    outline: none;
+                    border-color: #3498db;
+                    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+                }
+            </style>
+            <div style="font-size: 82px; margin-bottom: 28px;">⚖️</div>
+            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.1); letter-spacing: -0.5px;">
+                Update Weight
+            </h3>
+            <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7; font-weight: 500; background: linear-gradient(120deg, #f1f3f5, #ffffff); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08); text-align: center;">
+                Current weight: <span style="color: #00b894; font-weight: 700;">${currentWeight} gm</span>
+            </p>
+            <input type="number" class="weight-input" id="newWeightInput" placeholder="Enter new weight" value="${currentWeight}">
+            <div style="display: flex; justify-content: center; gap: 24px;">
+                <button id="cancelBtn" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
+                    Cancel
+                </button>
+                <button id="updateBtn" class="modal-btn" style="background: linear-gradient(145deg, #3498db, #2980b9); color: white;">
+                    Update Weight
+                </button>
+            </div>
+        `;
+
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+
+        // Handle modal actions
+        return new Promise((resolve) => {
+            const closeModal = () => {
+                modalOverlay.style.animation = 'fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                modalContent.style.animation = 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                setTimeout(() => {
+                    modalOverlay.remove();
+                    resolve(false);
+                }, 380);
+            };
+
+            document.getElementById('cancelBtn').onclick = closeModal;
+
+            document.getElementById('updateBtn').onclick = async () => {
+                const newWeight = document.getElementById('newWeightInput').value;
+                if (newWeight && !isNaN(newWeight)) {
+                    const url = isMass ? `/update-weight-mass/${stockId}` : `/update-weight/${stockId}`;
+                    try {
+                        const response = await fetch(url, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ newWeight: newWeight })
+                        });
+                        const data = await response.json();
+
+                        if (data.message.includes('successfully')) {
+                            const tableSelector = isMass ? '#massStockTable' : '#stockTable';
+                            const row = document.querySelector(`${tableSelector} tr[data-id="${stockId}"]`);
+                            if (row) {
+                                const weightCell = row.querySelector('.weight-cell');
+                                if (weightCell) {
+                                    weightCell.textContent = newWeight;
+                                }
+                            }
+
+                            modalContent.innerHTML = `
+                                <div style="font-size: 88px; margin-bottom: 24px;">✓</div>
+                                <h3 style="margin: 15px 0; font-size: 32px; color: #2ecc71; text-shadow: 0 2px 4px rgba(46,204,113,0.2); font-weight: 800;">Success!</h3>
+                                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7; font-weight: 500; background: linear-gradient(120deg, #f1f3f5, #ffffff); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08); text-align: center;">
+                                    Weight updated successfully to <span style="color: #00b894; font-weight: 700;">${newWeight} gm</span>
+                                </p>
+                                <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white; padding: 16px 42px;">
+                                    Close
+                                </button>
+                            `;
+                            
+                            document.getElementById('closeModal').onclick = closeModal;
+                        }
+                    } catch (error) {
+                        console.error('Error updating weight:', error);
+                        modalContent.innerHTML = `
+                            <div style="color: #ff4757; font-size: 88px;">⚠️</div>
+                            <h3 style="margin: 15px 0; font-size: 32px; color: #ff4757; text-shadow: 0 2px 4px rgba(255,71,87,0.2); font-weight: 800;">Error</h3>
+                            <p style="margin: 0 0 36px 0; color: #636e72; font-size: 18px; line-height: 1.7;">
+                                Failed to update weight. Please try again.
+                            </p>
+                            <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white; padding: 16px 42px;">
+                                Close
+                            </button>
+                        `;
+                        
+                        document.getElementById('closeModal').onclick = closeModal;
+                    }
+                }
+            };
+
+            // Close on overlay click
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // Close on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
+    }
+    
+    </script>
+</body>
+</html>

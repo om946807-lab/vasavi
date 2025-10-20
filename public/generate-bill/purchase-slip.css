@@ -1,0 +1,389 @@
+Base Theme purchase-slip
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f4f8; /* Softer background for a modern look */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header Styling */
+header {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 5px solid #004d40;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Increased shadow for depth */
+    position: relative;
+    border-radius: 0 0 15px 15px; /* Rounded bottom corners */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Back Button Styling */
+.back-button {
+    background: linear-gradient(135deg, #e6e5e9, #b89d44);
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s, box-shadow 0.3s ease, transform 0.3s;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Main Container */
+.container {
+    width: 70%;
+    max-width: 1200px; /* Added max-width for better responsiveness */
+    background-color: white;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    margin: 60px auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.container:hover {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Section Headings */
+h2 {
+    color: #004d40;
+    font-size: 30px;
+    border-bottom: 4px solid #00796b;
+    padding-bottom: 12px;
+    margin-bottom: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px; /* Slightly thicker underline */
+    background: linear-gradient(135deg, #004d40, #00796b);
+    position: absolute;
+    left: 0;
+    bottom: -10px; /* Space between heading and underline */
+    border-radius: 2px;
+}
+
+/* Form Elements */
+label {
+    display: block;
+    margin-bottom: 12px; /* Reduced margin for compact look */
+    font-weight: 600;
+    color: #004d40;
+    font-size: 18px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #ffffff; /* Changed to white for a cleaner look */
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: #004d40;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 77, 64, 0.3);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 18px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+th {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+td {
+    background-color: #ffffff;
+    color: #333;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #e3f2fd;
+}
+
+/* Button Styling */
+button {
+    background: linear-gradient(135deg, #00796b, #004d40);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+    outline: none;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+button:active {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}
+
+/* Specific Button Styles */
+#generate-button {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    color: #ffeb3b;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 12px;
+}
+
+#generate-button:hover {
+    background: linear-gradient(135deg, #00796b, #004d40);
+    color: #fff;
+}
+
+#add-item-button {
+    background: linear-gradient(135deg, #00796b, #004d40);
+    color: #ffffff;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+#add-item-button:hover {
+    background: linear-gradient(135deg, #004d40, #00796b);
+    color: #fff;
+}
+
+/* Total Amount Section */
+.total-section {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.total-section label {
+    font-weight: bold;
+    margin-right: 15px;
+    color: #555;
+}
+
+.total-section span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background-color: #f1f1f1;
+    display: inline-block;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.update-button,
+.generate-button {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.update-button {
+    background: linear-gradient(135deg, #ffeb3b, #fbc02d);
+    color: #004d40;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 12px;
+}
+
+.update-button:hover {
+    background: linear-gradient(135deg, #fbc02d, #ffeb3b);
+    color: #004d40;
+}
+
+/* Field Headings (Labels) */
+label[for="billNumber"] {
+    font-weight: 600;
+    color: #004d40;
+    font-size: 18px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Bill Number Span */
+#billNumber {
+    font-size: 20px;
+    color: #00796b;
+    font-weight: 700;
+    padding: 8px 12px;
+    background-color: #e0f2f1;
+    border: 1px solid #b2dfdb;
+    border-radius: 6px;
+    display: inline-block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.success-message {
+    margin: 30px auto;
+    max-width: 600px;
+    font-size: 20px;
+    color: #1b5e20;
+    text-align: center;
+    font-weight: 700;
+    background: linear-gradient(135deg, #d4edda, #c8e6c9);
+    border: none;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+    transform-origin: center;
+}
+
+.success-message::before {
+    content: '✓';
+    position: absolute;
+    left: 20px;
+    font-size: 24px;
+    opacity: 0.8;
+    animation: checkmark 1s ease-in-out;
+}
+
+.success-message::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: shine 2s infinite;
+}
+
+.entry-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.entry-toggle span {
+    font-size: 16px;
+    color: #333;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px; /* Width of the switch */
+    height: 30px; /* Height of the switch */
+    margin: 0 10px; /* Space around the switch */
+}
+
+.switch input {
+    display: none; /* Hide the default checkbox */
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* Light grey background */
+    border-radius: 30px; /* Rounded edges */
+    transition: background-color 0.2s; /* Smooth transition */
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 24px; /* Toggle circle size */
+    width: 24px; /* Toggle circle size */
+    left: 3px; /* Position within the switch */
+    bottom: 3px; /* Position within the switch */
+    background-color: white; /* Toggle circle color */
+    border-radius: 50%; /* Fully rounded */
+    transition: transform 0.2s; /* Smooth movement */
+}
+
+input:checked + .slider {
+    background-color: #4caf50; /* Green background when checked */
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px); /* Move the toggle circle */
+}
+
+
+
+
+
+

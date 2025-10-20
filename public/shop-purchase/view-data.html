@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Details</title>
+    <link rel="stylesheet" href="view-data.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-title">Transaction Details</div>
+        <a href="shop-purchase.html" class="back-button">Back</a>
+    </header>
+    <div class="container">
+        <h1><i class="fas fa-wallet"></i> Transaction Details</h1>
+        <label for="transaction-type">Select Transaction Type:</label>
+        <select id="transaction-type">
+            <option value="">-- Select Type --</option>
+            <option value="purchased">Purchased</option>
+            <option value="amount-given">Amount Given</option>
+        </select>
+
+        <!-- Section for Purchased Transactions -->
+        <div id="purchased-section" class="table-container">
+            <h2>Purchased Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Number of Items</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="purchased-data">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section for Amount Given Transactions -->
+        <div id="amount-given-section" class="table-container">
+            <h2>Amount Given Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Amount/Fine Given</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="amount-given-data">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const transactionType = document.getElementById('transaction-type');
+        const purchasedSection = document.getElementById('purchased-section');
+        const amountGivenSection = document.getElementById('amount-given-section');
+
+        // Event listener for the transaction type dropdown
+        transactionType.addEventListener('change', async function() {
+            if (this.value === 'purchased') {
+                purchasedSection.style.display = 'block';
+                amountGivenSection.style.display = 'none';
+                await loadPurchasedData(); // Fetch purchased transactions
+            } else if (this.value === 'amount-given') {
+                purchasedSection.style.display = 'none';
+                amountGivenSection.style.display = 'block';
+                await loadAmountGivenData(); // Fetch amount given transactions
+            } else {
+                purchasedSection.style.display = 'none';
+                amountGivenSection.style.display = 'none';
+            }
+        });
+
+        // Function to fetch Purchased Transactions
+        const loadPurchasedData = async () => {
+            try {
+                const response = await fetch('/api/purchased-transactions');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+                const data = await response.json();
+
+                const purchasedData = document.getElementById('purchased-data');
+                purchasedData.innerHTML = ''; // Clear previous data
+
+                data.forEach(transaction => {
+                    const row = `
+                         <tr>
+                            <td>${transaction.id}</td>
+                            <td>${transaction.name}</td>
+                            <td>${transaction.num_items}</td>
+                            <td>${formatDate(transaction.transaction_date)}</td>
+                            <td><button class="view-items-btn-gradient" onclick="viewItems(${transaction.id})">View Items</button></td> <!-- Button to view items -->
+                        </tr>
+                        <tr id="items-row-${transaction.id}" style="display:none;">
+                            <td colspan="5">
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item Type</th>
+                                            <th>Item Name</th>
+                                            <th>Quantity</th>
+                                            <th>Melting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="items-data-${transaction.id}">
+                                        <!-- Items will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    `;
+                    purchasedData.innerHTML += row; // Add each transaction to the table
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        };
+
+        // Function to fetch Amount Given Transactions
+        const loadAmountGivenData = async () => {
+            try {
+                const response = await fetch('/api/amount-given-transactions');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+                const data = await response.json();
+
+                const amountGivenData = document.getElementById('amount-given-data');
+                amountGivenData.innerHTML = ''; // Clear previous data
+
+                data.forEach(transaction => {
+                    const row = `
+                        <tr>
+                            <td>${transaction.id}</td>
+                            <td>${transaction.name}</td>
+                            <td>${formatDate(transaction.payment_date)}</td>
+                            <td>${transaction.amount_given}</td>
+                            <td>${transaction.description}</td>
+                        </tr>
+                    `;
+                    amountGivenData.innerHTML += row; // Add each transaction to the table
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        };
+
+   
+        // Function to toggle the display of items for a specific transaction
+            function viewItems(transactionId) {
+                const itemsRow = document.getElementById(`items-row-${transactionId}`);
+                
+                // Close all other open items
+                const allItemsRows = document.querySelectorAll('[id^="items-row-"]');
+                allItemsRows.forEach(row => {
+                    if (row !== itemsRow) {
+                        row.style.display = "none"; // Hide other items rows
+                    }
+                });
+
+                // Toggle the display of the selected items row
+                itemsRow.style.display = itemsRow.style.display === "none" || itemsRow.style.display === "" ? "table-row" : "none";
+
+                // Load items data only when opening the row
+                if (itemsRow.style.display === "table-row") {
+                    loadItemsData(transactionId); // Load the items data
+                }
+            }
+
+
+        // Function to load items data for a specific transaction
+        const loadItemsData = async (transactionId) => {
+            try {
+                const response = await fetch(`/api/items/${transactionId}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+                const data = await response.json();
+
+                const itemsData = document.getElementById(`items-data-${transactionId}`);
+                itemsData.innerHTML = ''; // Clear previous data
+
+                data.forEach(item => {
+                    const itemRow = `
+                        <tr>
+                            <td>${item.item_type}</td>
+                            <td>${item.item_name}</td>
+                            <td>${item.quantity}gm</td>
+                            <td>${item.melting}%</td>
+                        </tr>
+                    `;
+                    itemsData.innerHTML += itemRow; // Add each item to the table
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        };
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+    </script>
+</body>
+</html>
