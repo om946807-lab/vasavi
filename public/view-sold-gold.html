@@ -1,194 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Sold Gold Stock-Sri Vasavi Jewellers</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="view-sold-gold.css">
-    <link rel="icon" href="logo.png" type="image/x-icon">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Sold Gold Stock - Sri Vasavi Jewellers</title>
+  <link rel="icon" href="logo.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-    <header>
-        <h1>Sold Gold Stock</h1>
-        <a href="gold-stock.html" class="back-button">Back</a>
-    </header>
-    <main>
-        <div class="entry-toggle">
-            <span>Single Item</span>
-            <label class="switch">
-                <input type="checkbox" id="massViewSwitch" onchange="toggleView()">
-                <span class="slider"></span>
-            </label>
-            <span>Mass Items</span>
+
+<body class="bg-gradient-to-br from-yellow-50 to-white min-h-screen text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-4 bg-white shadow-md sticky top-0 z-50">
+    <h1 class="text-xl sm:text-2xl font-bold text-yellow-700 mb-3 sm:mb-0 text-center sm:text-left">
+      Sold Gold Stock
+    </h1>
+    <a href="gold-stock.html"
+       class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center">
+      <i class="fa fa-arrow-left mr-2"></i>Back
+    </a>
+  </header>
+
+  <main class="p-4 sm:p-8 space-y-8 max-w-6xl mx-auto">
+    
+    <!-- Toggle Section -->
+    <div class="flex items-center justify-center gap-3 sm:gap-6 flex-wrap">
+      <span class="font-medium text-gray-700">Single Item</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="massViewSwitch" onchange="toggleView()" class="sr-only peer">
+        <div class="w-14 h-7 bg-gray-200 rounded-full peer peer-checked:bg-yellow-600 transition-all relative">
+          <div class="absolute top-0.5 left-[2px] w-6 h-6 bg-white rounded-full transition-all peer-checked:translate-x-7 shadow"></div>
         </div>
-        
-        <h1 class="gold-stock-heading">Sold Gold Stock</h1>
-        <i class="fa fa-print print-icon" onclick="window.print();"></i>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Gold Type</th>
-                    <th>Weight(gm)</th>
-                    <th>Date Sold</th>
-                    <th>Customer Name</th>
-                </tr>
-            </thead>
-            <tbody id="soldGoldStockTableBody">
-                <!-- Table rows for Single Items will be inserted here by JavaScript -->
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="2"></td>
-                    <td id="totalWeight">Total: 0.00 gm</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
+      </label>
+      <span class="font-medium text-gray-700">Mass Items</span>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage"
+         class="hidden text-center bg-green-100 text-green-700 px-4 py-2 rounded-md shadow-md max-w-md mx-auto transition-all duration-500">
+      Data Loaded Successfully!
+    </div>
+
+    <!-- Single Items Section -->
+    <section id="singleItemsSection" class="space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+        <h2 class="text-lg sm:text-xl font-semibold text-yellow-800">Sold Gold Stock</h2>
+        <button onclick="window.print()"
+                class="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
+          <i class="fa fa-print"></i> Print
+        </button>
+      </div>
+
+      <div class="overflow-x-auto shadow rounded-lg bg-white">
+        <table class="min-w-full text-sm sm:text-base">
+          <thead class="bg-yellow-100 text-yellow-800">
+            <tr>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">ID</th>
+              <th class="py-3 px-2 sm:px-4 text-center font-semibold">Gold Type</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Weight (gm)</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Date Sold</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Customer Name</th>
+            </tr>
+          </thead>
+          <tbody id="soldGoldStockTableBody" class="divide-y divide-gray-200 text-center"></tbody>
+          <tfoot class="bg-yellow-50">
+            <tr>
+              <td colspan="2"></td>
+              <td id="totalWeight" class="font-semibold text-yellow-800 py-2">Total: 0.00 gm</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
         </table>
-        <div id="totalItems" class="total-items">Total Items Sold: 0</div>
-        
-        <!-- Replicated Section for Mass Items -->
-        <h1 class="gold-stock-heading">Sold Gold Mass Items</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Gold Type</th>
-                    <th>Weight(gm)</th>
-                    <th>Date Sold</th>
-                    <th>Customer Name</th>
-                </tr>
-            </thead>
-            <tbody id="soldGoldMassStockTableBody">
-                <!-- Table rows for Mass Items will be inserted here by JavaScript -->
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="2"></td>
-                    <td id="totalMassWeight">Total: 0.00 gm</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
+      </div>
+      <div id="totalItems" class="text-center font-medium text-gray-700">Total Items Sold: 0</div>
+    </section>
+
+    <!-- Mass Items Section -->
+    <section id="massItemsSection" class="hidden space-y-4">
+      <h2 class="text-lg sm:text-xl font-semibold text-yellow-800">Sold Gold Mass Items</h2>
+      <div class="overflow-x-auto shadow rounded-lg bg-white">
+        <table class="min-w-full text-sm sm:text-base">
+          <thead class="bg-yellow-100 text-yellow-800">
+            <tr>
+              <th class="py-3 px-2 sm:px-4 text-center font-semibold">ID</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Gold Type</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Weight (gm)</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Date Sold</th>
+              <th class="py-3 px-2 sm:px-4 text-left font-semibold">Customer Name</th>
+            </tr>
+          </thead>
+          <tbody id="soldGoldMassStockTableBody" class="divide-y divide-gray-200 text-center"></tbody>
+          <tfoot class="bg-yellow-50">
+            <tr>
+              <td colspan="2"></td>
+              <td id="totalMassWeight" class="font-semibold text-yellow-800 py-2">Total: 0.00 gm</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
         </table>
-        <div id="totalMassItems" class="total-items">Total Mass Items Sold: 0</div>
+      </div>
+      <div id="totalMassItems" class="text-center font-medium text-gray-700">Total Mass Items Sold: 0</div>
+    </section>
+
+  </main>
+
+  <script>
+    async function loadSoldGoldStocks() {
+      try {
+        const goldResponse = await fetch('/view-sold-gold-stock');
+        const goldData = await goldResponse.json();
+        const massResponse = await fetch('/view-sold-gold-stock-mass');
+        const massData = await massResponse.json();
         
-        <div  class="success-message" >Data Fetched successfully!</div>
 
-    </main>
-    <script>
-     async function loadSoldGoldStocks() {
-        try {
-            // Fetch data for sold gold stock
-            const goldResponse = await fetch('/view-sold-gold-stock');
-            const goldData = await goldResponse.json();
+        const goldBody = document.getElementById('soldGoldStockTableBody');
+        const massBody = document.getElementById('soldGoldMassStockTableBody');
+        goldBody.innerHTML = '';
+        massBody.innerHTML = '';
 
-            // Fetch data for sold gold mass stock
-            const massResponse = await fetch('/view-sold-gold-stock-mass');
-            const massData = await massResponse.json();
+        let totalGold = 0, totalMass = 0;
+        let countGold = 0, countMass = 0;
 
-            // Update sold gold stock table
-            const goldTableBody = document.getElementById('soldGoldStockTableBody');
-            const totalWeightElementGold = document.getElementById('totalWeight');
-            const totalItemsElementGold = document.getElementById('totalItems');
-            goldTableBody.innerHTML = '';
+        goldData.forEach(item => {
+          goldBody.innerHTML += `
+            <tr>
+              <td class="py-2 px-2 sm:px-4">${item.id}</td>
+              <td class="py-2 px-2 sm:px-4">${item.gold_type}</td>
+              <td class="py-2 px-2 sm:px-4">${parseFloat(item.quantity).toFixed(3)}</td>
+              <td class="py-2 px-2 sm:px-4">${formatDate(item.date_sold)}</td>
+              <td class="py-2 px-2 sm:px-4">${item.customer_name}</td>
+            </tr>`;
+          totalGold += parseFloat(item.quantity);
+          countGold++;
+        });
 
-            let totalWeightGold = 0; // Initialize total weight for gold
-            let totalItemsGold = 0; // Initialize total items for gold
+        massData.forEach(item => {
+          massBody.innerHTML += `
+            <tr>
+              <td class="py-2 px-2 sm:px-4">${item.id}</td>
+              <td class="py-2 px-2 sm:px-4">${item.gold_type}</td>
+              <td class="py-2 px-2 sm:px-4">${parseFloat(item.quantity).toFixed(3)}</td>
+              <td class="py-2 px-2 sm:px-4">${formatDate(item.date_sold)}</td>
+              <td class="py-2 px-2 sm:px-4">${item.customer_name}</td>
+            </tr>`;
+          totalMass += parseFloat(item.quantity);
+          countMass++;
+        });
 
-            goldData.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.gold_type}</td>
-                    <td>${parseFloat(item.quantity).toFixed(3)}</td>
-                    <td>${formatDate(item.date_sold)}</td>
-                    <td>${item.customer_name}</td>
-                `;
-                goldTableBody.appendChild(row);
-                
-                totalWeightGold += parseFloat(item.quantity); // Accumulate total weight for gold
-                totalItemsGold++; // Increment total items for gold
-            });
+        document.getElementById('totalWeight').textContent = `Total: ${totalGold.toFixed(2)} gm`;
+        document.getElementById('totalItems').textContent = `Total Items Sold: ${countGold}`;
+        document.getElementById('totalMassWeight').textContent = `Total: ${totalMass.toFixed(2)} gm`;
+        document.getElementById('totalMassItems').textContent = `Total Mass Items Sold: ${countMass}`;
 
-            totalWeightElementGold.textContent = `Total: ${totalWeightGold.toFixed(2)} gm`;
-            totalItemsElementGold.textContent = `Total Items Sold: ${totalItemsGold}`;
-
-            // Update sold gold mass stock table
-            const massTableBody = document.getElementById('soldGoldMassStockTableBody');
-            const totalWeightElementMass = document.getElementById('totalMassWeight');
-            const totalItemsElementMass = document.getElementById('totalMassItems');
-            massTableBody.innerHTML = '';
-
-            let totalWeightMass = 0; // Initialize total weight for mass
-            let totalItemsMass = 0; // Initialize total items for mass
-
-            massData.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.gold_type}</td>
-                    <td>${parseFloat(item.quantity).toFixed(3)}</td>
-                    <td>${formatDate(item.date_sold)}</td>
-                    <td>${item.customer_name}</td>
-                `;
-                massTableBody.appendChild(row);
-                
-                totalWeightMass += parseFloat(item.quantity); // Accumulate total weight for mass
-                totalItemsMass++; // Increment total items for mass
-            });
-
-            totalWeightElementMass.textContent = `Total: ${totalWeightMass.toFixed(2)} gm`;
-            totalItemsElementMass.textContent = `Total Mass Items Sold: ${totalItemsMass}`;
-
-            // Show success message
-            const successMessage = document.querySelector('.success-message');
-            successMessage.style.display = 'block'; // Show success message
-            successMessage.textContent = 'Data Loaded successfully!';
-
-        } catch (error) {
-            console.error('Error loading sold gold stocks:', error);
-            
-            // Show failure message
-            const successMessage = document.querySelector('.success-message');
-            successMessage.style.display = 'block'; // Show failure message
-            successMessage.textContent = 'Failed to load the stock!';
-
-          
-        }
+        showMessage('Data Loaded Successfully!');
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showMessage('Failed to load stock data!');
+      }
     }
 
-        document.addEventListener('DOMContentLoaded', loadSoldGoldStocks);
+    function formatDate(dateString) {
+      const d = new Date(dateString);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
 
+    function toggleView() {
+      const isMass = document.getElementById('massViewSwitch').checked;
+      document.getElementById('singleItemsSection').classList.toggle('hidden', isMass);
+      document.getElementById('massItemsSection').classList.toggle('hidden', !isMass);
+    }
 
+    function showMessage(text) {
+      const msg = document.getElementById('successMessage');
+      msg.textContent = text;
+      msg.classList.remove('hidden', 'opacity-0');
+      setTimeout(() => msg.classList.add('opacity-0'), 2000);
+      setTimeout(() => msg.classList.add('hidden'), 2500);
+    }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
-        }
-        
-        function toggleView() {
-            const isChecked = document.getElementById('massViewSwitch').checked;
-
-            // Toggle the display of Sold Gold Stock and Sold Gold Mass Items
-            document.querySelector('.gold-stock-heading').style.display = isChecked ? 'none' : 'block';
-            document.getElementById('soldGoldStockTableBody').parentElement.style.display = isChecked ? 'none' : 'table';
-            document.getElementById('totalItems').style.display = isChecked ? 'none' : 'block';
-
-            document.querySelectorAll('h1.gold-stock-heading')[1].style.display = isChecked ? 'block' : 'none';
-            document.querySelectorAll('table')[1].style.display = isChecked ? 'table' : 'none';
-            document.getElementById('totalMassItems').style.display = isChecked ? 'block' : 'none';
-        }
-
-            // Optionally, initialize view on page load based on the switch state
-            window.onload = () => {
-                toggleView();
-            };
-
-    </script>
+    document.addEventListener('DOMContentLoaded', loadSoldGoldStocks);
+  </script>
 </body>
 </html>

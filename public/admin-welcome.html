@@ -1,263 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Welcome - Sri Vasavi Jewellers</title>
-    <link rel="icon" href="logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="admin-welcome.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Sri Vasavi Jewellers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar">
-        <h1 class="dashboard-title">Dashboard</h1>
-        <a href="/logout" class="logout-btn">Logout</a>
-    </nav>
-    <div class="side-nav">
-        <h3 class="nav-header">Controls</h3>
-        <div class="nav-links">
-            <a href="gold-stock.html" class="nav-item">Gold Stock Management</a>
-            <a href="silver-stock.html" class="nav-item">Silver Stock Management</a>
-            <a href="/generate-bill/generate-bill.html" class="nav-item">Generate Bill</a>
-            <a href="bills/bills.html" class="nav-item">Bills</a>
-            <a href="others/others.html" class="nav-item">Others</a>
-            <a href="shop-purchase/shop-purchase.html" class="nav-item">Shop Purchase</a>
-        </div>
+<body class="font-inter bg-gradient-to-br from-[#f6f9fc] to-[#ecf0f3] text-gray-800">
+
+<!-- Navbar -->
+<nav class="fixed top-0 left-0 w-full flex justify-between items-center px-6 md:px-10 py-4 bg-gradient-to-br from-[#2b5876] to-[#4e4376] text-white shadow-lg z-50">
+  <h1 class="text-2xl font-bold">Dashboard</h1>
+  
+  <div class="flex items-center gap-3">
+    <!-- Mobile Toggle Button -->
+    <button id="sidebarToggle" class="md:hidden p-2 bg-white text-gray-800 rounded-md shadow hover:bg-gray-100 transition-all">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+    <a href="/logout" class="bg-gradient-to-br from-[#ff6b6b] to-[#ee5253] px-6 py-2 rounded-xl font-semibold uppercase text-sm shadow-md hover:scale-105 transition-all">
+      Logout
+    </a>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="bg-white shadow-lg border-r border-gray-200 overflow-auto fixed top-17 left-0 w-72 h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-2xl font-bold text-gray-800 uppercase text-center tracking-wider">Controls</h3>
+  </div>
+
+  <nav class="flex flex-col px-4 py-6 gap-2">
+    <a href="gold-stock.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-yellow-50 hover:text-yellow-600 transition-all">
+      <i class="fas fa-gem text-yellow-500 text-lg"></i>
+      <span class="font-semibold">Gold Stock Management</span>
+    </a>
+    <a href="silver-stock.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-all">
+      <i class="fas fa-gem text-gray-400 text-lg"></i>
+      <span class="font-semibold">Silver Stock Management</span>
+    </a>
+    <a href="/generate-bill/generate-bill.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 hover:text-green-600 transition-all">
+      <i class="fas fa-file-invoice-dollar text-green-500 text-lg"></i>
+      <span class="font-semibold">Generate Bill</span>
+    </a>
+    <a href="bills/bills.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all">
+      <i class="fas fa-receipt text-blue-500 text-lg"></i>
+      <span class="font-semibold">Bills</span>
+    </a>
+    <a href="others/others.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 hover:text-purple-600 transition-all">
+      <i class="fas fa-box-open text-purple-500 text-lg"></i>
+      <span class="font-semibold">Others</span>
+    </a>
+    <a href="shop-purchase/shop-purchase.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-pink-50 hover:text-pink-600 transition-all">
+      <i class="fas fa-store text-pink-500 text-lg"></i>
+      <span class="font-semibold">Shop Purchase</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="fixed inset-0 bg-black bg-opacity-30 z-40 hidden md:hidden"></div>
+
+<!-- Main Content -->
+<main class="md:ml-72 mt-20 p-4 md:p-10 space-y-6">
+
+  <!-- Gold & Silver Details -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Gold Total Weight</p>
+      <h2 class="text-2xl font-bold mt-2" id="gold-total-weight">Loading...</h2>
+      <i class="fas fa-gem text-yellow-500 text-3xl mt-2"></i>
     </div>
-    <div class="main-content">
-        <div class="table-container">
-            <!-- Gold Details Table -->
-            <div class="data-table">
-                <div class="header-title">Gold Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Total Weight</th>
-                            <th>Total Items</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="gold-total-weight">Loading...</td>
-                            <td id="gold-total-items">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-gold-header">Sold Gold on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Quantity Sold</th>
-                            <th>Amount Collected</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gold-sold-data">
-                        <tr>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Silver Details Table -->
-            <div class="data-table">
-                <div class="header-title">Silver Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Total Weight</th>
-                            <th>Total Items</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="silver-total-weight">Loading...</td>
-                            <td id="silver-total-items">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-silver-header">Sold Silver on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Items Sold</th>
-                            <th>Amount Collected</th>
-                        </tr>
-                    </thead>
-                    <tbody id="silver-sold-data">
-                        <tr>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Sale Details Table -->
-            <div class="data-table">
-                <div class="header-title">Sale Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Total Amount</th>
-                            <th>Discount</th>
-                            <th>Old Gold/Silver Amount</th>
-                            <th>Amount Paid</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="total_amount">Loading...</td>
-                            <td id="discount">Loading...</td>
-                            <td id="oldGold">Loading...</td>
-                            <td id="amount_paid">Loading...</td>
-                            <td id="balance">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-date">Sold Items on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Amount</th>
-                            <th>Amount Paid</th>
-                            <th>Old Gold/silver Amount</th>
-                            <th>Discount</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sale-on-data">
-                        <tr>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Order Details Table -->
-            <div class="data-table">
-                <div class="header-title">Order Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Gold Total</th>
-                            <th>Silver Total</th>
-                            <th>Number of Orders</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="gold-total">Loading...</td>
-                            <td id="silver-total">Loading...</td>
-                            <td id="total-orders">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-date1">Orders on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Gold Orders (On Date)</th>
-                            <th>Silver Orders (On Date)</th>
-                            <th>Amount Collected</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="gold-orders-on-date">Loading...</td>
-                            <td id="silver-orders-on-date">Loading...</td>
-                            <td id="amount-collected-on-date">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Balance Details Table -->
-            <div class="data-table">
-                <div class="header-title">Balance Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Total Balance</th>
-                            <th>Total Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="total-balance">Loading...</td>
-                            <td id="total-count">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-date2">Balance paid on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount Paid</th>
-                            <th>Customers Count</th>
-                        </tr>
-                    </thead>
-                    <tbody id="diamond-sold-data">
-                        <tr>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Old Balance and Deposit Details Table -->
-            <div class="data-table">
-                <div class="header-title">Old Balance and Deposit Details</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Total Deposit</th>
-                            <th>Total Old Balance</th>
-                            <th>Total Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="total-deposit">Loading...</td>
-                            <td id="total-old-balance">Loading...</td>
-                            <td id="total-count-balance">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="header-title" id="sold-date3">Old Balance on Date</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount Paid</th>
-                            <th>Amount Deposited</th>
-                        </tr>
-                    </thead>
-                    <tbody id="old-balance-data">
-                        <tr>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                            <td>Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Gold Total Items</p>
+      <h2 class="text-2xl font-bold mt-2" id="gold-total-items">Loading...</h2>
+      <i class="fas fa-boxes text-yellow-500 text-3xl mt-2"></i>
     </div>
-    <script src="script.js"></script>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Silver Total Weight</p>
+      <h2 class="text-2xl font-bold mt-2" id="silver-total-weight">Loading...</h2>
+      <i class="fas fa-gem text-gray-400 text-3xl mt-2"></i>
+    </div>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Silver Total Items</p>
+      <h2 class="text-2xl font-bold mt-2" id="silver-total-items">Loading...</h2>
+      <i class="fas fa-boxes text-gray-400 text-3xl mt-2"></i>
+    </div>
+  </section>
+
+  <!-- Sale Summary -->
+  <section class="bg-gradient-to-br from-[#2b5876] to-[#4e4376] text-white rounded-2xl shadow-lg p-6">
+    <h3 class="uppercase font-semibold text-sm mb-4">Sale Summary</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="summary-card">
+        <p class="text-xs text-gray-200">Total Amount</p>
+        <h2 class="text-xl font-bold" id="total_amount">Loading...</h2>
+      </div>
+      <div class="summary-card">
+        <p class="text-xs text-gray-200">Discount</p>
+        <h2 class="text-xl font-bold" id="discount">Loading...</h2>
+      </div>
+      <div class="summary-card">
+        <p class="text-xs text-gray-200">Old Gold/Silver Amount</p>
+        <h2 class="text-xl font-bold" id="oldGold">Loading...</h2>
+      </div>
+      <div class="summary-card">
+        <p class="text-xs text-gray-200">Amount Paid</p>
+        <h2 class="text-xl font-bold" id="amount_paid">Loading...</h2>
+      </div>
+      <div class="summary-card">
+        <p class="text-xs text-gray-200">Balance</p>
+        <h2 class="text-xl font-bold" id="balance">Loading...</h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- Orders -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Total Orders</p>
+      <h2 class="text-2xl font-bold mt-2" id="total-orders">Loading...</h2>
+    </div>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Gold Orders Today</p>
+      <h2 class="text-2xl font-bold mt-2" id="gold-orders-on-date">Loading...</h2>
+    </div>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Silver Orders Today</p>
+      <h2 class="text-2xl font-bold mt-2" id="silver-orders-on-date">Loading...</h2>
+    </div>
+    <div class="card-dashboard">
+      <p class="text-sm font-semibold text-gray-500 uppercase">Amount Collected Today</p>
+      <h2 class="text-2xl font-bold mt-2" id="amount-collected-on-date">Loading...</h2>
+    </div>
+  </section>
+
+</main>
+
+<style>
+  .card-dashboard {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card-dashboard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .summary-card {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: rgba(255,255,255,0.15);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .summary-card:hover {
+    transform: scale(1.05);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    main {
+      margin-left: 0;
+      margin-top: 1rem;
+      padding: 1rem;
+    }
+  }
+</style>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const overlay = document.getElementById('overlay');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  });
+</script>
+
 </body>
 </html>

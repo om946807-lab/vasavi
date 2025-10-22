@@ -156,7 +156,7 @@
 
 
         function viewBill(billNumber) {
-            window.open(`http://localhost:3000/generate-bill/purchase-print-bill.html?billNumber=${billNumber}`, '_blank');
+            window.open(`/generate-bill/purchase-print-bill.html?billNumber=${(billNumber)}`, '_blank');
         }
 
         // Function to format numbers in the Indian numbering system
@@ -243,11 +243,11 @@
                 row.style.display = match ? '' : 'none';
             });
         }
-async function payBalance(billNumber, currentBalance, customerName) {
-    return new Promise((resolve) => {
-        // Overlay for payment input
-        const modalOverlay = document.createElement('div');
-        modalOverlay.innerHTML = `
+        async function payBalance(billNumber, currentBalance, customerName) {
+            return new Promise((resolve) => {
+                // Overlay for payment input
+                const modalOverlay = document.createElement('div');
+                modalOverlay.innerHTML = `
             <div style="
                 position: fixed;
                 top: 0; left: 0; right: 0; bottom: 0;
@@ -343,13 +343,13 @@ async function payBalance(billNumber, currentBalance, customerName) {
             </style>
         `;
 
-        const overlay = modalOverlay.firstElementChild;
-        document.body.appendChild(modalOverlay);
+                const overlay = modalOverlay.firstElementChild;
+                document.body.appendChild(modalOverlay);
 
-        async function showConfirmation(amount) {
-            return new Promise((resolve) => {
-                const confirmOverlay = document.createElement('div');
-                confirmOverlay.innerHTML = `
+                async function showConfirmation(amount) {
+                    return new Promise((resolve) => {
+                        const confirmOverlay = document.createElement('div');
+                        confirmOverlay.innerHTML = `
                     <div style="
                         position: fixed; top:0; left:0; right:0; bottom:0;
                         background: rgba(0,0,0,0.15);
@@ -381,62 +381,62 @@ async function payBalance(billNumber, currentBalance, customerName) {
                         </div>
                     </div>
                 `;
-                const overlay = confirmOverlay.firstElementChild;
-                document.body.appendChild(confirmOverlay);
+                        const overlay = confirmOverlay.firstElementChild;
+                        document.body.appendChild(confirmOverlay);
 
-                overlay.querySelector("#yesBtn").addEventListener("click", () => {
-                    confirmOverlay.remove();
-                    resolve(true);
-                });
-                overlay.querySelector("#noBtn").addEventListener("click", () => {
-                    confirmOverlay.remove();
-                    resolve(false);
-                });
-            });
-        }
-
-        async function handlePayment(amount) {
-            const userConfirmed = await showConfirmation(amount);
-            if (!userConfirmed) return;
-
-            try {
-                const response = await fetch(`/pay-bill/${billNumber}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount_paid: amount })
-                });
-                const resBody = await response.json();
-
-                if (response.ok && resBody.message === 'Payment successful') {
-                    showPaymentSuccess(amount, customerName);
-                    modalOverlay.remove();
-                } else {
-                    alert(resBody.error || 'Payment failed');
+                        overlay.querySelector("#yesBtn").addEventListener("click", () => {
+                            confirmOverlay.remove();
+                            resolve(true);
+                        });
+                        overlay.querySelector("#noBtn").addEventListener("click", () => {
+                            confirmOverlay.remove();
+                            resolve(false);
+                        });
+                    });
                 }
-            } catch (err) {
-                alert(err.message || 'Payment failed');
-            }
-        }
 
-        overlay.querySelector('#confirmBtn').addEventListener('click', () => {
-            const amount = parseFloat(overlay.querySelector('#amountInput').value);
-            if (!isNaN(amount) && amount > 0 && amount <= currentBalance) {
-                handlePayment(amount);
-            } else {
-                const input = overlay.querySelector('#amountInput');
-                input.style.borderColor = '#ef4444';
-                input.style.animation = 'pulse 0.3s ease';
-                setTimeout(() => { input.style.borderColor = '#e2e8f0'; input.style.animation = ''; }, 1500);
-            }
-        });
+                async function handlePayment(amount) {
+                    const userConfirmed = await showConfirmation(amount);
+                    if (!userConfirmed) return;
 
-        overlay.querySelector('#fullBtn').addEventListener('click', () => handlePayment(currentBalance));
-        overlay.querySelector('#cancelBtn').addEventListener('click', () => { modalOverlay.remove(); resolve(); });
+                    try {
+                        const response = await fetch(`/pay-bill/${billNumber}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ amount_paid: amount })
+                        });
+                        const resBody = await response.json();
 
-        // Payment Success Box
-        function showPaymentSuccess(amount, customerName) {
-            const successOverlay = document.createElement('div');
-            successOverlay.style.cssText = `
+                        if (response.ok && resBody.message === 'Payment successful') {
+                            showPaymentSuccess(amount, customerName);
+                            modalOverlay.remove();
+                        } else {
+                            alert(resBody.error || 'Payment failed');
+                        }
+                    } catch (err) {
+                        alert(err.message || 'Payment failed');
+                    }
+                }
+
+                overlay.querySelector('#confirmBtn').addEventListener('click', () => {
+                    const amount = parseFloat(overlay.querySelector('#amountInput').value);
+                    if (!isNaN(amount) && amount > 0 && amount <= currentBalance) {
+                        handlePayment(amount);
+                    } else {
+                        const input = overlay.querySelector('#amountInput');
+                        input.style.borderColor = '#ef4444';
+                        input.style.animation = 'pulse 0.3s ease';
+                        setTimeout(() => { input.style.borderColor = '#e2e8f0'; input.style.animation = ''; }, 1500);
+                    }
+                });
+
+                overlay.querySelector('#fullBtn').addEventListener('click', () => handlePayment(currentBalance));
+                overlay.querySelector('#cancelBtn').addEventListener('click', () => { modalOverlay.remove(); resolve(); });
+
+                // Payment Success Box
+                function showPaymentSuccess(amount, customerName) {
+                    const successOverlay = document.createElement('div');
+                    successOverlay.style.cssText = `
                 position: fixed; top:0; left:0; right:0; bottom:0;
                 display:flex; justify-content:center; align-items:center;
                 background: rgba(0,0,0,0.1);
@@ -444,14 +444,14 @@ async function payBalance(billNumber, currentBalance, customerName) {
                 z-index:10020;
                 font-family:'Poppins',sans-serif;
             `;
-            const card = document.createElement('div');
-            card.style.cssText = `
+                    const card = document.createElement('div');
+                    card.style.cssText = `
                 background:#ffffff; padding:70px 60px; border-radius:35px;
                 width:550px; max-width:95%; text-align:center;
                 box-shadow:0 30px 70px rgba(0,0,0,0.25),0 15px 40px rgba(0,0,0,0.15);
                 animation: slideUp 0.5s ease;
             `;
-            card.innerHTML = `
+                    card.innerHTML = `
                 <div style="font-size:110px; color:#10b981; margin-bottom:25px;">✅</div>
                 <h2 style="font-size:36px; font-weight:900; color:#10b981; margin-bottom:25px;">Payment Successful</h2>
                 <p style="font-size:22px; color:#334155; margin-bottom:50px; line-height:1.6;">
@@ -464,34 +464,34 @@ async function payBalance(billNumber, currentBalance, customerName) {
                     box-shadow:0 8px 25px rgba(99,102,241,0.35); transition: all 0.3s ease;
                 ">Done</button>
             `;
-            successOverlay.appendChild(card);
-            document.body.appendChild(successOverlay);
+                    successOverlay.appendChild(card);
+                    document.body.appendChild(successOverlay);
 
-            const doneBtn = card.querySelector('#doneBtn');
-            doneBtn.addEventListener('mouseenter', () => doneBtn.style.transform = 'translateY(-3px)');
-            doneBtn.addEventListener('mouseleave', () => doneBtn.style.transform = 'translateY(0)');
-            doneBtn.addEventListener('click', () => {
-                if (successOverlay.parentNode) successOverlay.parentNode.removeChild(successOverlay);
-                location.reload();
+                    const doneBtn = card.querySelector('#doneBtn');
+                    doneBtn.addEventListener('mouseenter', () => doneBtn.style.transform = 'translateY(-3px)');
+                    doneBtn.addEventListener('mouseleave', () => doneBtn.style.transform = 'translateY(0)');
+                    doneBtn.addEventListener('click', () => {
+                        if (successOverlay.parentNode) successOverlay.parentNode.removeChild(successOverlay);
+                        location.reload();
+                    });
+
+                    setTimeout(() => {
+                        if (successOverlay.parentNode) successOverlay.parentNode.removeChild(successOverlay);
+                        location.reload();
+                    }, 3000);
+                }
             });
-
-            setTimeout(() => {
-                if (successOverlay.parentNode) successOverlay.parentNode.removeChild(successOverlay);
-                location.reload();
-            }, 3000);
         }
-    });
-}
 
 
-       async function showHistory(billNumber) {
-    // Remove existing modal if any
-    let existingModal = document.getElementById('historyModal');
-    if (existingModal) existingModal.remove();
+        async function showHistory(billNumber) {
+            // Remove existing modal if any
+            let existingModal = document.getElementById('historyModal');
+            if (existingModal) existingModal.remove();
 
-    const modal = document.createElement('div');
-    modal.id = 'historyModal';
-    modal.style.cssText = `
+            const modal = document.createElement('div');
+            modal.id = 'historyModal';
+            modal.style.cssText = `
         position: fixed; top:0; left:0; right:0; bottom:0;
         background: rgba(0,0,0,0.35);
         backdrop-filter: blur(6px);
@@ -499,8 +499,8 @@ async function payBalance(billNumber, currentBalance, customerName) {
         z-index:10010; font-family:'Poppins', sans-serif;
     `;
 
-    const container = document.createElement('div');
-    container.style.cssText = `
+            const container = document.createElement('div');
+            container.style.cssText = `
         background: #fff;
         border-radius: 28px;
         width: 650px;
@@ -513,50 +513,50 @@ async function payBalance(billNumber, currentBalance, customerName) {
         animation: fadeIn 0.4s ease, slideUp 0.4s ease;
     `;
 
-    // Close button
-    const closeBtn = document.createElement('span');
-    closeBtn.innerHTML = '&times;';
-    closeBtn.style.cssText = `
+            // Close button
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = `
         position: absolute; top:16px; right:20px;
         font-size:28px; font-weight:bold; cursor:pointer; color:#334155;
     `;
-    closeBtn.onclick = () => modal.remove();
-    container.appendChild(closeBtn);
+            closeBtn.onclick = () => modal.remove();
+            container.appendChild(closeBtn);
 
-    // Title
-    const title = document.createElement('h2');
-    title.textContent = 'Payment History';
-    title.style.cssText = `
+            // Title
+            const title = document.createElement('h2');
+            title.textContent = 'Payment History';
+            title.style.cssText = `
         font-size:28px; font-weight:800; color:#1e293b; margin-bottom:20px; text-align:center;
     `;
-    container.appendChild(title);
+            container.appendChild(title);
 
-    // Payment cards wrapper
-    const cardsWrapper = document.createElement('div');
-    cardsWrapper.style.cssText = 'display:flex; flex-direction:column; gap:18px;';
-    container.appendChild(cardsWrapper);
+            // Payment cards wrapper
+            const cardsWrapper = document.createElement('div');
+            cardsWrapper.style.cssText = 'display:flex; flex-direction:column; gap:18px;';
+            container.appendChild(cardsWrapper);
 
-    modal.appendChild(container);
-    document.body.appendChild(modal);
+            modal.appendChild(container);
+            document.body.appendChild(modal);
 
-    try {
-        const response = await fetch(`/payment-history/${billNumber}`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
+            try {
+                const response = await fetch(`/payment-history/${billNumber}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
 
-        let totalAmountPaid = 0;
+                let totalAmountPaid = 0;
 
-        if (data.subBills && Array.isArray(data.subBills) && data.subBills.length > 0) {
-            data.subBills.forEach(subBill => {
-                const amountPaid = parseFloat(subBill.amount_paid || 0);
-                totalAmountPaid += amountPaid;
-                const paymentDate = subBill.payment_date ? 
-                    new Date(subBill.payment_date).toLocaleDateString('en-GB') : 'N/A';
-                const paymentTime = subBill.payment_date ? 
-                    new Date(subBill.payment_date).toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}) : 'N/A';
+                if (data.subBills && Array.isArray(data.subBills) && data.subBills.length > 0) {
+                    data.subBills.forEach(subBill => {
+                        const amountPaid = parseFloat(subBill.amount_paid || 0);
+                        totalAmountPaid += amountPaid;
+                        const paymentDate = subBill.payment_date ?
+                            new Date(subBill.payment_date).toLocaleDateString('en-GB') : 'N/A';
+                        const paymentTime = subBill.payment_date ?
+                            new Date(subBill.payment_date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'N/A';
 
-                const card = document.createElement('div');
-                card.style.cssText = `
+                        const card = document.createElement('div');
+                        card.style.cssText = `
                     background: linear-gradient(145deg,#f8fafc,#e2e8f0);
                     padding:20px 25px; border-radius:18px;
                     box-shadow:0 6px 20px rgba(0,0,0,0.12);
@@ -564,10 +564,10 @@ async function payBalance(billNumber, currentBalance, customerName) {
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
                     position:relative;
                 `;
-                card.onmouseenter = () => card.style.transform = 'translateY(-4px)';
-                card.onmouseleave = () => card.style.transform = 'translateY(0)';
+                        card.onmouseenter = () => card.style.transform = 'translateY(-4px)';
+                        card.onmouseleave = () => card.style.transform = 'translateY(0)';
 
-                card.innerHTML = `
+                        card.innerHTML = `
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <div style="
                             font-weight:800; font-size:20px;
@@ -582,41 +582,41 @@ async function payBalance(billNumber, currentBalance, customerName) {
                         background: linear-gradient(45deg,#10b981,#059669);
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
-                    ">₹${amountPaid.toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+                    ">₹${amountPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
                 `;
-                cardsWrapper.appendChild(card);
-            });
+                        cardsWrapper.appendChild(card);
+                    });
 
-            // Total amount card
-            const totalCard = document.createElement('div');
-            totalCard.style.cssText = `
+                    // Total amount card
+                    const totalCard = document.createElement('div');
+                    totalCard.style.cssText = `
                 background: linear-gradient(145deg,#6366f1,#4338ca); color:#fff;
                 padding:20px 25px; border-radius:18px; font-weight:700; font-size:20px;
                 text-align:right; box-shadow:0 6px 20px rgba(0,0,0,0.15);
             `;
-            totalCard.textContent = `Total Paid: ₹${totalAmountPaid.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
-            cardsWrapper.appendChild(totalCard);
+                    totalCard.textContent = `Total Paid: ₹${totalAmountPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+                    cardsWrapper.appendChild(totalCard);
 
-        } else {
-            const noData = document.createElement('div');
-            noData.textContent = 'No payment history found.';
-            noData.style.cssText = 'padding:20px; text-align:center; color:#334155; font-weight:600;';
-            cardsWrapper.appendChild(noData);
+                } else {
+                    const noData = document.createElement('div');
+                    noData.textContent = 'No payment history found.';
+                    noData.style.cssText = 'padding:20px; text-align:center; color:#334155; font-weight:600;';
+                    cardsWrapper.appendChild(noData);
+                }
+
+            } catch (error) {
+                console.error('Error fetching payment history:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = 'Failed to fetch payment history.';
+                errorDiv.style.cssText = 'padding:20px; text-align:center; color:#ef4444; font-weight:600;';
+                cardsWrapper.appendChild(errorDiv);
+            }
+
+            // Close modal on overlay click
+            modal.onclick = (event) => {
+                if (event.target === modal) modal.remove();
+            };
         }
-
-    } catch (error) {
-        console.error('Error fetching payment history:', error);
-        const errorDiv = document.createElement('div');
-        errorDiv.textContent = 'Failed to fetch payment history.';
-        errorDiv.style.cssText = 'padding:20px; text-align:center; color:#ef4444; font-weight:600;';
-        cardsWrapper.appendChild(errorDiv);
-    }
-
-    // Close modal on overlay click
-    modal.onclick = (event) => {
-        if (event.target === modal) modal.remove();
-    };
-}
 
         window.onload = fetchBills;
     </script>

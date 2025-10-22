@@ -1,112 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Stock Silver -Sri Vasavi Jewellers</title>
+    <title>View Stock Silver - Sri Vasavi Jewellers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="view-stock-gold.css">
     <link rel="icon" href="logo.png" type="image/x-icon">
-
 </head>
-<body>
+
+<body class="bg-gray-50 font-sans">
+
     <!-- Header -->
-    <header>
-        <h1>View Stock Silver</h1>
-        <a href="silver-stock.html" class="back-button">Back</a>
+    <header
+        class="bg-white shadow-md py-4 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+        <h1 class="text-2xl font-bold text-gray-800">Silver Stock Inventory</h1>
+        <a href="silver-stock.html"
+            class="text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm sm:text-base">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </header>
 
-    <main>
-        <div class="entry-toggle">
-            <span>Single Item</span>
-            <label class="switch">
-                <input type="checkbox" id="massViewSwitch" onchange="toggleView()">
-                <span class="slider"></span>
+    <main class="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+
+        <!-- Toggle -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+            <span class="text-gray-600 font-medium text-sm sm:text-base">Single Item</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="massViewSwitch" onchange="toggleView()" class="sr-only peer">
+                <div
+                    class="w-12 sm:w-14 h-6 sm:h-7 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-all duration-300">
+                </div>
+                <div
+                    class="absolute left-0.5 top-0.5 w-5 sm:w-6 h-5 sm:h-6 bg-white rounded-full shadow-md peer-checked:translate-x-6 sm:peer-checked:translate-x-7 transition-transform duration-300">
+                </div>
             </label>
-            <span>Mass Items</span>
+            <span class="text-gray-600 font-medium text-sm sm:text-base">Mass Items</span>
         </div>
-    
-        <div id="tableContainer">
-            <div id="singleViewTable">
-                <i class="fas fa-print print-icon" onclick="printTable()" title="Print Table"></i>
-                <h1 class="gold-stock-heading">Silver Stock - Shield Items</h1>
-                <table id="stockTable">
-                    <thead>
+
+        <!-- Export Button -->
+        <div class="flex justify-end mb-4">
+            <button onclick="exportTableToExcel('silverStock.xls')"
+                class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-3 sm:px-5 py-2 sm:py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                <i class="fas fa-file-excel text-white text-base sm:text-lg"></i>
+                Export to Excel
+            </button>
+        </div>
+
+        <!-- Single View Table -->
+        <div id="singleViewTable" class="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-500">
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 p-3 sm:p-4 border-b">Silver Stock - Shield Items</h2>
+            <div class="overflow-x-auto">
+                <table id="stockTable" class="min-w-full divide-y divide-gray-100 text-sm sm:text-base">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th>ID</th>
-                            <th>Silver Type</th>
-                            <th>Weight (in gm)</th>
-                            <th>Date Added</th>
-                            <th>Actions</th>
-                            <th>Delete</th>
-                            <th>Edit</th>
+                            <th class="w-10 px-2 sm:px-4 py-2 sm:py-3 text-center font-medium text-gray-700 uppercase">
+                                ID</th>
+                            <th class="w-28 px-2 sm:px-4 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">
+                                Silver Type</th>
+                            <th class="w-20 px-2 sm:px-4 py-2 sm:py-3 text-center font-medium text-gray-700 uppercase">
+                                Weight (gm)</th>
+                            <th class="w-32 px-2 sm:px-4 py-2 sm:py-3 text-center font-medium text-gray-700 uppercase">
+                                Date Added</th>
+                            <th
+                                class="w-36 px-2 sm:px-4 py-2 sm:py-3 text-right sm:text-right font-medium text-gray-700 uppercase">
+                                Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be populated here dynamically -->
+                    <tbody id="stockTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Dynamic rows will be appended here -->
                     </tbody>
-                    <tfoot>
+                    <tfoot class="bg-gray-50">
                         <tr>
                             <td colspan="2"></td>
-                            <td id="totalWeight">Total: 0.00 gm</td>
+                            <td id="totalWeight"
+                                class="px-2 sm:px-4 py-2 sm:py-3 text-center font-semibold text-gray-800">Total: 0.00 gm
+                            </td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
                 </table>
-                <div id="totalItems" class="total-items">Total Items Sold: 0</div>
             </div>
-    
-            <!-- Mass View (initially hidden) -->
-            <div id="massViewTable" style="display:none;">
-                <i class="fas fa-print print-icon" onclick="printTable()" title="Print Table"></i>
-                <h1 class="gold-stock-heading">Silver Stock - Items</h1>
-                <table id="massStockTable">
-                    <thead>
+            <div id="totalItems"
+                class="p-2 sm:p-4 font-medium text-gray-700 text-sm sm:text-base text-center sm:text-left">Total Items
+                Sold: 0</div>
+        </div>
+
+
+        <!-- Mass View Table -->
+        <div id="massViewTable" class="bg-white shadow-lg rounded-xl overflow-hidden mt-6" style="display:none;">
+            <h2
+                class="text-lg sm:text-xl font-bold text-gray-800 p-3 sm:p-4 border-b flex justify-between items-center">
+                Silver Stock - Mass Items
+            </h2>
+            <div class="overflow-x-auto">
+                <table id="massStockTable" class="min-w-full divide-y divide-gray-200 text-sm sm:text-base">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th>ID</th>
-                            <th>Silver Type</th>
-                            <th>Weight (in gm)</th>
-                            <th>Date Added</th>
-                            <th>Actions</th>
-                            <th>Delete</th>
-                            <th>Edit</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">ID</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">Silver
+                                Type</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">Weight
+                                (gm)</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">Date
+                                Added</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-left font-medium text-gray-700 uppercase">Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data for mass view will be populated dynamically here -->
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- Mass data dynamically populated -->
                     </tbody>
-                    <tfoot>
+                    <tfoot class="bg-gray-50">
                         <tr>
                             <td colspan="2"></td>
-                            <td id="massTotalWeight">Total: 0.00 gm</td>
+                            <td id="massTotalWeight" class="px-3 sm:px-6 py-2 sm:py-3 font-semibold text-gray-800">
+                                Total: 0.00 gm</td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
                 </table>
-                <div id="massTotalItems" class="total-items">Total Items : 0</div>
             </div>
-    
-            <div id="message" class="success-message" style="display:none;">Data added successfully!</div>
+            <div id="massTotalItems" class="p-2 sm:p-4 font-medium text-gray-700 text-sm sm:text-base">Total Items: 0
+            </div>
         </div>
+
+        <div id="message"
+            class="fixed top-20 right-4 bg-green-500 text-white px-3 py-2 rounded-lg shadow-lg hidden transition-all duration-300 text-sm sm:text-base">
+        </div>
+
     </main>
 
     <script>
-        function toggleView() {
-        const singleView = document.getElementById('singleViewTable');
-        const massView = document.getElementById('massViewTable');
-        const isMassView = document.getElementById('massViewSwitch').checked;
-
-        if (isMassView) {
-            singleView.style.display = 'none';
-            massView.style.display = 'block';
-        } else {
-            singleView.style.display = 'block';
-            massView.style.display = 'none';
+        function toggleActions(button) {
+            const menu = button.nextElementSibling;
+            menu.classList.toggle('hidden'); // toggle visibility
         }
-    }
+
+        // Close dropdown if clicking outside
+        document.addEventListener('click', function (e) {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                if (!menu.contains(e.target) && !menu.previousElementSibling.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+        function toggleView() {
+            const singleView = document.getElementById('singleViewTable');
+            const massView = document.getElementById('massViewTable');
+            const isMassView = document.getElementById('massViewSwitch').checked;
+
+            if (isMassView) {
+                singleView.style.display = 'none';
+                massView.style.display = 'block';
+            } else {
+                singleView.style.display = 'block';
+                massView.style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // Function to fetch and display stock data
-            const fetchStockData = async (url, tableBodySelector, totalWeightElementId, totalItemsElementId, messageDivId,isMass=false) => {
+            const fetchStockData = async (url, tableBodySelector, totalWeightElementId, totalItemsElementId, messageDivId, isMass = false) => {
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
@@ -136,14 +192,27 @@
                         const row = document.createElement('tr');
 
                         row.innerHTML = `
-                            <td>${stock.id}</td>
-                            <td>${stock.silver_type}</td>
-                            <td>${stock.quantity}</td>
-                            <td>${formatDate(stock.date_added)}</td>
-                            <td><button class="generate-tag-button" onclick="generateTag(${stock.id}, '${stock.silver_type}', ${stock.quantity})">Generate Tag</button></td>
-                            <td><button class="delete-button" onclick="deleteStock(${stock.id}, ${isMass})">Delete</button></td>
-                            <td><button class="edit-button" onclick="editStock(${stock.id}, ${stock.quantity},${isMass})">Edit</button></td> <!-- Edit button -->
-                        `;
+  <td class="text-center">${stock.id}</td>
+  <td class="text-center">${stock.silver_type}</td>
+  <td class="text-center">${stock.quantity}</td>
+  <td class="text-center">${formatDate(stock.date_added)}</td>
+  <td class="text-center relative">
+    <div class="inline-block text-left">
+      <button onclick="toggleDropdown(this)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-3 py-1 rounded-lg text-sm shadow-sm">
+        Actions <i class="fas fa-chevron-down ml-1"></i>
+      </button>
+      <div class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 dropdown-menu">
+        <button onclick="generateTag(${stock.id}, '${stock.silver_type}', ${stock.quantity})"
+          class="block w-full text-left px-4 py-2 text-sm hover:bg-yellow-50">Generate Tag</button>
+        <button onclick="editStock(${stock.id}, ${stock.quantity}, ${isMass})"
+          class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 text-blue-600">Edit</button>
+        <button onclick="deleteStock(${stock.id}, ${isMass})"
+          class="block w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-600">Delete</button>
+      </div>
+    </div>
+  </td>
+`;
+
                         tableBody.appendChild(row);
 
                         // Calculate totals
@@ -166,19 +235,18 @@
             };
 
             // Fetch mass stock data
-            fetchStockData('/view-stock-data-silver-mass', '#massStockTable tbody', 'massTotalWeight', 'massTotalItems', 'message',true);
+            fetchStockData('/view-stock-data-silver-mass', '#massStockTable tbody', 'massTotalWeight', 'massTotalItems', 'message', true);
 
             // Fetch regular stock data
-            fetchStockData('/view-stock-data-silver', '#stockTable tbody', 'totalWeight', 'totalItems', 'message',false);
+            fetchStockData('/view-stock-data-silver', '#stockTable tbody', 'totalWeight', 'totalItems', 'message', false);
         });
-
 
         function generateTag(id, silverType, quantity) {
             const tagContent = `
                 <div style="width: 2in; height: 1in; border: 1px solid #000; padding: 5px; box-sizing: border-box;">
-                    <h2 style="font-size: 0.8em; margin: 0;">Silver Tag</h2>
+                    <h2 style="font-size: 0.8em; margin: 0;">silver Tag</h2>
                     <p style="font-size: 0.7em; margin: 2px 0;"><strong>ID:</strong> ${id}</p>
-                    <p style="font-size: 0.7em; margin: 2px 0;"><strong>Silver Type:</strong> ${silverType}</p>
+                    <p style="font-size: 0.7em; margin: 2px 0;"><strong>silver Type:</strong> ${silverType}</p>
                     <p style="font-size: 0.7em; margin: 2px 0;"><strong>Weight (in gm):</strong> ${quantity}</p>
                 </div>
             `;
@@ -191,18 +259,6 @@
             tagWindow.document.write('</body></html>');
             tagWindow.document.close();
         }
-
-        function printTable() {
-            const printWindow = window.open('', '', 'height=600,width=800');
-            const content = document.querySelector('main').innerHTML;
-            printWindow.document.write('<html><head><title>Print</title>');
-            printWindow.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid #ddd; padding: 12px; text-align: center;} th {background: #007bff; color: #fff;} td:nth-child(3) {width: 30%;} </style>');
-            printWindow.document.write('</head><body >');
-            printWindow.document.write(content);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
-        }
         function formatDate(dateString) {
             const date = new Date(dateString);
             const day = String(date.getDate()).padStart(2, '0');
@@ -210,396 +266,377 @@
             const year = date.getFullYear();
             return `${day}-${month}-${year}`;
         }
+        function exportTableToExcel(filename = 'stock.xls') {
+            const table = document.querySelector('main table');
+            if (!table) return alert('No table found to export');
 
-     async function deleteStock(id, isMass = false) {
-            // Create modal elements
+            // Clone table to avoid modifying the page
+            const tableClone = table.cloneNode(true);
+
+            // Remove last column from all rows
+            Array.from(tableClone.rows).forEach(row => {
+                row.deleteCell(-1); // remove last cell
+            });
+
+            // Create a data URI for Excel
+            const html = tableClone.outerHTML;
+            const uri = 'data:application/vnd.ms-excel;base64,';
+            const base64 = s => window.btoa(unescape(encodeURIComponent(s)));
+
+            const template = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+              xmlns:x="urn:schemas-microsoft-com:office:excel" 
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8"></head>
+        <body>${html}</body>
+        </html>
+    `;
+
+            const link = document.createElement('a');
+            link.href = uri + base64(template);
+            link.download = filename;
+            link.click();
+        }
+
+
+        async function deleteStock(id, isMass = false) {
+            // Create modal overlay
             const modalOverlay = document.createElement('div');
             modalOverlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.85);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-                backdrop-filter: blur(12px);
-                animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                cursor: pointer;
-            `;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    overflow-y: auto;
+    animation: fadeIn 0.4s ease forwards;
+  `;
 
+            // Create modal content container
             const modalContent = document.createElement('div');
             modalContent.style.cssText = `
-                background: linear-gradient(165deg, #ffffff, #f5f7fa);
-                padding: 48px;
-                border-radius: 32px;
-                text-align: center;
-                max-width: 520px;
-                width: 94%;
-                box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
-                            0 12px 32px -8px rgba(0,0,0,0.2),
-                            inset 0 2px 6px rgba(255,255,255,0.9);
-                transform: translateY(0);
-                animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-                border: 1px solid rgba(255,255,255,0.22);
-                cursor: default;
-                position: relative;
-                overflow: hidden;
-            `;
+    background: linear-gradient(165deg, #ffffff, #f5f7fa);
+    padding: 2.5rem 1.5rem;
+    border-radius: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideIn 0.5s ease forwards;
+  `;
 
             modalContent.innerHTML = `
-                <style>
-                    @keyframes fadeIn {
-                        from { opacity: 0; }
-                        to { opacity: 1; }
-                    }
-                    @keyframes slideIn {
-                        from { transform: translateY(-40px); opacity: 0; }
-                        to { transform: translateY(0); opacity: 1; }
-                    }
-                    @keyframes pulse {
-                        0% { transform: scale(1); }
-                        50% { transform: scale(1.08); }
-                        100% { transform: scale(1); }
-                    }
-                    @keyframes glow {
-                        0% { box-shadow: 0 0 5px rgba(255,71,87,0.5); }
-                        50% { box-shadow: 0 0 20px rgba(255,71,87,0.8); }
-                        100% { box-shadow: 0 0 5px rgba(255,71,87,0.5); }
-                    }
-                    .modal-btn {
-                        padding: 16px 32px;
-                        border: none;
-                        border-radius: 100px;
-                        cursor: pointer;
-                        font-weight: 700;
-                        font-size: 17px;
-                        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                        transform: scale(1);
-                        margin: 0 12px;
-                        letter-spacing: 0.5px;
-                        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-                        position: relative;
-                        overflow: hidden;
-                    }
-                    .modal-btn:hover {
-                        transform: scale(1.05) translateY(-2px);
-                        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-                    }
-                    .modal-btn:active {
-                        transform: scale(0.98);
-                    }
-                </style>
-                <div style="font-size: 82px; margin-bottom: 28px; animation: pulse 2.5s infinite;">🗑️</div>
-                <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800;">Delete Stock Item</h3>
-                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
-                    Are you sure you want to delete this stock item? This action cannot be undone.
-                </p>
-                <div style="display: flex; justify-content: center; gap: 24px;">
-                    <button id="cancelDelete" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
-                        Cancel
-                    </button>
-                    <button id="confirmDelete" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white; animation: glow 2s infinite;">
-                        Delete Stock
-                    </button>
-                </div>
-            `;
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideIn {
+        from { transform: translateY(-40px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+      @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px rgba(255,71,87,0.5); }
+        50% { box-shadow: 0 0 20px rgba(255,71,87,0.8); }
+      }
+      .modal-btn {
+        padding: 0.75rem 1.75rem;
+        border: none;
+        border-radius: 9999px;
+        font-weight: 700;
+        margin: 0 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .modal-btn:hover {
+        transform: scale(1.05);
+      }
+      @media (max-width: 480px) {
+        .modal-btn { width: 100%; margin: 0.5rem 0; }
+      }
+    </style>
+    <div style="font-size: 4.5rem; margin-bottom: 1rem; animation: pulse 2s infinite;">🗑️</div>
+    <h3 style="font-size: 1.875rem; font-weight: 800; color: #2d3436; margin-bottom: 1rem;">Delete Stock Item</h3>
+    <p style="font-size: 1rem; line-height: 1.6; color: #2d3436; margin-bottom: 2rem;">
+      Are you sure you want to delete this stock item? This action cannot be undone.
+    </p>
+    <div style="
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  margin-top: 10px;
+">
+  <button id="cancelDelete" class="modal-btn" 
+    style="
+      background: #f1f2f6; 
+      color: #2d3436; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 8px; 
+      font-weight: 500; 
+      cursor: pointer; 
+      transition: all 0.3s ease;
+    "
+    onmouseover="this.style.background='#dfe6e9'"
+    onmouseout="this.style.background='#f1f2f6'"
+  >
+    Cancel
+  </button>
+
+  <button id="confirmDelete" class="modal-btn" 
+    style="
+      background: #ff4757; 
+      color: white; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 8px; 
+      font-weight: 500; 
+      cursor: pointer; 
+      animation: glow 2s infinite; 
+      transition: transform 0.2s ease;
+    "
+    onmouseover="this.style.transform='scale(1.05)'"
+    onmouseout="this.style.transform='scale(1)'"
+  >
+    Delete Stock
+  </button>
+</div>
+
+<style>
+@keyframes glow {
+  0% { box-shadow: 0 0 5px #ff6b81; }
+  50% { box-shadow: 0 0 15px #ff4757; }
+  100% { box-shadow: 0 0 5px #ff6b81; }
+}
+</style>
+
+  `;
 
             modalOverlay.appendChild(modalContent);
             document.body.appendChild(modalOverlay);
 
-            // Handle modal actions
-            return new Promise((resolve) => {
-                const closeModal = () => {
-                    modalOverlay.style.animation = 'fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
-                    modalContent.style.animation = 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
-                    setTimeout(() => {
-                        modalOverlay.remove();
-                        resolve(false);
-                    }, 380);
-                };
-
-                modalOverlay.addEventListener('click', (e) => {
-                    if (e.target === modalOverlay) {
-                        closeModal();
-                    }
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        closeModal();
-                    }
-                });
-
-                document.getElementById('cancelDelete').onclick = closeModal;
-
-                document.getElementById('confirmDelete').onclick = async () => {
-                    const url = isMass ? `/delete-stock-silver-mass/${id}` : `/delete-stock-silver/${id}`;
-                    
-                    try {
-                        const response = await fetch(url, { method: 'DELETE' });
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        const data = await response.json();
-                        
-                        if (data.success || data.message.includes('successfully')) {
-                            const tableBody = isMass ? document.querySelector('#massStockTable tbody') : document.querySelector('#stockTable tbody');
-                            const row = tableBody.querySelector(`tr[data-id="${id}"]`);
-                            if (row) {
-                                row.remove();
-                            }
-
-                            modalContent.innerHTML = `
-                                <div style="font-size: 82px; margin-bottom: 28px; color: #2ecc71;">✓</div>
-                                <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2ecc71; font-weight: 800;">Success!</h3>
-                                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
-                                    Stock item has been successfully deleted.
-                                </p>
-                                <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white;">
-                                    Close
-                                </button>
-                            `;
-                            
-                            document.getElementById('closeModal').onclick = closeModal;
-                        } else {
-                            throw new Error(data.message || 'Failed to delete stock on the server');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting stock:', error);
-                        modalContent.innerHTML = `
-                            <div style="font-size: 82px; margin-bottom: 28px; color: #ff4757;">⚠️</div>
-                            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #ff4757; font-weight: 800;">Error</h3>
-                            <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7;">
-                                Failed to delete stock item: ${error.message}
-                            </p>
-                            <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white;">
-                                Close
-                            </button>
-                        `;
-                        
-                        document.getElementById('closeModal').onclick = closeModal;
-                    }
-                };
-            });
-        }
-
-    function editStock(stockId, currentWeight, isMass = false) {
-        // Create modal elements
-        const modalOverlay = document.createElement('div');
-        modalOverlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(12px);
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        `;
-
-        const modalContent = document.createElement('div');
-        modalContent.style.cssText = `
-            background: linear-gradient(165deg, #ffffff, #f5f7fa);
-            padding: 48px;
-            border-radius: 32px;
-            text-align: center;
-            max-width: 520px;
-            width: 94%;
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
-                        0 12px 32px -8px rgba(0,0,0,0.2),
-                        inset 0 2px 6px rgba(255,255,255,0.9);
-            transform: translateY(0);
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid rgba(255,255,255,0.22);
-            cursor: default;
-            position: relative;
-            overflow: hidden;
-        `;
-
-        modalContent.innerHTML = `
-            <style>
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideIn {
-                    from { transform: translateY(-40px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                    100% { transform: scale(1); }
-                }
-                .modal-btn {
-                    padding: 16px 32px;
-                    border: none;
-                    border-radius: 16px;
-                    font-size: 16px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                    transform: scale(1);
-                    margin: 0 12px;
-                    letter-spacing: 0.5px;
-                    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-                    position: relative;
-                    overflow: hidden;
-                }
-                .modal-btn:before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255,255,255,0.2),
-                        transparent
-                    );
-                    transition: 0.5s;
-                }
-                .modal-btn:hover:before {
-                    left: 100%;
-                }
-                .modal-btn:hover {
-                    transform: scale(1.05) translateY(-2px);
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-                }
-                .modal-btn:active {
-                    transform: scale(0.98);
-                }
-                .weight-input {
-                    width: 100%;
-                    padding: 20px;
-                    margin: 24px 0;
-                    border: 2px solid #e1e8ed;
-                    border-radius: 16px;
-                    font-size: 18px;
-                    transition: all 0.3s;
-                    background: white;
-                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-                }
-                .weight-input:focus {
-                    outline: none;
-                    border-color: #3498db;
-                    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-                }
-            </style>
-            <div style="font-size: 82px; margin-bottom: 28px;">⚖️</div>
-            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.1); letter-spacing: -0.5px;">
-                Update Weight
-            </h3>
-            <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7; font-weight: 500; background: linear-gradient(120deg, #f1f3f5, #ffffff); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08); text-align: center;">
-                Current weight: <span style="color: #00b894; font-weight: 700;">${currentWeight} gm</span>
-            </p>
-            <input type="number" class="weight-input" id="newWeightInput" placeholder="Enter new weight" value="${currentWeight}">
-            <div style="display: flex; justify-content: center; gap: 24px;">
-                <button id="cancelBtn" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
-                    Cancel
-                </button>
-                <button id="updateBtn" class="modal-btn" style="background: linear-gradient(145deg, #3498db, #2980b9); color: white;">
-                    Update Weight
-                </button>
-            </div>
-        `;
-
-        modalOverlay.appendChild(modalContent);
-        document.body.appendChild(modalOverlay);
-
-        // Handle modal actions
-        return new Promise((resolve) => {
+            // Close modal function
             const closeModal = () => {
-                modalOverlay.style.animation = 'fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
-                modalContent.style.animation = 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
-                setTimeout(() => {
-                    modalOverlay.remove();
-                    resolve(false);
-                }, 380);
+                modalOverlay.remove();
             };
+
+            // Cancel button
+            document.getElementById('cancelDelete').onclick = closeModal;
+
+            // Clicking outside modal
+            modalOverlay.addEventListener('click', e => {
+                if (e.target === modalOverlay) closeModal();
+            });
+
+            // ESC key
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') closeModal();
+            }, { once: true });
+
+            // Confirm delete
+            document.getElementById('confirmDelete').onclick = async () => {
+                const url = isMass ? `/delete-stock-silver-mass/${id}` : `/delete-stock-silver/${id}`;
+                try {
+                    const response = await fetch(url, { method: 'DELETE' });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Failed to delete');
+
+                    // Remove table row
+                    const tableBody = isMass ? document.querySelector('#massStockTable tbody') : document.querySelector('#stockTable tbody');
+                    const row = tableBody.querySelector(`tr[data-id="${id}"]`);
+                    if (row) row.remove();
+
+                    // Show success inside modal
+                    modalContent.innerHTML = `
+        <div style="font-size: 4.5rem; margin-bottom: 1rem; color: #2ecc71;">✓</div>
+        <h3 style="font-size: 1.875rem; font-weight: 800; color: #2ecc71; margin-bottom: 1rem;">Success!</h3>
+        <p style="font-size: 1rem; line-height: 1.6; color: #2d3436; margin-bottom: 2rem;">Stock item has been successfully deleted.</p>
+        <button id="closeModal" class="modal-btn" style="background: #2ecc71; color: white; width: 60%;">Close</button>
+      `;
+                    document.getElementById('closeModal').onclick = closeModal;
+                } catch (error) {
+                    console.error(error);
+                    modalContent.innerHTML = `
+        <div style="font-size: 4.5rem; margin-bottom: 1rem; color: #ff4757;">⚠️</div>
+        <h3 style="font-size: 1.875rem; font-weight: 800; color: #ff4757; margin-bottom: 1rem;">Error</h3>
+        <p style="font-size: 1rem; line-height: 1.6; color: #2d3436; margin-bottom: 2rem;">Failed to delete stock item: ${error.message}</p>
+        <button id="closeModal" class="modal-btn" style="background: #ff4757; color: white; width: 60px;">Close</button>
+      `;
+                    document.getElementById('closeModal').onclick = closeModal;
+                }
+            };
+        }
+        async function editStock(stockId, currentWeight, isMass = false) {
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(12px);
+        padding: 1rem;
+        overflow-y: auto;
+        animation: fadeIn 0.4s ease forwards;
+    `;
+
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+        background: linear-gradient(165deg, #ffffff, #f5f7fa);
+        padding: 2rem 1.5rem;
+        border-radius: 1.5rem;
+        width: 100%;
+        max-width: 480px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        position: relative;
+        animation: slideIn 0.5s ease forwards;
+    `;
+
+            modalContent.innerHTML = `
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideIn {
+                from { transform: translateY(-40px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            .modal-btn {
+                padding: 0.75rem 1.75rem;
+                border: none;
+                border-radius: 9999px;
+                font-weight: 700;
+                font-size: 1rem;
+                margin: 0.5rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .modal-btn:hover {
+                transform: scale(1.05);
+            }
+            .weight-input {
+                width: 89%;
+                padding: 1.25rem;
+                margin: 1.5rem 0;
+                border: 2px solid #e1e8ed;
+                border-radius: 16px;
+                font-size: 1rem;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+                transition: all 0.3s;
+            }
+            .weight-input:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+            }
+            @media (max-width: 480px) {
+                .modal-btn { width: 100%; margin: 0.5rem 0; }
+            }
+        </style>
+        <div style="font-size: 4.5rem; margin-bottom: 1rem; animation: pulse 2s infinite;">⚖️</div>
+        <h3 style="font-size: 1.875rem; font-weight: 800; color: #2d3436; margin-bottom: 1rem;">Update Weight</h3>
+        <p style="font-size: 1rem; line-height: 1.6; color: #2d3436; margin-bottom: 1.5rem; font-weight: 500; background: #f1f3f5; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #dcdde1;">
+            ID: <span style="color: #00b894; font-weight: 700;">${stockId}</span><br>
+            Current weight: <span style="color: #00b894; font-weight: 700;">${currentWeight} gm</span>
+        </p>
+
+        <input type="number" class="weight-input" id="newWeightInput" placeholder="Enter new weight" value="${currentWeight}">
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;">
+            <button id="cancelBtn" class="modal-btn" style="background: #f1f2f6; color: #2d3436;">Cancel</button>
+            <button id="updateBtn" class="modal-btn" style="background: #3498db; color: white;">Update Weight</button>
+        </div>
+    `;
+
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+
+            // Close modal function
+            const closeModal = () => modalOverlay.remove();
 
             document.getElementById('cancelBtn').onclick = closeModal;
+            modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); }, { once: true });
 
+            // Update button
             document.getElementById('updateBtn').onclick = async () => {
                 const newWeight = document.getElementById('newWeightInput').value;
-                if (newWeight && !isNaN(newWeight)) {
-                    const url = isMass ? `/update-weight1-mass/${stockId}` : `/update-weight1/${stockId}`;
-                    
-                    try {
-                        const response = await fetch(url, {
-                            method: 'PUT',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ newWeight: newWeight })
-                        });
-                        const data = await response.json();
+                if (!newWeight || isNaN(newWeight)) return;
 
-                        if (data.message.includes('successfully')) {
-                            const tableSelector = isMass ? '#massStockTable' : '#stockTable';
-                            const row = document.querySelector(`${tableSelector} tr[data-id="${stockId}"]`);
-                            if (row) {
-                                const weightCell = row.querySelector('.weight-cell');
-                                if (weightCell) {
-                                    weightCell.textContent = newWeight;
-                                }
-                            }
+                const url = isMass ? `/update-weight1-mass/${stockId}` : `/update-weight1/${stockId}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ newWeight: newWeight })
+                    });
+                    const data = await response.json();
 
-                            modalContent.innerHTML = `
-                                <div style="font-size: 88px; margin-bottom: 24px;">✓</div>
-                                <h3 style="margin: 15px 0; font-size: 32px; color: #2ecc71; text-shadow: 0 2px 4px rgba(46,204,113,0.2); font-weight: 800;">Success!</h3>
-                                <p style="margin: 0 0 36px 0; color: #2d3436; font-size: 18px; line-height: 1.7; font-weight: 500; background: linear-gradient(120deg, #f1f3f5, #ffffff); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08); text-align: center;">
-                                    Weight updated successfully to <span style="color: #00b894; font-weight: 700;">${newWeight} gm</span>
-                                </p>
-                                <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white; padding: 16px 42px;">
-                                    Close
-                                </button>
-                            `;
-                            
-                            document.getElementById('closeModal').onclick = closeModal;
-                        }
-                    } catch (error) {
-                        console.error('Error updating weight:', error);
+                    if (data.message.includes('successfully')) {
+                        // Update table weight
+                        const tableSelector = isMass ? '#massStockTable' : '#stockTable';
+                        const row = document.querySelector(`${tableSelector} tr[data-id="${stockId}"]`);
+                        if (row) row.querySelector('.weight-cell').textContent = newWeight;
+
+                        // Success message
                         modalContent.innerHTML = `
-                            <div style="color: #ff4757; font-size: 88px;">⚠️</div>
-                            <h3 style="margin: 15px 0; font-size: 32px; color: #ff4757; text-shadow: 0 2px 4px rgba(255,71,87,0.2); font-weight: 800;">Error</h3>
-                            <p style="margin: 0 0 36px 0; color: #636e72; font-size: 18px; line-height: 1.7;">
-                                Failed to update weight. Please try again.
-                            </p>
-                            <button id="closeModal" class="modal-btn" style="background: linear-gradient(145deg, #ff4757, #ff6b81); color: white; padding: 16px 42px;">
-                                Close
-                            </button>
-                        `;
-                        
+                    <div style="font-size: 4.5rem; margin-bottom: 1rem; color: #2ecc71;">✓</div>
+                    <h3 style="font-size: 1.875rem; font-weight: 800; color: #2ecc71; margin-bottom: 1rem;">Success!</h3>
+                    <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem; background: #f1f3f5; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #dcdde1;">
+                        Weight updated successfully to <span style="color: #00b894; font-weight: 700;">${newWeight} gm</span>
+                    </p>
+                    <button id="closeModal" class="modal-btn" style="background: #2ecc71; color: white; width: 100%;">Close</button>
+                `;
                         document.getElementById('closeModal').onclick = closeModal;
                     }
+                } catch (err) {
+                    console.error(err);
+                    modalContent.innerHTML = `
+                <div style="font-size: 4.5rem; margin-bottom: 1rem; color: #ff4757;">⚠️</div>
+                <h3 style="font-size: 1.875rem; font-weight: 800; color: #ff4757; margin-bottom: 1rem;">Error</h3>
+                <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">Failed to update weight. Please try again.</p>
+                <button id="closeModal" class="modal-btn" style="background: #ff4757; color: white; width: 100%;">Close</button>
+            `;
+                    document.getElementById('closeModal').onclick = closeModal;
                 }
             };
+        }
+function toggleDropdown(button) {
+  const menu = button.nextElementSibling;
+  document.querySelectorAll('.dropdown-menu').forEach(m => {
+    if (m !== menu) m.classList.add('hidden');
+  });
+  menu.classList.toggle('hidden');
+}
 
-            // Close on overlay click
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) {
-                    closeModal();
-                }
-            });
-
-            // Close on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
-            });
-        });
-    }
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown-menu') && !e.target.closest('button')) {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+  }
+});
 
     </script>
 </body>
+
 </html>
