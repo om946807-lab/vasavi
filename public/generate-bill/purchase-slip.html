@@ -3,56 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sale Slip - Sri Vasavi Jewellers</title>
-    <link rel="stylesheet" href="purchase-slip.css">
-    <link rel="icon" href="logo.png" type="image/x-icon">
+    <title>Sale Slip - Dynamic Jewellers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1f2937', // Dark background for containers
+                        'secondary-dark': '#374151', // Slightly lighter dark for headers/table
+                        'text-light': '#f3f4f6', // Light text color
+                        'accent-blue': '#3b82f6', // Primary action color
+                        'accent-green': '#10b981', // Success color
+                        'accent-red': '#ef4444', // Danger color
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* General body styling for a clean look */
+        body {
+            background-color: #030712; /* Deep background */
+            color: #d1d5db; /* Default light text */
+            font-family: ui-sans-serif, system-ui, sans-serif;
+        }
+        .container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        /* Style for all input/select elements */
+        input:not([type="checkbox"]), select {
+            border: 1px solid #4b5563;
+            background-color: #1f2937;
+            color: #f3f4f6;
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #3b82f6;
+            ring: 2px;
+            ring-color: #3b82f6;
+            outline: none;
+        }
+        /* Custom header */
+        header {
+            border-bottom: 2px solid #374151;
+        }
+    </style>
+</head>
+<body class="p-6">
+    
+    <header class="mb-8 pb-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-4xl font-extrabold text-accent-blue">Sale Slip</h1>
+            <a href="generate-bill.html" class="bg-accent-blue hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition duration-200 shadow-lg">
+                Back
+            </a>
+        </div>
+    </header>
+    
+    <div class="container max-w-7xl mx-auto p-8 bg-primary-dark rounded-xl">
+        
+        <div id="successMessage" class="hidden fixed top-5 left-1/2 -translate-x-1/2 bg-accent-green text-white font-semibold p-4 rounded-lg shadow-2xl z-50">
+            ✅ Bill Generated Successfully!
+        </div>
+
+        <h2 class="text-2xl font-semibold mb-4 text-text-light">Customer Details & Bill</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-4 bg-secondary-dark rounded-lg">
+            <div class="md:col-span-1 flex items-center">
+                <span id="billNumber" class="text-xl font-bold text-yellow-400">Bill Number: LOADING...</span>
+            </div>
+            <div class="space-y-1">
+                <label for="customerName" class="text-sm text-gray-400">Customer Name:</label>
+                <input type="text" id="customerName" name="customerName" required class="w-full">
+            </div>
+            <div class="space-y-1">
+                <label for="customerPhone" class="text-sm text-gray-400">Customer Phone:</label>
+                <input type="text" id="customerPhone" name="customerPhone" required class="w-full">
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center my-6">
+            <span class="text-lg font-medium text-gray-400">Single Item</span>
+            <label class="switch mx-4 relative inline-block w-12 h-6">
+                <input type="checkbox" id="massEntrySwitch" onchange="toggleForms()" class="opacity-0 w-0 h-0">
+                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-600 transition-all duration-400 rounded-full before:absolute before:content-[''] before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:transition-all before:duration-400 before:rounded-full"></span>
+            </label>
+            <span class="text-lg font-medium text-gray-400">Mass Items</span>
+            <style>
+                #massEntrySwitch:checked + .slider { background-color: #3b82f6; }
+                #massEntrySwitch:checked + .slider:before { transform: translateX(24px); }
+            </style>
+        </div>
+        
+        <div id="singleItemForm" class="p-6 border border-gray-700 rounded-lg bg-secondary-dark">
+            <h2 class="text-xl font-semibold mb-5 text-accent-blue">Item Details (Single Item)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="space-y-1">
+                    <label for="itemType" class="text-sm text-gray-400">Item Type:</label>
+                    <select id="itemType" name="itemType" class="w-full">
+                        <option value="">Select Item Type</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label for="itemId" class="text-sm text-gray-400">Item ID:</label>
+                    <select id="itemId" name="itemId" class="w-full">
+                        <option value="">Select Item ID</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label for="itemName" class="text-sm text-gray-400">Item Name:</label>
+                    <input type="text" id="itemName" name="itemName" readonly class="w-full bg-gray-600/50 cursor-not-allowed">
+                </div>
+                <div class="space-y-1">
+                    <label for="quantity" class="text-sm text-gray-400">Total Weight (gm):</label>
+                    <input type="number" id="quantity" name="quantity" step="0.01" readonly class="w-full bg-gray-600/50 cursor-not-allowed">
+                </div>
+                <div class="space-y-1">
+                    <label for="stoneWeight" class="text-sm text-gray-400">Stone Weight (gm):</label>
+                    <input type="number" id="stoneWeight" name="stoneWeight" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="amountPerGram" class="text-sm text-gray-400">Amount per Gram (₹):</label>
+                    <input type="number" id="amountPerGram" name="amountPerGram" step="0.01" required class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="makingCharges" class="text-sm text-gray-400">Making Charges (₹):</label>
+                    <input type="number" id="makingCharges" name="makingCharges" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="wastage" class="text-sm text-gray-400">Wastage (%):</label>
+                    <input type="number" id="wastage" name="wastage" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1 lg:col-span-4">
+                    <label for="itemDescription" class="text-sm text-gray-400">Item Description (Optional):</label>
+                    <input type="text" id="itemDescription" name="itemDescription" class="w-full">
+                </div>
+                <div class="lg:col-span-4 mt-2">
+                    <button type="button" onclick="addItem()" class="w-full bg-accent-blue hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200">Add Item</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="massItemForm" style="display:none;" class="p-6 border border-gray-700 rounded-lg bg-secondary-dark">
+            <h2 class="text-xl font-semibold mb-5 text-accent-blue">Item Details (Mass Items)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="space-y-1">
+                    <label for="massItemType" class="text-sm text-gray-400">Item Type:</label>
+                    <select id="massItemType" name="itemType" onchange="handleItemTypeChange()" class="w-full">
+                        <option value="">Select Item Type</option>
+                        <option value="goldOrnaments">Gold Ornaments</option>
+                        <option value="silverOrnaments">Silver Ornaments</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label for="massItemName" class="text-sm text-gray-400">Item Name:</label>
+                    <select id="massItemName" name="itemName" class="w-full">
+                        <option value="">Select Item Name</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label for="massitemId" class="text-sm text-gray-400">Item Id:</label>
+                    <input type="number" id="massitemId" name="massitemId" readonly class="w-full bg-gray-600/50 cursor-not-allowed">
+                </div>
+                <div class="space-y-1">
+                    <label for="massQuantity" class="text-sm text-gray-400">Total Weight (gm):</label>
+                    <input type="number" id="massQuantity" name="quantity" step="0.01" required class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="massStoneWeight" class="text-sm text-gray-400">Stone Weight (gm):</label>
+                    <input type="number" id="massStoneWeight" name="massStoneWeight" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="massAmountPerGram" class="text-sm text-gray-400">Amount per Gram (₹):</label>
+                    <input type="number" id="massAmountPerGram" name="amountPerGram" step="0.01" required class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="massMakingCharges" class="text-sm text-gray-400">Making Charges (₹):</label>
+                    <input type="number" id="massMakingCharges" name="makingCharges" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="massWastage" class="text-sm text-gray-400">Wastage (%):</label>
+                    <input type="number" id="massWastage" name="wastage" step="0.01" value="0" class="w-full">
+                </div>
+                <div class="space-y-1 lg:col-span-4">
+                    <label for="massItemDescription" class="text-sm text-gray-400">Item Description (Optional):</label>
+                    <input type="text" id="massItemDescription" name="itemDescription" class="w-full">
+                </div>
+                <div class="lg:col-span-4 mt-2">
+                    <button type="button" onclick="addMassItem()" class="w-full bg-accent-blue hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200">Add Item</button>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="text-2xl font-semibold mt-10 mb-4 text-text-light">Bill Summary</h2>
+        <div class="overflow-x-auto border border-gray-700 rounded-lg">
+            <table id="billSummary" class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-secondary-dark">
+                    <tr>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-left text-gray-300">Item Type</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-left text-gray-300">Item ID</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-left text-gray-300">Item Name</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-gray-300">Total Wt(gm)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-gray-300">Stone Wt(gm)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-accent-red">Net Wt(gm)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-gray-300">Wastage (%)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-gray-300">Amt/Gram</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-gray-300">M. Charges (₹)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-right text-yellow-400">Total Amount (₹)</th>
+                        <th class="px-3 py-3 text-xs font-medium uppercase tracking-wider text-center text-gray-300">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700 bg-primary-dark">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 flex justify-end">
+            <div class="space-y-4 p-6 bg-secondary-dark rounded-lg w-full max-w-sm">
+                <div class="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <label class="font-bold text-lg text-text-light">Gross Total:</label>
+                    <span id="totalBillAmount" class="font-extrabold text-xl text-yellow-400">₹0.00</span> 
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <label for="discount" class="text-sm text-gray-400">Discount (₹):</label>
+                    <input type="number" id="discount" name="discount" step="0.01" value="0" class="text-right w-2/5 p-2 bg-primary-dark border-gray-600">
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <label for="oldGold" class="text-sm text-gray-400">Old Gold Amount (₹):</label>
+                    <input type="number" id="oldGold" name="oldGold" step="0.01" value="0" class="text-right w-2/5 p-2 bg-primary-dark border-gray-600">
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <label for="oldBalance" class="text-sm text-gray-400">Previous Balance (₹):</label>
+                    <input type="number" id="oldBalance" name="oldBalance" step="0.01" value="0" class="text-right w-2/5 p-2 bg-primary-dark border-gray-600">
+                </div>
+                
+                <div class="flex justify-between items-center border-t border-gray-600 pt-3">
+                    <label for="amountPaid" class="font-semibold text-text-light">Amount Paid (₹):</label>
+                    <input type="number" id="amountPaid" name="amountPaid" step="0.01" value="0" class="text-right w-2/5 p-2 bg-primary-dark border-gray-600">
+                </div>
+
+                <div class="flex justify-between items-center border-t border-gray-600 pt-3">
+                    <label class="font-bold text-lg text-text-light">Net Balance Due:</label>
+                    <span id="balanceAmount" class="font-extrabold text-2xl text-accent-green">₹0.00</span> 
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-4 mt-6">
+            <button type="button" id="updateButton" class="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md">Update Totals</button>
+            <button id="printButton" class="bg-accent-green hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200 shadow-xl">Generate Bill & Print</button>
+        </div>
+
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let totalBillAmount = 0;
             let billNumber;
-            fetchNextBillNumber();
+
+            // --- Utility: show modal warning ---
+            function showWarning(message) {
+                const existingModal = document.getElementById("warning-modal");
+                if (existingModal) existingModal.remove();
+
+                const overlay = document.createElement("div");
+                overlay.id = "warning-modal";
+                overlay.className = "fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 flex justify-center items-center z-[10000] animate-fadeIn";
+                overlay.style.animation = "fadeIn 0.3s ease-out";
+
+                const modal = document.createElement("div");
+                modal.className = "bg-primary-dark p-8 rounded-xl shadow-2xl text-center max-w-sm border-2 border-accent-red animate-popUp";
+                modal.style.animation = "popUp 0.3s ease-out";
+
+                const warningIcon = document.createElement("div");
+                warningIcon.innerHTML = "⚠️";
+                warningIcon.className = "text-5xl mb-4 animate-bounce";
+                warningIcon.style.animation = "bounce 1s infinite";
+                modal.appendChild(warningIcon);
+
+                const warningText = document.createElement("p");
+                warningText.innerText = message;
+                warningText.className = "mb-6 text-lg text-text-light";
+                modal.appendChild(warningText);
+
+                const okButton = document.createElement("button");
+                okButton.innerText = "OK";
+                okButton.className = "bg-accent-blue hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200";
+                okButton.onclick = () => {
+                    document.body.removeChild(overlay);
+                };
+                modal.appendChild(okButton);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                // Keyframes defined in style block at the top
+                const styleSheet = document.createElement("style");
+                styleSheet.type = "text/css";
+                styleSheet.innerText = `@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                                        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                                        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }`;
+                document.head.appendChild(styleSheet);
+            }
+
+            // --- 1. Fetch Next Bill Number (Dynamic) ---
             function fetchNextBillNumber() {
-                fetch('/next-bill-number')
+                // YOUR ENDPOINT
+                fetch('/next-bill-number') 
                     .then(response => response.json())
                     .then(data => {
-                        billNumber = data.nextBillNumber;
-                        document.getElementById('billNumber').textContent += billNumber; // Display the bill number
+                        billNumber = data.nextBillNumber || 'N/A';
+                        document.getElementById('billNumber').textContent = `Bill Number: ${billNumber}`;
                     })
                     .catch(error => {
-                        console.error('Error fetching bill number:', error);
-                        billNumber = 1; // Default to 1 if there's an error
-                        document.getElementById('billNumber').textContent += billNumber; // Display default bill number
-
+                        // console.error('Error fetching bill number:', error);
+                        billNumber = 'Error Loading'; 
+                        document.getElementById('billNumber').textContent = `Bill Number: ${billNumber}`;
                     });
             }
-            function incrementBillNumber() {
-                billNumber += 1;
-                // Use this billNumber for your logic
-                console.log('Incremented Bill Number:', billNumber);
-            }
-           // Fetch stock data based on the type (gold/silver)
+
+            // --- 2. Fetch Single Stock Data (Dynamic) ---
             async function fetchStockData(type) {
-                const response = await fetch(`/view-stock-data${type === 'silver' ? '-silver' : ''}`);
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    console.error('Failed to fetch stock data');
+                const endpoint = type === 'silver' ? '/view-stock-data-silver' : '/view-stock-data';
+                try {
+                    const response = await fetch(endpoint);
+                    if (response.ok) return response.json();
+                    console.error(`Failed to fetch ${type} stock data`);
+                    return [];
+                } catch (error) {
+                    console.error('Error fetching stock data:', error);
                     return [];
                 }
             }
-            // Fetch item details by type and ID
+
+            // --- 3. Fetch Single Item Details (Dynamic) ---
             async function fetchItemDetails(type, id) {
-                const response = await fetch(`/view-stock-data${type === 'silver' ? '-silver' : ''}`);
-                if (response.ok) {
-                    const items = await response.json();
-                    return items.find(item => item.id == id) || null;
-                } else {
-                    console.error('Failed to fetch item details');
+                const endpoint = type === 'silver' ? '/view-stock-data-silver' : '/view-stock-data';
+                try {
+                    const response = await fetch(endpoint);
+                    if (response.ok) {
+                        const items = await response.json();
+                        // IMPORTANT: Ensure item.id is compared correctly (it might be a number in the endpoint response)
+                        return items.find(item => String(item.id) === String(id)) || null; 
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error fetching item details:', error);
                     return null;
                 }
             }
-            // Update options in the dropdown for item IDs
+
+            // --- 4. Fetch Mass Stock Data (Dynamic) ---
+            async function fetchMassStockData(itemType) {
+                const endpoint = itemType === 'silverOrnaments' ? '/view-stock-data-silver-mass' : '/view-stock-data-mass';
+                try {
+                    const response = await fetch(endpoint);
+                    if (response.ok) return await response.json();
+                    console.error('Failed to fetch mass stock data');
+                    return [];
+                } catch (error) {
+                    console.error('Error fetching mass stock data:', error);
+                    return [];
+                }
+            }
+            
+            // --- 5. Fetch Mass Item Details (Dynamic) ---
+            async function fetchMassItemDetails(itemType, itemName) {
+                const endpoint = itemType === 'silverOrnaments' ? '/view-stock-data-silver-mass' : '/view-stock-data-mass';
+                try {
+                    const response = await fetch(endpoint);
+                    if (response.ok) {
+                        const items = await response.json();
+                        const typeKey = itemType === 'goldOrnaments' ? 'gold_type' : 'silver_type';
+                        return items.find(item => item[typeKey] === itemName) || null;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error fetching mass item details:', error);
+                    return null;
+                }
+            }
+            
+            // --- DOM Manipulation Helpers ---
             function updateItemIdOptions(items) {
                 const itemIdSelect = document.getElementById('itemId');
                 itemIdSelect.innerHTML = '<option value="">Select Item ID</option>';
@@ -63,401 +401,307 @@
                     itemIdSelect.appendChild(option);
                 });
             }
-            function updateItemIdOptions1(items) {
-                const itemIdSelect = document.getElementById('massitemId');
-                itemIdSelect.innerHTML = '<option value="">Select Item ID</option>';
-                items.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.id;
-                    itemIdSelect.appendChild(option);
+            
+            function updateMassItemNameOptions(items, itemType) {
+                const itemNameSelect = document.getElementById('massItemName');
+                itemNameSelect.innerHTML = '<option value="">Select Item Name</option>';
+                // Clear the mass ID field when the item name list is updated
+                document.getElementById('massitemId').value = ''; 
+
+                const nameKey = itemType === 'goldOrnaments' ? 'gold_type' : 'silver_type';
+                // Get unique names to populate the dropdown
+                const uniqueNames = [...new Set(items.map(item => item[nameKey]))];
+
+                uniqueNames.forEach(name => {
+                    if (name) { // Skip any null/empty names
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        itemNameSelect.appendChild(option);
+                    }
                 });
             }
-            // Event listener for when item type changes (gold/silver)
+
+
+            // --- Calculation Logic (Retained) ---
+            function updateAmounts() {
+                // Ensure all inputs are treated as numbers, defaulting to 0
+                const discount = parseFloat(document.getElementById('discount').value) || 0;
+                const oldGold = parseFloat(document.getElementById('oldGold').value) || 0;
+                const oldBalance = parseFloat(document.getElementById('oldBalance').value) || 0;
+                const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+                
+                // Net Balance = Gross Total + Previous Balance - Discount - Amount Paid - Old Gold
+                const balanceAmount = totalBillAmount + oldBalance - discount - amountPaid - oldGold;
+
+                document.getElementById('totalBillAmount').textContent = `₹${totalBillAmount.toFixed(2)}`;
+                document.getElementById('balanceAmount').textContent = `₹${balanceAmount.toFixed(2)}`;
+            }
+
+            // --- Event Listeners for Dynamic Data Loading ---
+            
+            // Single Item - Type Change
             document.getElementById('itemType').addEventListener('change', async () => {
                 const itemType = document.getElementById('itemType').value;
+                document.getElementById('itemName').value = '';
+                document.getElementById('quantity').value = '';
+                document.getElementById('amountPerGram').value = '';
+                updateItemIdOptions([]); // Clear existing IDs
+
                 if (itemType) {
                     const items = await fetchStockData(itemType);
                     updateItemIdOptions(items);
                 }
             });
-            // Event listner for when item ID is selected
+
+            // Single Item - ID Change
             document.getElementById('itemId').addEventListener('change', async () => {
                 const itemType = document.getElementById('itemType').value;
                 const itemId = document.getElementById('itemId').value;
+                const typeKey = itemType === 'gold' ? 'gold_type' : 'silver_type';
 
                 if (itemType && itemId) {
                     const item = await fetchItemDetails(itemType, itemId);
                     if (item) {
-                        document.getElementById('itemName').value = item[itemType === 'gold' ? 'gold_type' : 'silver_type'] || '';
+                        document.getElementById('itemName').value = item[typeKey] || '';
                         document.getElementById('quantity').value = item.quantity || '';
-                        document.getElementById('amountPerGram').value = item.amountPerGram || '';
+                        document.getElementById('amountPerGram').value = item.amountPerGram || '0';
+                    } else {
+                        showWarning('Item details not found for the selected ID.');
+                        document.getElementById('itemName').value = '';
+                        document.getElementById('quantity').value = '';
                     }
+                } else {
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('quantity').value = '';
                 }
             });
-            // Fetch mass stock data based on item type (gold/silver ornaments)
-            async function fetchMassStockData(itemType) {
-                const endpoint = itemType === 'silverOrnaments' ? '/view-stock-data-silver-mass' : '/view-stock-data-mass';
-                try {
-                    const response = await fetch(endpoint);
-                    if (response.ok) {
-                        return await response.json();
-                    } else {
-                        console.error('Failed to fetch mass stock data');
-                        return [];
-                    }
-                } catch (error) {
-                    console.error('Error fetching mass stock data:', error);
-                    return [];
-                }
-            }
-            // Function to fetch item details (gold_type or silver_type) based on the selected item name
-            async function fetchMassItemDetails(itemType, itemName) {
-                const endpoint = itemType === 'silverOrnaments' ? '/view-stock-data-silver-mass' : '/view-stock-data-mass';
-                try {
-                    const response = await fetch(endpoint);
-                    if (response.ok) {
-                        const items = await response.json();
-                        return items.find(item => item[itemType === 'goldOrnaments' ? 'gold_type' : 'silver_type'] === itemName) || null;
-                    } else {
-                        console.error('Failed to fetch mass item details');
-                        return null;
-                    }
-                } catch (error) {
-                    console.error('Error fetching mass item details:', error);
-                    return null;
-                }
-            }
 
-            // Function to update item name dropdown options dynamically
-            function updateMassItemNameOptions(items, itemType) {
-                const itemNameSelect = document.getElementById('massItemName');
-                itemNameSelect.innerHTML = '<option value="">Select Item Name</option>';
-                items.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item[itemType === 'goldOrnaments' ? 'gold_type' : 'silver_type'];
-                    option.textContent = item[itemType === 'goldOrnaments' ? 'gold_type' : 'silver_type'];
-                    itemNameSelect.appendChild(option);
-                });
-            }
-
-             // Function to handle item type change and fetch corresponding stock data
-            async function handleItemTypeChange() {
+            // Mass Item - Type Change
+            window.handleItemTypeChange = async function() {
                 const itemType = document.getElementById('massItemType').value;
+                document.getElementById('massItemName').innerHTML = '<option value="">Select Item Name</option>';
+                document.getElementById('massitemId').value = '';
+
                 if (itemType) {
                     const items = await fetchMassStockData(itemType);
                     updateMassItemNameOptions(items, itemType);
-                    updateItemIdOptions1(items);
-
                 }
-            }
-
-             // Event listener for item type change
-            document.getElementById('massItemType').addEventListener('change', handleItemTypeChange);
-
-            // Event listener for item name change to auto-fill item details
+            };
+            
+            // Mass Item - Name Change
             document.getElementById('massItemName').addEventListener('change', async () => {
                 const itemType = document.getElementById('massItemType').value;
                 const itemName = document.getElementById('massItemName').value;
 
                 if (itemType && itemName) {
+                    // Fetch all data for the type, then filter by name to find the details
                     const item = await fetchMassItemDetails(itemType, itemName);
+                    
                     if (item) {
                         document.getElementById('massitemId').value = item.id || '';
                         document.getElementById('massQuantity').value = item.quantity || '';
-                        document.getElementById('totalQuantity').value = item.quantity || '';
-
+                        // document.getElementById('massAmountPerGram').value = item.amountPerGram || '0'; // Can be pre-filled if available
+                    } else {
+                        showWarning('Mass Item details not found for the selected Name.');
+                        document.getElementById('massitemId').value = '';
+                        document.getElementById('massQuantity').value = '';
                     }
                 }
             });
 
-            function updateAmounts() {
-                const discount = parseFloat(document.getElementById('discount').value) || 0;
-                const oldGold = parseFloat(document.getElementById('oldGold').value) || 0;
-                const oldBalance = parseFloat(document.getElementById('oldBalance').value) || 0;
-                const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-                const balanceAmount = totalBillAmount + oldBalance - discount - amountPaid - oldGold;
-
-                document.getElementById('balanceAmount').textContent = `₹${balanceAmount.toFixed(2)}`;
-            }
-            function showWarning(message) {
-    // Remove existing modal if any
-    const existingModal = document.getElementById("warning-modal");
-    if (existingModal) existingModal.remove();
-
-    // Create overlay
-    const overlay = document.createElement("div");
-    overlay.id = "warning-modal";
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100vw";
-    overlay.style.height = "100vh";
-    overlay.style.background = "rgba(0, 0, 0, 0.6)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "10000";
-    overlay.style.animation = "fadeIn 0.3s ease-in-out";
-
-    // Create modal box with glassmorphism effect
-    const modal = document.createElement("div");
-    modal.style.background = "rgba(255, 255, 255, 0.2)";
-    modal.style.backdropFilter = "blur(12px)";
-    modal.style.color = "#fff";
-    modal.style.padding = "30px";
-    modal.style.borderRadius = "15px";
-    modal.style.boxShadow = "0px 10px 30px rgba(0, 0, 0, 0.3)";
-    modal.style.textAlign = "center";
-    modal.style.fontSize = "18px";
-    modal.style.fontFamily = "'Poppins', sans-serif";
-    modal.style.maxWidth = "400px";
-    modal.style.position = "relative";
-    modal.style.border = "1px solid rgba(255, 255, 255, 0.3)";
-    modal.style.animation = "popUp 0.3s ease-out forwards";
-
-    // Warning Icon
-    const warningIcon = document.createElement("div");
-    warningIcon.innerHTML = "⚠️";
-    warningIcon.style.fontSize = "50px";
-    warningIcon.style.marginBottom = "15px";
-    warningIcon.style.animation = "bounce 1s infinite";
-    modal.appendChild(warningIcon);
-
-    // Warning Text
-    const warningText = document.createElement("p");
-    warningText.innerText = message;
-    warningText.style.marginBottom = "20px";
-    warningText.style.fontSize = "18px";
-    warningText.style.color = "#f8f8f8";
-    warningText.style.lineHeight = "1.6";
-    modal.appendChild(warningText);
-
-    // OK Button
-    const okButton = document.createElement("button");
-    okButton.innerText = "OK";
-    okButton.style.background = "linear-gradient(135deg, #ff7e5f, #feb47b)";
-    okButton.style.color = "#fff";
-    okButton.style.border = "none";
-    okButton.style.padding = "12px 28px";
-    okButton.style.borderRadius = "30px";
-    okButton.style.cursor = "pointer";
-    okButton.style.fontSize = "16px";
-    okButton.style.fontWeight = "600";
-    okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
-    okButton.style.transition = "all 0.3s ease-in-out";
-    
-    okButton.onmouseover = () => {
-        okButton.style.transform = "scale(1.05)";
-        okButton.style.boxShadow = "0 6px 20px rgba(255, 126, 95, 0.5)";
-    };
-    okButton.onmouseleave = () => {
-        okButton.style.transform = "scale(1)";
-        okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
-    };
-
-    okButton.onclick = () => {
-        document.body.removeChild(overlay);
-    };
-
-    modal.appendChild(okButton);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    // Allow pressing Enter to confirm
-    document.addEventListener("keydown", function handleKeyPress(event) {
-        if (event.key === "Enter") {
-            document.body.removeChild(overlay);
-            document.removeEventListener("keydown", handleKeyPress);
-        }
-    });
-}
-
-// Add Soft Animations
-const styleSheet = document.createElement("style");
-styleSheet.innerHTML = `
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes popUp {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
-`;
-document.head.appendChild(styleSheet);
-
-
+            // --- Add Single Item ---
             window.addItem = () => {
                 const itemType = document.getElementById('itemType').value;
                 const itemId = document.getElementById('itemId').value;
                 const itemName = document.getElementById('itemName').value;
-                const quantity = parseFloat(document.getElementById('quantity').value);
-                const stoneWeight = parseFloat(document.getElementById('stoneWeight').value)||0;
-                const amountPerGram = parseFloat(document.getElementById('amountPerGram').value);
-                const makingCharges = parseFloat(document.getElementById('makingCharges').value);
+                const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+                const stoneWeight = parseFloat(document.getElementById('stoneWeight').value) || 0;
+                const amountPerGram = parseFloat(document.getElementById('amountPerGram').value) || 0;
+                const makingCharges = parseFloat(document.getElementById('makingCharges').value) || 0;
                 const wastage = parseFloat(document.getElementById('wastage').value) || 0;
                 const itemDescription = document.getElementById('itemDescription').value;
 
-                if (isNaN(quantity) || isNaN(amountPerGram) || isNaN(makingCharges) || quantity <= 0 || amountPerGram <= 0) {
-                    showWarning('Please enter valid values for quantity, amount per gram, and making charges.');
+                if (!itemType || !itemId || quantity <= 0 || amountPerGram <= 0) {
+                    showWarning('Please select an Item Type/ID and enter valid, non-zero values for Total Weight and Amount per Gram.');
                     return;
                 }
 
-                const adjustedQuantity = (quantity-stoneWeight) + ((quantity-stoneWeight) * (wastage / 100));
+                const netMetalWeight = quantity - stoneWeight; 
+                if (netMetalWeight < 0) {
+                    showWarning('Stone Weight cannot exceed Total Weight.');
+                    return;
+                }
+                
+                // Adjusted quantity includes wastage on net metal weight
+                const adjustedQuantity = netMetalWeight + (netMetalWeight * (wastage / 100));
                 const totalAmount = (amountPerGram * adjustedQuantity) + makingCharges;
 
                 const billSummary = document.getElementById('billSummary').getElementsByTagName('tbody')[0];
                 const newRow = billSummary.insertRow();
                 newRow.innerHTML = `
-                    <td>${itemType}</td>
-                    <td>${itemId}</td>
-                    <td>${itemName}${itemDescription ? `<br> - <small>${itemDescription}</small>` : ''}</td>
-                    <td>${quantity.toFixed(2)}</td>
-                    <td>${stoneWeight.toFixed(2)}</td>
-                    <td>${wastage.toFixed(2)}</td>
-                    <td>₹${amountPerGram.toFixed(2)}</td>
-                    <td>₹${makingCharges.toFixed(2)}</td>
-                    <td>₹${totalAmount.toFixed(2)}</td>
-                    <td><button type="button" class="deleteButton">Delete</button></td>
+                    <td class="px-3 py-2 whitespace-nowrap">${itemType}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${itemId}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${itemName}${itemDescription ? `<br><small class="text-xs text-gray-500 italic">- ${itemDescription}</small>` : ''}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${quantity.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${stoneWeight.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right font-bold text-accent-red">${netMetalWeight.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${wastage.toFixed(2)}%</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right" data-value="${amountPerGram.toFixed(2)}">₹${amountPerGram.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right" data-value="${makingCharges.toFixed(2)}">₹${makingCharges.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right font-semibold text-yellow-400" data-total="${totalAmount.toFixed(2)}">₹${totalAmount.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-center"><button type="button" class="deleteButton bg-accent-red hover:bg-red-600 text-white p-1 rounded text-xs transition duration-150">Delete</button></td>
                 `;
+
                 totalBillAmount += totalAmount;
-                document.getElementById('totalBillAmount').textContent = `₹${totalBillAmount.toFixed(2)}`;
                 updateAmounts();
 
+                // Clear single item form inputs
                 document.getElementById('itemType').value = '';
                 updateItemIdOptions([]);
                 document.getElementById('itemName').value = '';
                 document.getElementById('quantity').value = '';
-                document.getElementById('stoneWeight').value = '';
+                document.getElementById('stoneWeight').value = '0';
                 document.getElementById('amountPerGram').value = '';
-                document.getElementById('makingCharges').value = '';
-                document.getElementById('wastage').value = '';
+                document.getElementById('makingCharges').value = '0';
+                document.getElementById('wastage').value = '0';
                 document.getElementById('itemDescription').value = '';
             };
+
+            // --- Add Mass Item ---
             window.addMassItem = () => {
                 const itemType = document.getElementById('massItemType').value;
-                const itemId = document.getElementById('massitemId').value; // Reusing the same ID field for mass items
+                const itemId = document.getElementById('massitemId').value; // Mass items use the name for stock-check, but bill needs an ID
                 const itemName = document.getElementById('massItemName').value;
-                const quantity = parseFloat(document.getElementById('massQuantity').value);
-                const stoneWeight = parseFloat(document.getElementById('massStoneWeight').value)||0;
-                const amountPerGram = parseFloat(document.getElementById('massAmountPerGram').value);
-                const makingCharges = parseFloat(document.getElementById('massMakingCharges').value);
+                const quantity = parseFloat(document.getElementById('massQuantity').value) || 0;
+                const stoneWeight = parseFloat(document.getElementById('massStoneWeight').value) || 0;
+                const amountPerGram = parseFloat(document.getElementById('massAmountPerGram').value) || 0;
+                const makingCharges = parseFloat(document.getElementById('massMakingCharges').value) || 0;
                 const wastage = parseFloat(document.getElementById('massWastage').value) || 0;
                 const itemDescription = document.getElementById('massItemDescription').value;
 
-                if (isNaN(quantity) || isNaN(amountPerGram) || isNaN(makingCharges) || quantity <= 0 || amountPerGram <= 0) {
-                    showWarning('Please enter valid values for quantity, amount per gram, and making charges.');
+                if (!itemType || !itemName || quantity <= 0 || amountPerGram <= 0) {
+                    showWarning('Please select an Item Type/Name and enter valid, non-zero values for Total Weight and Amount per Gram.');
                     return;
                 }
 
-                const adjustedQuantity = (quantity-stoneWeight) + ((quantity-stoneWeight) * (wastage / 100));
+                const netMetalWeight = quantity - stoneWeight; 
+                if (netMetalWeight < 0) {
+                    showWarning('Stone Weight cannot exceed Total Weight.');
+                    return;
+                }
+
+                const adjustedQuantity = netMetalWeight + (netMetalWeight * (wastage / 100));
                 const totalAmount = (amountPerGram * adjustedQuantity) + makingCharges;
 
                 const billSummary = document.getElementById('billSummary').getElementsByTagName('tbody')[0];
                 const newRow = billSummary.insertRow();
                 newRow.innerHTML = `
-                    <td>${itemType}</td>
-                    <td>${itemId}</td>
-                    <td>${itemName}${itemDescription ? `<br> - <small>${itemDescription}</small>` : ''}</td>
-                    <td>${quantity.toFixed(2)}</td>
-                    <td>${stoneWeight.toFixed(2)}</td>
-                    <td>${wastage.toFixed(2)}</td>
-                    <td>₹${amountPerGram.toFixed(2)}</td>
-                    <td>₹${makingCharges.toFixed(2)}</td>
-                    <td>₹${totalAmount.toFixed(2)}</td>
-                    <td><button type="button" class="deleteButton">Delete</button></td>
+                     <td class="px-3 py-2 whitespace-nowrap">${itemType}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${itemId || 'MASS-ENTRY'}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${itemName}${itemDescription ? `<br><small class="text-xs text-gray-500 italic">- ${itemDescription}</small>` : ''}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${quantity.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${stoneWeight.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right font-bold text-accent-red">${netMetalWeight.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right">${wastage.toFixed(2)}%</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right" data-value="${amountPerGram.toFixed(2)}">₹${amountPerGram.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right" data-value="${makingCharges.toFixed(2)}">₹${makingCharges.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-right font-semibold text-yellow-400" data-total="${totalAmount.toFixed(2)}">₹${totalAmount.toFixed(2)}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-center"><button type="button" class="deleteButton bg-accent-red hover:bg-red-600 text-white p-1 rounded text-xs transition duration-150">Delete</button></td>
                 `;
 
                 totalBillAmount += totalAmount;
-                document.getElementById('totalBillAmount').textContent = `₹${totalBillAmount.toFixed(2)}`;
                 updateAmounts();
 
-                // Clear the input fields for the next item entry
+                // Clear mass inputs
                 document.getElementById('massItemType').value = '';
-                document.getElementById('massItemName').value = '';
+                document.getElementById('massItemName').innerHTML = '<option value="">Select Item Name</option>';
                 document.getElementById('massitemId').value = '';
-                document.getElementById('massStoneWeight').value = '';
                 document.getElementById('massQuantity').value = '';
+                document.getElementById('massStoneWeight').value = '0';
                 document.getElementById('massAmountPerGram').value = '';
-                document.getElementById('massMakingCharges').value = '';
-                document.getElementById('massWastage').value = '';
+                document.getElementById('massMakingCharges').value = '0';
+                document.getElementById('massWastage').value = '0';
                 document.getElementById('massItemDescription').value = '';
             };
 
+
+            // --- Delete Item Handler ---
             document.getElementById('billSummary').addEventListener('click', (event) => {
                 if (event.target.classList.contains('deleteButton')) {
                     const row = event.target.closest('tr');
-                    const totalAmount = parseFloat(row.cells[8].textContent.replace('₹', ''));
+                    const totalCell = row.cells[9]; 
+                    const totalAmount = parseFloat(totalCell.getAttribute('data-total')) || 0;
 
                     totalBillAmount -= totalAmount;
-                    document.getElementById('totalBillAmount').textContent = `₹${totalBillAmount.toFixed(2)}`;
                     updateAmounts();
 
                     row.remove();
                 }
             });
 
-            document.getElementById('updateButton').addEventListener('click', () => {
-                const discount = parseFloat(document.getElementById('discount').value) || 0;
-                const oldGold = parseFloat(document.getElementById('oldGold').value) || 0;
-                const oldBalance = parseFloat(document.getElementById('oldBalance').value) || 0;
-                const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-                const balanceAmount = totalBillAmount + oldBalance - discount - amountPaid - oldGold;
-
-                document.getElementById('balanceAmount').textContent = `₹${balanceAmount.toFixed(2)}`;
-            });
-
-
+            // --- Update and Print Handlers ---
+            document.getElementById('updateButton').addEventListener('click', updateAmounts);
+            document.getElementById('discount').addEventListener('input', updateAmounts);
+            document.getElementById('oldGold').addEventListener('input', updateAmounts);
+            document.getElementById('oldBalance').addEventListener('input', updateAmounts);
+            document.getElementById('amountPaid').addEventListener('input', updateAmounts);
+            
+            window.toggleForms = function() {
+                const isMassItem = document.getElementById('massEntrySwitch').checked;
+                document.getElementById('singleItemForm').style.display = isMassItem ? 'none' : 'block';
+                document.getElementById('massItemForm').style.display = isMassItem ? 'block' : 'none';
+            };
+            
             document.getElementById('printButton').addEventListener('click', async () => {
                 const customerName = document.getElementById('customerName').value.trim();
                 const customerPhone = document.getElementById('customerPhone').value.trim();
                 const billSummary = document.getElementById('billSummary').getElementsByTagName('tbody')[0];
                 const itemRows = billSummary.getElementsByTagName('tr').length;
+                
+                updateAmounts(); // Final update just before submission
+                
                 const discount = parseFloat(document.getElementById('discount').value) || 0;
                 const oldBalance = parseFloat(document.getElementById('oldBalance').value) || 0;
                 const oldGold = parseFloat(document.getElementById('oldGold').value) || 0;
                 const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-                const balanceAmount = totalBillAmount - discount - amountPaid-oldGold+oldBalance;
+                const balanceAmount = totalBillAmount + oldBalance - discount - amountPaid - oldGold;
 
-                if (!customerName) {
-                    showWarning('Please enter the customer name.');
-                    return;
-                }
-                if (!customerPhone) {
-                    showWarning('Please enter the customer phone number.');
-                    return;
-                }
-                if (itemRows === 0 || isNaN(discount) || discount < 0 || isNaN(amountPaid) ||isNaN(oldGold)|| amountPaid < 0) {
-                    showWarning('Add atleast one item or check the inputs.');
+
+                if (!customerName || !customerPhone || itemRows === 0) {
+                    showWarning('Please enter customer details and add at least one item to generate the bill.');
                     return;
                 }
 
-                const items = Array.from(billSummary.rows).map(row => ({
-                    itemType: row.cells[0].textContent,
-                    itemId: row.cells[1].textContent,
-                    itemName: row.cells[2].textContent,
-                    quantity: row.cells[3].textContent,
-                    stoneWeight: row.cells[4].textContent,
-                    wastage:row.cells[5].textContent,
-                    amountPerGram: row.cells[6].textContent,
-                    makingCharges: row.cells[7].textContent, // Include making charges
-                    totalPrice: parseFloat(row.cells[8].textContent.replace('₹', '')),
-                    itemDescription: row.cells[2].querySelector('small') ? row.cells[2].querySelector('small').textContent : ''
-                }));
+                // Prepare items data for API
+                const items = Array.from(billSummary.rows).map(row => {
+                    const itemNameCell = row.cells[2].textContent;
+                    const itemDescriptionMatch = itemNameCell.match(/- (.*)/);
+                    const itemDescription = itemDescriptionMatch ? itemDescriptionMatch[1].trim() : '';
+                    const itemName = itemNameCell.replace(itemDescription ? `- ${itemDescription}` : '', '').trim();
+
+                    return {
+                        itemType: row.cells[0].textContent,
+                        itemId: row.cells[1].textContent,
+                        itemName: itemName,
+                        quantity: parseFloat(row.cells[3].textContent),
+                        stoneWeight: parseFloat(row.cells[4].textContent),
+                        netMetalWeight: parseFloat(row.cells[5].textContent),
+                        wastage: parseFloat(row.cells[6].textContent.replace('%', '')),
+                        amountPerGram: parseFloat(row.cells[7].textContent.replace('₹', '')),
+                        makingCharges: parseFloat(row.cells[8].textContent.replace('₹', '')),
+                        totalPrice: parseFloat(row.cells[9].textContent.replace('₹', '')),
+                        itemDescription: itemDescription
+                    };
+                });
 
                 try {
+                    // API Call to your backend to generate the bill
                     const response = await fetch('/generate-bill', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            billNumber: billNumber,
+                            billNumber: billNumber, // Use the dynamically loaded bill number
                             customerName,
                             customerPhone,
                             items,
@@ -466,7 +710,7 @@ document.head.appendChild(styleSheet);
                             oldGold,
                             oldBalance,
                             amountPaid,
-                            balanceAmount: balanceAmount > 0 ? balanceAmount : 0
+                            balanceAmount: balanceAmount
                         })
                     });
 
@@ -474,197 +718,28 @@ document.head.appendChild(styleSheet);
                         const result = await response.json();
                         console.log(result.message);
                         const successMessage = document.getElementById('successMessage');
-                        successMessage.style.display = 'block';
+                        successMessage.classList.remove('hidden');
 
                         setTimeout(() => {
-                            successMessage.style.display = 'none';
+                            successMessage.classList.add('hidden');
+                            // Open print view and refresh form
                             window.open(`purchase-print-bill.html?billNumber=${billNumber}`, '_blank');
-                            location.reload();
+                            location.reload(); 
                         }, 2000);
-
-                        totalBillAmount = 0;
-                        document.getElementById('totalBillAmount').textContent = `₹0.00`;
-                        document.getElementById('balanceAmount').textContent = `₹0.00`;
-                        billSummary.innerHTML = '';
+                        
                     } else {
                         console.error('Failed to generate bill');
+                        showWarning('Failed to generate bill. Server error.');
                     }
                 } catch (error) {
                     console.error('Error generating bill:', error);
+                    showWarning('Error connecting to server. Check console for details.');
                 }
             });
-        });
-
-            function toggleForms() {
-                const isMassItem = document.getElementById('massEntrySwitch').checked;
-                document.getElementById('singleItemForm').style.display = isMassItem ? 'none' : 'block';
-                document.getElementById('massItemForm').style.display = isMassItem ? 'block' : 'none';
-            }
-    </script>
-</head>
-<body>
-    
-    <header>
-        <h1>Sale Slip</h1>
-        <a href="generate-bill.html" class="back-button">Back</a>
-    </header>
-    <div class="container">
-        <h2>Customer Details</h2>
-
-        <form id="customerForm">
-            <label for="billNumber"></label>
-        <span id="billNumber">Bill Number: </span><br>
-            <label for="customerName">Customer Name:</label>
-            <input type="text" id="customerName" name="customerName" required>
             
-            <label for="customerPhone">Customer Phone:</label>
-            <input type="text" id="customerPhone" name="customerPhone" required>
-        </form>
-
-        <div class="entry-toggle">
-            <span>Single Item</span>
-            <label class="switch">
-                <input type="checkbox" id="massEntrySwitch" onchange="toggleForms()">
-                <span class="slider"></span>
-            </label>
-            <span>Mass Items</span>
-        </div>
-        
-        <!-- Single Item Form -->
-        <div id="singleItemForm">
-            <h2>Item Details (Single Item)</h2>
-            <form id="itemForm">
-                <label for="itemType">Item Type:</label>
-                <select id="itemType" name="itemType">
-                    <option value="">Select Item Type</option>
-                    <option value="gold">Gold</option>
-                    <option value="silver">Silver</option>
-                </select>
-        
-                <label for="itemId">Item ID:</label>
-                <select id="itemId" name="itemId">
-                    <option value="">Select Item ID</option>
-                </select>
-        
-                <label for="itemName">Item Name:</label>
-                <input type="text" id="itemName" name="itemName" readonly>
-        
-                <label for="quantity">Net Weight(gm):</label>
-                <input type="number" id="quantity" name="quantity" step="0.01" readonly>
-
-                <label for="stoneWeight">Stone Weight(gm):</label>
-                <input type="number" id="stoneWeight" name="stoneWeight" step="0.01">
-        
-                <label for="amountPerGram">Amount per Gram:</label>
-                <input type="number" id="amountPerGram" name="amountPerGram" step="0.01" required>
-        
-                <label for="makingCharges">Making Charges:</label>
-                <input type="number" id="makingCharges" name="makingCharges" step="0.01">
-        
-                <label for="wastage">Wastage (%):</label>
-                <input type="number" id="wastage" name="wastage" step="0.01">
-        
-                <label for="itemDescription">Item Description:</label>
-                <input type="text" id="itemDescription" name="itemDescription">
-        
-                <button type="button" onclick="addItem()">Add Item</button>
-            </form>
-        </div>
-        
-        <!-- Mass Item Form (Initially Hidden) -->
-        <div id="massItemForm" style="display:none;">
-            <h2>Item Details (Mass Items)</h2>
-            <form id="massItemFormDetails">
-                <label for="itemType">Item Type:</label>
-                <select id="massItemType" name="itemType" onchange="handleItemTypeChange()">
-                    <option value="">Select Item Type</option>
-                    <option value="goldOrnaments">Gold Ornaments</option>
-                    <option value="silverOrnaments">Silver Ornaments</option>
-                </select>
-        
-                <label for="itemName">Item Name:</label>
-                <select id="massItemName" name="itemName">
-                    <option value="">Select Item Name</option>
-                </select>
-        
-                <label for="itemId">Item Id:</label>
-                <input type="number" id="massitemId" name="massitemId" readonly>
-        
-                <label for="massQuantity">Net Weight(gm):</label>
-                <input type="number" id="massQuantity" name="quantity" step="0.01" required>
-
-                <label for="massStoneWeight">Stone Weight(gm):</label>
-                <input type="number" id="massStoneWeight" name="massStoneWeight" step="0.01">
-                
-                <label for="amountPerGram">Amount per Gram:</label>
-                <input type="number" id="massAmountPerGram" name="amountPerGram" step="0.01" required>
-        
-                <label for="makingCharges">Making Charges:</label>
-                <input type="number" id="massMakingCharges" name="makingCharges" step="0.01">
-        
-                <label for="wastage">Wastage (%):</label>
-                <input type="number" id="massWastage" name="wastage" step="0.01">
-        
-                <label for="itemDescription">Item Description:</label>
-                <input type="text" id="massItemDescription" name="itemDescription">
-        
-                <button type="button" onclick="addMassItem()">Add Item</button>
-            </form>
-        </div>
-        
-        <h2>Bill Summary</h2>
-        <table id="billSummary">
-            <thead>
-                <tr>
-                    <th>Item Type</th>
-                    <th>Item ID</th>
-                    <th>Item Name</th>
-                    <th>Net Weight(gm)</th>
-                    <th>Stone Weight(gm)</th>
-                    <th>Wastage</th>
-                    <th>Amount per Gram</th> <!-- New Column -->
-                    <th>Making Charges</th>
-                    <th>Total Amount</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-
-        <div class="total-section">
-            <label for="totalBillAmount">Total Amount: <span id="totalBillAmount">₹0.00</span> </label>
-        </div>
-
-        <div class="total-section">
-            <label for="discount">Discount:</label>
-            <input type="number" id="discount" name="discount" step="0.01" value="0">
-        </div>
-
-        <div class="total-section">
-            <label for="oldGold">Old Gold Amount:</label>
-            <input type="number" id="oldGold" name="oldGold" step="0.01" value="0">
-        </div>
-        <div class="total-section">
-            <label for="oldBalance">Old Balance:</label>
-            <input type="number" id="oldBalance" name="oldBalance" step="0.01" value="0">
-        </div>
-        <div class="total-section">
-            <label for="amountPaid">Amount Paid:</label>
-            <input type="number" id="amountPaid" name="amountPaid" step="0.01" value="0">
-        </div>
-
-        <div class="total-section">
-            <label for="balanceAmount">Balance Amount: <span id="balanceAmount">₹0.00</span> </label>
-        </div>
-        <div class="button-group">
-            <button type="button" id="updateButton">Update</button><br>
-            <button id="printButton">Generate Bill</button>
-        </div>
-
-        <div id="successMessage" class="success-message" style="display: none;">
-            Your bill has been generated successfully
-        </div>
-    </div>
+            fetchNextBillNumber();
+            window.toggleForms(); 
+        });
+    </script>
 </body>
 </html>

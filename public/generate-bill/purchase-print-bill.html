@@ -1,324 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Purchase Bill-Sri Vasavi Jewellers</title>
+    <title>Sri Vasavi Jewellers - Bill</title>
     <link rel="stylesheet" href="purchase-print-bill.css">
-    <link rel="icon" href="logo.png" type="image/x-icon">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-
 <body>
-    <header>
-        <h1>Purchase Slip</h1>
-        <button id="print-btn" class="print-button">Print</button>
-
+    <!-- Desktop/Tablet Header -->
+    <header class="desktop-header">
+        <h1>Bill Details</h1>
+        <div class="header-actions">
+            <button class="print-button" id="print-btn" onclick="printBill()">Print</button>
+            <button class="share-button" id="share-btn" onclick="shareBill()">Share PDF</button>
+            <a href="javascript:history.back()" class="back-button">Back</a>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="original-bill">Sale Bill</div> <!-- Added here -->
+    <!-- Bill Container -->
+    <div class="bill-wrapper">
+        <div class="container" id="bill-content">
+            <!-- Original Bill Badge -->
+            <div class="original-bill">Sale Bill</div>
 
-        <img src="gold.png" alt="Logo" class="logo"> <!-- Add your logo path here -->
-        <p class="centered">||Sri Vasavi Prasanna||</p>
-
-        <div class="store-header">
-            <h1>SRI VASAVI JEWELLERS</h1>
-        </div>
-        <div class="contact-info">
-            Bagalkot Road, Near Police Station, Mudgal-584125<br>
-            Phone: 7022269436
-        </div>
-        <div class="double-divider"></div>
-
-        <div class="details-box">
-            <div class="store-details">
-                <h2>Store Details</h2>
-                <p>SRI VASAVI JEWELLERS</p>
-                <p>Bagalkot Road, Near Police Station</p>
-                <p>Mudgal-584125</p>
-                <p>Phone: 7022269436</p>
+            <!-- Logo and Header -->
+            <div class="header-section">
+                <img src="gold.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <p class="mantra">||Sri Vasavi Prasanna||</p>
+                    <h1 class="store-name">SRI VASAVI JEWELLERS</h1>
+                    <div class="contact-info">
+                        Bagalkot Road, Near Police Station, Mudgal-584125<br>
+                        Phone: 7022269436
+                    </div>
+                </div>
             </div>
-            <div class="customer-details">
-                <h2>Customer Details</h2>
-                <p><strong>Bill Number:</strong> <span id="billNumber"></span></p>
-                <p><strong>Name:</strong> <span id="customerName"></span></p>
-                <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
-                <p><strong>Bill Date:</strong> <span id="billDate"></span></p>
+
+            <div class="divider"></div>
+
+            <!-- Bill Info Cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <h3>Store Details</h3>
+                    <p>SRI VASAVI JEWELLERS</p>
+                    <p>Bagalkot Road, Near Police Station</p>
+                    <p>Mudgal-584125</p>
+                    <p>Phone: 7022269436</p>
+                </div>
+                <div class="info-card">
+                    <h3>Customer Details</h3>
+                    <div class="detail-row">
+                        <span class="label">Bill Number:</span>
+                        <span class="value" id="billNumber">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Name:</span>
+                        <span class="value" id="customerName">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Phone:</span>
+                        <span class="value" id="customerPhone">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Date:</span>
+                        <span class="value" id="billDate">-</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <h2>Bill Summary</h2>
-        <table id="billSummary">
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Net Weight(gm)</th>
-                    <th>Stone Weight(gm)</th>
-                    <th>Amount per Gram</th>
-                    <th>Wastage</th>
-                    <th>Making Charges</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Items will be populated here -->
-            </tbody>
-
-        </table>
-
-        <div class="content-container">
-            <h2></h2>
-            <div class="table-container" style="display: none;">
-                <h2>Payment Details</h2>
-                <table id="halfWidthBillSummary">
+            <!-- Items Section -->
+            <div class="section-title">Bill Summary</div>
+            <div class="items-container">
+                <table class="items-table" id="billSummary">
                     <thead>
                         <tr>
-                            <th>Details</th>
-                            <th>Amount Paid</th>
-                            <th>Date</th>
+                            <th>Item Name</th>
+                            <th>Net Wt(gm)</th>
+                            <th>Stone Wt(gm)</th>
+                            <th>Rate/gm</th>
+                            <th>Wastage</th>
+                            <th>Making</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Items will be populated here -->
                     </tbody>
                 </table>
-                <p style="font-style: italic; color: #666; margin-top: 12px; font-size: 0.9em; text-align: center;">
-                    *This is including old balance(if present)</p>
-
             </div>
 
-            <!-- Total Section -->
-            <div class="total-section">
-                <p><strong>Subtotal:</strong> <span id="subtotal">0.00</span></p>
-                <p><strong>Discount:</strong> <span id="discount">0.00</span></p>
-                <p><strong>Old Gold/Silver Amount:</strong> <span id="oldGold">0.00</span></p>
-                <p><strong>Amount Paid:</strong> <span id="amountPaid">0.00</span></p>
-                <p id="oldBalanceRow" style="display: none;"><strong>Old Balance:</strong> <span
-                        id="oldBalance">0.00</span></p>
+            <!-- Payment and Totals Side by Side -->
+            <div class="payment-totals-wrapper">
+                <!-- Payment Details (if multiple payments) -->
+                <div class="payment-details-container" id="paymentDetailsContainer" style="display: none;">
+                    <div class="section-title">Payment Details</div>
+                    <table class="payment-table" id="paymentTable">
+                        <thead>
+                            <tr>
+                                <th>Details</th>
+                                <th>Amount Paid</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Payment details will be populated here -->
+                        </tbody>
+                    </table>
+                    <p class="payment-note">*This is including old balance (if present)</p>
+                </div>
 
-                <p><strong>Balance Amount:</strong> <span id="balanceAmount">0.00</span></p>
+                <!-- Total Section -->
+                <div class="totals-section">
+                    <div class="total-row">
+                        <span class="total-label">Subtotal:</span>
+                        <span class="total-value" id="subtotal">₹0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Discount:</span>
+                        <span class="total-value discount" id="discount">₹0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Old Gold/Silver:</span>
+                        <span class="total-value" id="oldGold">₹0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Amount Paid:</span>
+                        <span class="total-value" id="amountPaid">₹0.00</span>
+                    </div>
+                    <div class="total-row" id="oldBalanceRow" style="display: none;">
+                        <span class="total-label">Old Balance:</span>
+                        <span class="total-value" id="oldBalance">₹0.00</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="total-row grand-total">
+                        <span class="total-label">Balance Amount:</span>
+                        <span class="total-value" id="balanceAmount">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amount in Words -->
+            <div class="amount-words">
+                <strong>Amount in Words:</strong>
+                <span id="amountInWords">Zero Only</span>
+            </div>
+
+            <!-- Signature -->
+            <div class="signature-section">
+                <div class="signature-line">Owner's Signature</div>
+            </div>
+
+            <!-- Note -->
+            <div class="note-section">
+                <strong>Note:</strong> Goods once sold can be exchanged only if returned within 3 days (if unused). No exchanges will be accepted after 3 days.
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Footer -->
+            <div class="footer">
+                Thank you for visiting Vasavi Jewellers! Visit Again
             </div>
         </div>
-
-
-        <div class="amount-in-words">
-            <p><strong>Amount in Words:</strong> <span id="amountInWords"></span></p>
-        </div>
-        <div class="signature-section">
-            <p>Owner's Signature</p>
-        </div>
-        <p><strong>Note:</strong> Goods once sold can be exchanged only if returned within 3 days (if unused). No
-            exchanges will be accepted after 3 days.</p>
-
-        <div class="double-divider"></div>
-        <div class="footer">Thank you for visiting Vasavi Jewellers! Visit Again</div>
-
     </div>
-    <script>
-        document.getElementById('print-btn').addEventListener('click', function () {
-            // Get the print container
-            const printContents = document.querySelector('.container').innerHTML;
 
-            // Backup the original page content
-            const originalContents = document.body.innerHTML;
+    <!-- Mobile Action Buttons -->
+    <div class="mobile-actions">
+        <button class="mobile-btn print-btn" onclick="printBill()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Print
+        </button>
+        <button class="mobile-btn share-btn" onclick="shareBill()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Share
+        </button>
+        <button class="mobile-btn back-btn" onclick="history.back()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back
+        </button>
+    </div>
 
-            // Replace the body content with only the print container content
-            document.body.innerHTML = printContents;
-
-            // Trigger the print dialog
-            window.print();
-
-            // Restore the original page content after printing
-            document.body.innerHTML = originalContents;
-
-            // Reload the page to restore JavaScript functionality
-            location.reload();
-        });
-        function convertNumberToWords(amount) {
-            const ones = [
-                '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-                'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-                'Seventeen', 'Eighteen', 'Nineteen'
-            ];
-            const tens = [
-                '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
-            ];
-            const scales = ['', 'Thousand', 'Lakh', 'Crore'];
-
-            function convertChunk(number) {
-                let words = '';
-                const hundred = Math.floor(number / 100);
-                number %= 100;
-                const ten = Math.floor(number / 10);
-                const one = number % 10;
-
-                if (hundred) {
-                    words += ones[hundred] + ' Hundred ';
-                }
-                if (ten > 1) {
-                    words += tens[ten] + ' ';
-                    if (one) {
-                        words += ones[one] + ' ';
-                    }
-                } else if (ten === 1) {
-                    words += ones[number] + ' ';
-                } else if (one) {
-                    words += ones[one] + ' ';
-                }
-                return words.trim();
-            }
-
-            if (amount === 0) return 'Zero';
-
-            let words = '';
-            let scaleIndex = 0;
-
-            while (amount > 0) {
-                let chunk;
-                if (scaleIndex === 0) {
-                    chunk = amount % 1000; // For Thousand
-                } else {
-                    chunk = amount % 100; // For Lakh and Crore
-                }
-
-                if (chunk > 0) {
-                    words = convertChunk(chunk) + ' ' + scales[scaleIndex] + ' ' + words;
-                }
-                amount = Math.floor(amount / (scaleIndex === 0 ? 1000 : 100));
-                scaleIndex++;
-            }
-
-            return words.trim() + ' Only';
-        }
-
-        function formatToIndianCurrency(number) {
-            let x = number.toString().split(".");
-            let integerPart = x[0]; // Split the integer and decimal parts
-            let decimalPart = x.length > 1 ? "." + x[1] : ""; // Add decimal part if exists
-            let lastThree = integerPart.substring(integerPart.length - 3);
-            let otherNumbers = integerPart.substring(0, integerPart.length - 3);
-
-            // Insert commas for numbers in Indan format (like lakhs, crores)
-            if (otherNumbers !== '') {
-                lastThree = ',' + lastThree;
-            }
-
-            let result = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-
-            return result + decimalPart;
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
-        }
-        document.addEventListener('DOMContentLoaded', async () => {
-            const billNumber = new URLSearchParams(window.location.search).get('billNumber');
-            console.log(billNumber)
-            if (!billNumber) {
-                console.error('No bill number found in the URL');
-                return;
-            }
-
-            try {
-                // Fetch bill details
-                const billResponse = await fetch(`/fetch-bill-details/${billNumber}`);
-                if (billResponse.ok) {
-                    const billDetails = await billResponse.json();
-                    console.log('Fetched Bill Details:', billDetails);
-
-                    // Populate bill details
-                    document.getElementById('billNumber').textContent = ` ${billDetails.billNumber}`;
-                    document.getElementById('customerName').textContent = ` ${billDetails.customerName}`;
-                    document.getElementById('customerPhone').textContent = ` ${billDetails.customerPhone}`;
-                    const formattedBillDate = formatDate(billDetails.billDate);
-                    document.getElementById('billDate').textContent = ` ${formattedBillDate}`;
-
-                    // Fetch bill items
-                    console.log(billNumber)
-                    const itemsResponse = await fetch(`/fetch-bill-items/${billNumber}`);
-                    if (itemsResponse.ok) {
-                        const items = await itemsResponse.json();
-
-                        // Add this line to log fetched items to the console
-                        console.log('Fetched Bill Items:', items);
-
-                        const billSummary = document.getElementById('billSummary').getElementsByTagName('tbody')[0];
-                        billSummary.innerHTML = ''; // Clear existing rows
-
-                        if (items.length > 0) {
-                            items.forEach(item => {
-                                const newRow = billSummary.insertRow();
-                                newRow.innerHTML = `
-                                            <td>${item.itemName}</td>
-                                            <td>${item.quantity}</td>
-                                            <td>${item.stoneWeight === 0 || item.stoneWeight === null ? '-' : item.stoneWeight}</td>
-                                            <td>${(item.amountPerGram)}</td>
-                                            <td>${item.wastage === 0 || item.wastage === null ? '-' : item.wastage+'%'}</td>
-                                            <td>${(item.makingCharges)}</td>
-                                            <td>₹${(item.totalAmount)}</td>
-                                        `;
-                            });
-                        } else {
-                            const newRow = billSummary.insertRow();
-                            const cell = newRow.insertCell();
-                            cell.colSpan = 5;
-                            cell.textContent = 'No items found';
-                        }
-                        // Populate totals
-                        document.getElementById('subtotal').textContent = ` ₹${formatToIndianCurrency(parseFloat(billDetails.subtotal.toFixed(2)))}`;
-                        document.getElementById('discount').textContent = `₹${formatToIndianCurrency(parseFloat(billDetails.discount.toFixed(2)))}`;
-                        document.getElementById('oldGold').textContent = `₹${formatToIndianCurrency(parseFloat(billDetails.oldGold.toFixed(2)))}`;
-                        document.getElementById('amountPaid').textContent = ` ₹${formatToIndianCurrency(parseFloat(billDetails.amountPaid.toFixed(2)))}`;
-                        // Show old balance row if greater than 0
-                        if (billDetails.oldBalance > 0) {
-                            document.getElementById('oldBalanceRow').style.display = 'block';
-                            document.getElementById('oldBalance').textContent = ` ₹${formatToIndianCurrency(billDetails.oldBalance)}`;
-                        }
-                        document.getElementById('balanceAmount').textContent = ` ₹${formatToIndianCurrency(parseFloat(billDetails.balanceAmount.toFixed(2)))}`;
-                        document.getElementById('amountInWords').textContent = convertNumberToWords(billDetails.subtotal - billDetails.discount);
-                    } else {
-                        console.error('Error fetching bill items:', itemsResponse.statusText);
-                    }
-                } else {
-                    console.error('Error fetching bill details:', billResponse.statusText);
-                }
-                const subBillsResponse = await fetch(`/fetch-sub-bills/${billNumber}`);
-                if (subBillsResponse.ok) {
-                    const subBills = await subBillsResponse.json();
-                    console.log('Fetched Sub-Bills:', subBills);
-
-                    // Populate sub-bills in the table
-                    const subBillsTableBody = document.getElementById('halfWidthBillSummary').getElementsByTagName('tbody')[0];
-                    subBillsTableBody.innerHTML = ''; // Clear existing rows
-
-                    if (subBills.length > 1) {
-                        document.querySelector('.table-container').style.display = 'block';  // Show the table
-                        subBills.forEach(subBill => {
-                            const newRow = subBillsTableBody.insertRow();
-                            newRow.innerHTML = `
-                                <td>${subBill.details}</td>
-                                <td>₹${formatToIndianCurrency(subBill.amountPaid)}</td>
-                                <td>${formatDate(subBill.paymentDate)}</td>
-                            `;
-                        });
-                    } else {
-                        document.querySelector('.table-container').style.display = 'none';  // Hide the table
-
-                    }
-                } else {
-                    console.error('Error fetching sub-bills:', subBillsResponse.statusText);
-                }
-            } catch (error) {
-                console.error('Error fetching bill details:', error);
-            }
-        });
-    </script>
+    <script src="bill-script.js"></script>
 </body>
-
 </html>

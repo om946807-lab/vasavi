@@ -1,947 +1,954 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Order Slip - Sri Vasavi Jewellers</title>
-    <link rel="stylesheet" href="new-order-slip.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="logo.png" type="image/x-icon">
 
     <script>
-        document.addEventListener('DOMContentLoaded', async function () {
-            let orderItems = [];
-            let totalOrderAmount = 0;
-            let advancePayment = 0;
-
-            // Get next order number
-            try {
-                const response = await fetch('/get-next-order-number');
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('nextOrderNumber').textContent = `Order Number: ${data.nextOrderNumber}`;
-                }
-            } catch (error) {
-                console.error('Error fetching order number:', error);
-            }
-
-            window.openImageOptions = function (subItemId) {
-                // Create overlay
-                const overlay = document.createElement("div");
-                overlay.style.position = "fixed";
-                overlay.style.top = "0";
-                overlay.style.left = "0";
-                overlay.style.width = "100vw";
-                overlay.style.height = "100vh";
-                overlay.style.background = "rgba(0, 0, 0, 0.5)";
-                overlay.style.display = "flex";
-                overlay.style.justifyContent = "center";
-                overlay.style.alignItems = "center";
-                overlay.style.zIndex = "10000";
-
-                // Create modal
-                const modal = document.createElement("div");
-                modal.style.background = "#fff";
-                modal.style.padding = "30px";
-                modal.style.borderRadius = "12px";
-                modal.style.textAlign = "center";
-                modal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-
-                const title = document.createElement("h2");
-                title.innerText = "Choose an option:";
-                modal.appendChild(title);
-
-                // Camera Option
-                const cameraButton = document.createElement("button");
-                cameraButton.innerText = "📸 Open Camera";
-                styleButton(cameraButton, "#4CAF50");
-                cameraButton.onclick = () => {
-                    document.body.removeChild(overlay);
-                    openCamera(subItemId);
-                };
-                modal.appendChild(cameraButton);
-
-                // Upload from Device Option
-                const uploadButton = document.createElement("button");
-                uploadButton.innerText = "📁 Upload from Device";
-                styleButton(uploadButton, "#2196F3");
-                uploadButton.onclick = () => {
-                    document.body.removeChild(overlay);
-                    document.getElementById(`file-input-${subItemId}`).click();
-                };
-                modal.appendChild(uploadButton);
-
-                overlay.appendChild(modal);
-                document.body.appendChild(overlay);
-
-                overlay.addEventListener("click", (event) => {
-                    if (event.target === overlay) {
-                        document.body.removeChild(overlay);
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1f2937', // Main background for container
+                        'secondary-dark': '#374151', // Accent background for forms/cards
+                        'text-light': '#f3f4f6', // Light text color
+                        'accent-gold': '#ffb703', // Primary brand color
+                        'accent-blue': '#3b82f6', // Action color
+                        'accent-red': '#ef4444', // Danger color
                     }
-                });
-            };
-
-            window.openCamera = function (subItemId) {
-                // Create camera overlay
-                const cameraOverlay = document.createElement("div");
-                cameraOverlay.style.position = "fixed";
-                cameraOverlay.style.top = "0";
-                cameraOverlay.style.left = "0";
-                cameraOverlay.style.width = "100vw";
-                cameraOverlay.style.height = "100vh";
-                cameraOverlay.style.background = "rgba(0, 0, 0, 0.5)";
-                cameraOverlay.style.display = "flex";
-                cameraOverlay.style.justifyContent = "center";
-                cameraOverlay.style.alignItems = "center";
-                cameraOverlay.style.zIndex = "10000";
-
-                // Create video preview
-                const cameraModal = document.createElement("div");
-                cameraModal.style.background = "#fff";
-                cameraModal.style.padding = "20px";
-                cameraModal.style.borderRadius = "12px";
-                cameraModal.style.textAlign = "center";
-                cameraModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-
-                const video = document.createElement("video");
-                video.style.width = "100%";
-                video.setAttribute("autoplay", "");
-                cameraModal.appendChild(video);
-
-                // Capture Button
-                const captureButton = document.createElement("button");
-                captureButton.innerText = "📸 Capture";
-                styleButton(captureButton, "#f44336");
-                captureButton.onclick = async () => {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    const context = canvas.getContext("2d");
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    const imageData = canvas.toDataURL("image/png");
-
-                    // Stop camera stream
-                    video.srcObject.getTracks().forEach(track => track.stop());
-
-                    // Show confirmation
-                    showCaptureConfirmation(imageData, subItemId, cameraOverlay);
-                };
-                cameraModal.appendChild(captureButton);
-
-                cameraOverlay.appendChild(cameraModal);
-                document.body.appendChild(cameraOverlay);
-
-                // Close overlay when clicking outside the modal
-                cameraOverlay.addEventListener("click", (event) => {
-                    if (event.target === cameraOverlay) {
-                        // Stop camera stream before closing
-                        if (video.srcObject) {
-                            video.srcObject.getTracks().forEach(track => track.stop());
-                        }
-                        document.body.removeChild(cameraOverlay);
-                    }
-                });
-                // Start Camera Stream
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then((stream) => {
-                        video.srcObject = stream;
-                    })
-                    .catch((error) => {
-                        console.error("Camera access denied:", error);
-                        alert("Failed to access camera.");
-                        document.body.removeChild(cameraOverlay);
-                    });
-
-
-            };
-
-            function showCaptureConfirmation(imageData, subItemId, cameraOverlay) {
-                document.body.removeChild(cameraOverlay);
-
-                // Create preview modal
-                const confirmOverlay = document.createElement("div");
-                confirmOverlay.style.position = "fixed";
-                confirmOverlay.style.top = "0";
-                confirmOverlay.style.left = "0";
-                confirmOverlay.style.width = "100vw";
-                confirmOverlay.style.height = "100vh";
-                confirmOverlay.style.background = "rgba(0, 0, 0, 0.5)";
-                confirmOverlay.style.display = "flex";
-                confirmOverlay.style.justifyContent = "center";
-                confirmOverlay.style.alignItems = "center";
-                confirmOverlay.style.zIndex = "10000";
-
-                const confirmModal = document.createElement("div");
-                confirmModal.style.background = "#fff";
-                confirmModal.style.padding = "20px";
-                confirmModal.style.borderRadius = "12px";
-                confirmModal.style.textAlign = "center";
-                confirmModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-
-                const previewImage = document.createElement("img");
-                previewImage.src = imageData;
-                previewImage.style.maxWidth = "100%";
-                previewImage.style.borderRadius = "8px";
-                confirmModal.appendChild(previewImage);
-
-                // Retake Button
-                const retakeButton = document.createElement("button");
-                retakeButton.innerText = "🔄 Retake";
-                styleButton(retakeButton, "#ff9800");
-                retakeButton.onclick = () => {
-                    document.body.removeChild(confirmOverlay);
-                    openCamera(subItemId);
-                };
-                confirmModal.appendChild(retakeButton);
-
-                // Upload Button
-                const uploadButton = document.createElement("button");
-                uploadButton.innerText = "✅ Upload";
-                styleButton(uploadButton, "#4CAF50");
-                uploadButton.onclick = () => {
-                    orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
-                    // Convert base64 to file and store it in pendingImages
-                    const imageFile = base64ToFile(imageData, `image-${subItemId}.png`);
-
-                    pendingImages.push({ file: imageFile, subItemId, orderId });
-                    document.body.removeChild(confirmOverlay);
-                    document.getElementById(`preview-${subItemId}`).src = imageData;
-                    document.getElementById(`preview-${subItemId}`).style.display = "block";
-                    showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
-                };
-                confirmModal.appendChild(uploadButton);
-
-                confirmOverlay.appendChild(confirmModal);
-                document.body.appendChild(confirmOverlay);
-
-                // Close overlay when clicking outside the modal
-                confirmOverlay.addEventListener("click", (event) => {
-                    if (event.target === confirmOverlay) {
-                        document.body.removeChild(confirmOverlay);
-                    }
-                });
+                }
             }
-
-            window.handleImageSelection = function (event, subItemId) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imageData = e.target.result;
-                    showImageConfirmation(imageData, file, subItemId);
-                };
-                reader.readAsDataURL(file);
-            };
-
-            function showImageConfirmation(imageData, file, subItemId) {
-                // Create confirmation modal
-                const confirmOverlay = document.createElement("div");
-                confirmOverlay.style.position = "fixed";
-                confirmOverlay.style.top = "0";
-                confirmOverlay.style.left = "0";
-                confirmOverlay.style.width = "100vw";
-                confirmOverlay.style.height = "100vh";
-                confirmOverlay.style.background = "rgba(0, 0, 0, 0.5)";
-                confirmOverlay.style.display = "flex";
-                confirmOverlay.style.justifyContent = "center";
-                confirmOverlay.style.alignItems = "center";
-                confirmOverlay.style.zIndex = "10000";
-
-                const confirmModal = document.createElement("div");
-                confirmModal.style.background = "#fff";
-                confirmModal.style.padding = "20px";
-                confirmModal.style.borderRadius = "12px";
-                confirmModal.style.textAlign = "center";
-                confirmModal.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-
-                const previewImage = document.createElement("img");
-                previewImage.src = imageData;
-                previewImage.style.maxWidth = "400px";
-                previewImage.style.borderRadius = "8px";
-                confirmModal.appendChild(previewImage);
-
-                // Cancel Button
-                const cancelButton = document.createElement("button");
-                cancelButton.innerText = "❌ Cancel";
-                styleButton(cancelButton, "#f44336");
-                cancelButton.onclick = () => document.body.removeChild(confirmOverlay);
-                confirmModal.appendChild(cancelButton);
-
-                // Confirm Button
-                const confirmButton = document.createElement("button");
-                confirmButton.innerText = "✅ Confirm Upload";
-                styleButton(confirmButton, "#4CAF50");
-                confirmButton.onclick = () => {
-                    document.body.removeChild(confirmOverlay);
-                    document.getElementById(`preview-${subItemId}`).src = imageData;
-                    document.getElementById(`preview-${subItemId}`).style.display = "block";
-
-                    const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
-                    pendingImages.push({ file, subItemId, orderId });
-
-                    showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
-                };
-                confirmModal.appendChild(confirmButton);
-
-                confirmOverlay.appendChild(confirmModal);
-                document.body.appendChild(confirmOverlay);
-            }
-            function showCustomAlert(message, subItemId, type = "success") {
-                // Remove any existing alert
-                const existingAlert = document.getElementById("custom-alert");
-                if (existingAlert) {
-                    document.body.removeChild(existingAlert);
-                }
-
-                // Create alert container
-                const alertBox = document.createElement("div");
-                alertBox.id = "custom-alert";
-                alertBox.style.position = "fixed";
-                alertBox.style.top = "20px"; // Move to top
-                alertBox.style.right = "20px";
-                alertBox.style.padding = "15px 20px";
-                alertBox.style.background = type === "success" ? "#4CAF50" : "#f44336"; // Green for success, Red for error
-                alertBox.style.color = "#fff";
-                alertBox.style.borderRadius = "8px";
-                alertBox.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-                alertBox.style.fontSize = "16px";
-                alertBox.style.fontWeight = "bold";
-                alertBox.style.display = "flex";
-                alertBox.style.alignItems = "center";
-                alertBox.style.zIndex = "10000";
-                alertBox.style.transition = "all 0.3s ease-in-out";
-                alertBox.style.opacity = "0";
-
-                // Slide-in animation
-                alertBox.style.transform = "translateY(-50px)";
-                setTimeout(() => {
-                    alertBox.style.opacity = "1";
-                    alertBox.style.transform = "translateY(0)";
-                }, 10);
-
-                // Add icon
-                const icon = document.createElement("span");
-                icon.innerHTML = type === "success" ? "✅" : "❌";
-                icon.style.marginRight = "10px";
-                icon.style.fontSize = "18px";
-                alertBox.appendChild(icon);
-
-                // Add message text
-                const alertText = document.createElement("span");
-                alertText.innerHTML = `${message} <span style="color: ${type === "success" ? "#FFD700" : "#ADD8E6"};">(${subItemId})</span>`;
-                alertBox.appendChild(alertText);
-
-                // Append to body
-                document.body.appendChild(alertBox);
-
-                // Auto-close after 3 seconds
-                setTimeout(() => {
-                    alertBox.style.opacity = "0";
-                    alertBox.style.transform = "translateY(-50px)";
-                    setTimeout(() => {
-                        if (alertBox.parentNode) {
-                            document.body.removeChild(alertBox);
-                        }
-                    }, 300);
-                }, 3000);
-            }
-
-            // Style buttons for UI consistency
-            function styleButton(button, bgColor) {
-                button.style.padding = "15px 30px";
-                button.style.fontSize = "18px";
-                button.style.margin = "10px";
-                button.style.width = "250px";
-                button.style.border = "none";
-                button.style.background = bgColor;
-                button.style.color = "#fff";
-                button.style.borderRadius = "8px";
-                button.style.cursor = "pointer";
-                button.style.fontWeight = "bold";
-                button.style.transition = "0.3s";
-                button.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-                button.onmouseover = () => (button.style.opacity = "0.8");
-                button.onmouseout = () => (button.style.opacity = "1");
-            }
-
-            // Form elements
-            const customerForm = document.getElementById('customerForm');
-            const orderForm = document.getElementById('orderForm');
-            const submitOrderButton = document.getElementById('submitOrderButton');
-            const orderSummary = document.getElementById('orderSummary').getElementsByTagName('tbody')[0];
-            const finalizeOrderButton = document.getElementById('finalizeOrderButton');
-            const advancePaymentButton = document.getElementById('advancePaymentButton');
-
-            // Add item to order
-            let subItemCounter = 1; // Initialize sub-item counter
-
-            submitOrderButton.addEventListener('click', function () {
-                const itemType = document.getElementById('itemType').value;
-                const itemName = document.getElementById('itemName').value;
-                const quantity = parseFloat(document.getElementById('quantity').value);
-                const amountPerGram = parseFloat(document.getElementById('amountPerGram').value);
-                const makingCharges = parseFloat(document.getElementById('makingCharges').value) || 0;
-                const wastage = parseFloat(document.getElementById('wastage').value) || 0;
-                const itemDescription = document.getElementById('itemDescription').value;
-
-                if (!itemType || !itemName || !quantity || !amountPerGram || !makingCharges) {
-                    showWarning("Please fill in all required fields");
-
-                    return;
-                }
-                const subItemId = `a${subItemCounter++}`;
-
-                const totalAmount = calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage);
-
-                const item = {
-                    subItemId,
-                    itemType,
-                    itemName,
-                    quantity,
-                    amountPerGram,
-                    makingCharges,
-                    wastage,
-                    itemDescription,
-                    totalAmount,
-                };
-
-                orderItems.push(item);
-                addItemToTable(item);
-                updateTotalAmount();
-                orderForm.reset();
-            });
-
-            // Calculate total amount for an item
-            function calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage) {
-                const baseAmount = quantity * amountPerGram;
-                const wastageAmount = (baseAmount * wastage) / 100;
-                return baseAmount + wastageAmount + makingCharges;
-            }
-
-            // Add item to summary table
-            function addItemToTable(item) {
-                const row = orderSummary.insertRow();
-                const imageInputId = `imageUpload-${item.subItemId}`;
-
-                row.innerHTML = `
-            <td>${item.subItemId}</td>
-            <td>${item.itemType}</td>
-            <td>${item.itemName}<br><small>${item.itemDescription}</small></td>
-            <td>${item.quantity}</td>
-            <td>₹${item.amountPerGram.toFixed(2)}</td>
-            <td>₹${item.makingCharges.toFixed(2)}</td>
-            <td>${item.wastage !== 0 ? item.wastage + '%' : '-'}</td>
-            <td>₹${item.totalAmount.toFixed(2)}</td>
-            <td>
-                <button onclick="openImageOptions('${item.subItemId}')">Upload Image</button>
-                <input type="file" id="file-input-${item.subItemId}" accept="image/*" style="display: none;" onchange="handleImageSelection(event, '${item.subItemId}')">
-                <img id="preview-${item.subItemId}" style="max-width: 50px; display: none; margin-top: 5px;">
-            </td>
-            <td><button onclick="removeItem(this)">Remove</button></td>
-        `;
-            }
-            // Remove item from order
-            window.removeItem = function (button) {
-                const row = button.parentNode.parentNode;
-                const index = row.rowIndex - 1;
-
-                // Get the subItemId from the row (assuming it's stored in a data attribute or inside a cell)
-                const subItemId = row.getAttribute("data-subitem-id") || row.cells[0].textContent.trim();
-
-                // Remove the item from orderItems
-                orderItems.splice(index, 1);
-
-                // Remove the corresponding row from the order summary table
-                orderSummary.deleteRow(index);
-
-                // Remove pending images associated with this subItemId
-                pendingImages = pendingImages.filter(img => img.subItemId !== subItemId);
-
-                // Remove image preview if it exists
-                const previewImage = document.getElementById(`preview-${subItemId}`);
-                if (previewImage) {
-                    previewImage.remove();
-                }
-
-                // Remove any additional elements related to the image preview
-                const fileInput = document.getElementById(`file-input-${subItemId}`);
-                if (fileInput) {
-                    fileInput.remove();
-                }
-
-                // Update total amount after removal
-                updateTotalAmount();
-            };
-
-
-            function updateTotalAmount() {
-                totalOrderAmount = orderItems.reduce((sum, item) => sum + item.totalAmount, 0);
-                document.getElementById('totalAmount').textContent = `₹${totalOrderAmount.toFixed(2)}`;
-                updateBalanceAmount();
-            }
-
-            // Handle advance payment
-            advancePaymentButton.addEventListener('click', function () {
-                // Create modal elements
-                const modalOverlay = document.createElement('div');
-                modalOverlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(12px);
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        `;
-
-                const modalContent = document.createElement('div');
-                modalContent.style.cssText = `
-            background: linear-gradient(165deg, #ffffff, #f5f7fa);
-            padding: 48px;
-            border-radius: 32px;
-            text-align: center;
-            max-width: 520px;
-            width: 94%;
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
-                        0 12px 32px -8px rgba(0,0,0,0.2),
-                        inset 0 2px 6px rgba(255,255,255,0.9);
-            transform: translateY(0);
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid rgba(255,255,255,0.22);
-        `;
-
-                modalContent.innerHTML = `
-            <style>
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideIn {
-                    from { transform: translateY(-40px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                .payment-input {
-                    width: 100%;
-                    padding: 16px;
-                    border: 2px solid #e1e8ed;
-                    border-radius: 16px;
-                    font-size: 18px;
-                    margin: 24px 0;
-                    outline: none;
-                    transition: all 0.3s;
-                }
-                .payment-input:focus {
-                    border-color: #007bff;
-                    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
-                }
-                .modal-btn {
-                    padding: 16px 32px;
-                    border: none;
-                    border-radius: 100px;
-                    cursor: pointer;
-                    font-weight: 700;
-                    font-size: 17px;
-                    transition: all 0.3s;
-                    margin: 0 8px;
-                }
-                .modal-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-                }
-            </style>
-            <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800;">Enter Advance Payment</h3>
-            <input type="number" class="payment-input" id="advancePaymentInput" placeholder="Enter amount">
-            <div>
-                <button id="confirmPayment" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white;">
-                    Confirm
-                </button>
-                <button id="cancelPayment" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
-                    Cancel
-                </button>
-            </div>
-        `;
-
-                document.body.appendChild(modalOverlay);
-                modalOverlay.appendChild(modalContent);
-
-                const closeModal = () => modalOverlay.remove();
-
-                document.getElementById('cancelPayment').onclick = closeModal;
-
-                document.getElementById('confirmPayment').onclick = () => {
-                    const input = document.getElementById('advancePaymentInput');
-                    const amount = parseFloat(input.value);
-
-                    if (amount && !isNaN(amount) && amount > 0) {
-                        advancePayment = amount;
-                        document.getElementById('advancePaymentDisplay').textContent = `₹${advancePayment.toFixed(2)}`;
-                        updateBalanceAmount();
-                        closeModal();
-                    }
-                };
-
-                modalOverlay.onclick = (e) => {
-                    if (e.target === modalOverlay) closeModal();
-                };
-            });
-
-            // Update balance amount
-            function base64ToFile(base64String, fileName) {
-                const byteCharacters = atob(base64String.split(',')[1]); // Remove metadata
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                const file = new Blob([byteArray], { type: 'image/png' });
-                return new File([file], fileName, { type: 'image/png' });
-            }
-
-            function updateBalanceAmount() {
-                const balanceAmount = totalOrderAmount - advancePayment;
-                document.getElementById('balanceAmountDisplay').textContent = `₹${balanceAmount.toFixed(2)}`;
-            }
-
-            let pendingImages = [];
-
-            window.uploadImage = function (event, subItemId) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
-
-                if (!orderId) {
-                    alert('Order ID not found!');
-                    return;
-                }
-                pendingImages.push({ file, subItemId, orderId });
-
-                alert(`Image selected for ${subItemId}. It will be uploaded when the order is finalized.`);
-            };
-            function showWarning(message) {
-    // Remove existing modal if any
-    const existingModal = document.getElementById("warning-modal");
-    if (existingModal) existingModal.remove();
-
-    // Create overlay
-    const overlay = document.createElement("div");
-    overlay.id = "warning-modal";
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100vw";
-    overlay.style.height = "100vh";
-    overlay.style.background = "rgba(0, 0, 0, 0.6)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "10000";
-    overlay.style.animation = "fadeIn 0.3s ease-in-out";
-
-    // Create modal box with glassmorphism effect
-    const modal = document.createElement("div");
-    modal.style.background = "rgba(255, 255, 255, 0.2)";
-    modal.style.backdropFilter = "blur(12px)";
-    modal.style.color = "#fff";
-    modal.style.padding = "30px";
-    modal.style.borderRadius = "15px";
-    modal.style.boxShadow = "0px 10px 30px rgba(0, 0, 0, 0.3)";
-    modal.style.textAlign = "center";
-    modal.style.fontSize = "18px";
-    modal.style.fontFamily = "'Poppins', sans-serif";
-    modal.style.maxWidth = "400px";
-    modal.style.position = "relative";
-    modal.style.border = "1px solid rgba(255, 255, 255, 0.3)";
-    modal.style.animation = "popUp 0.3s ease-out forwards";
-
-    // Warning Icon
-    const warningIcon = document.createElement("div");
-    warningIcon.innerHTML = "⚠️";
-    warningIcon.style.fontSize = "50px";
-    warningIcon.style.marginBottom = "15px";
-    warningIcon.style.animation = "bounce 1s infinite";
-    modal.appendChild(warningIcon);
-
-    // Warning Text
-    const warningText = document.createElement("p");
-    warningText.innerText = message;
-    warningText.style.marginBottom = "20px";
-    warningText.style.fontSize = "18px";
-    warningText.style.color = "#f8f8f8";
-    warningText.style.lineHeight = "1.6";
-    modal.appendChild(warningText);
-
-    // OK Button
-    const okButton = document.createElement("button");
-    okButton.innerText = "OK";
-    okButton.style.background = "linear-gradient(135deg, #ff7e5f, #feb47b)";
-    okButton.style.color = "#fff";
-    okButton.style.border = "none";
-    okButton.style.padding = "12px 28px";
-    okButton.style.borderRadius = "30px";
-    okButton.style.cursor = "pointer";
-    okButton.style.fontSize = "16px";
-    okButton.style.fontWeight = "600";
-    okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
-    okButton.style.transition = "all 0.3s ease-in-out";
-    
-    okButton.onmouseover = () => {
-        okButton.style.transform = "scale(1.05)";
-        okButton.style.boxShadow = "0 6px 20px rgba(255, 126, 95, 0.5)";
-    };
-    okButton.onmouseleave = () => {
-        okButton.style.transform = "scale(1)";
-        okButton.style.boxShadow = "0 4px 15px rgba(255, 126, 95, 0.4)";
-    };
-
-    okButton.onclick = () => {
-        document.body.removeChild(overlay);
-    };
-
-    modal.appendChild(okButton);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    // Allow pressing Enter to confirm
-    document.addEventListener("keydown", function handleKeyPress(event) {
-        if (event.key === "Enter") {
-            document.body.removeChild(overlay);
-            document.removeEventListener("keydown", handleKeyPress);
         }
-    });
-}
-
-// Add Soft Animations
-const styleSheet = document.createElement("style");
-styleSheet.innerHTML = `
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes popUp {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
-`;
-document.head.appendChild(styleSheet);
-
-
-            async function finalizeOrder() {
-                const customerName = document.getElementById('customerName').value;
-                const customerPhone = document.getElementById('customerPhone').value;
-
-                // **Replace alert with this stylish warning modal**
-                if (!customerName) {
-                    showWarning("Please fill Customer Name.");
-                    return;
-                }
-
-                if (!customerPhone) {
-                    showWarning("Please fill Customer phone number.");
-                    return;
-                }
-
-                if (orderItems.length === 0) {
-                    showWarning("Please add at least one item.");
-                    return;
-                }
-
-                const orderData = {
-                    customerName,
-                    customerPhone,
-                    orderDate: new Date().toISOString(),
-                    items: orderItems.map(item => ({
-                        subItemId: item.subItemId,
-                        itemType: item.itemType,
-                        itemName: item.itemName,
-                        quantity: item.quantity,
-                        amountPerGram: item.amountPerGram,
-                        makingCharges: item.makingCharges,
-                        wastage: item.wastage,
-                        itemDescription: item.itemDescription,
-                        totalAmount: item.totalAmount,
-                    })),
-                    totalAmount: totalOrderAmount,
-                    advancePayment,
-                    balanceAmount: totalOrderAmount - advancePayment
-                };
-
-                try {
-                    // 1️⃣ Upload images first
-                    for (const { file, subItemId, orderId } of pendingImages) {
-                        const formData = new FormData();
-                        formData.append('image', file);
-                        formData.append('subItemId', subItemId);
-                        formData.append('orderId', orderId);
-
-                        const imgResponse = await fetch('/upload-item-image', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!imgResponse.ok) {
-                            throw new Error(`Image upload failed for ${subItemId}`);
-                            console.error('🚨 Error:', error);
-
-                        }
-                        console.log(`✅ Image uploaded for ${subItemId}`);
-                    }
-
-                    // 2️⃣ Submit order after successful image uploads
-                    const orderResponse = await fetch('/generate-order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(orderData)
-                    });
-
-                    if (orderResponse.ok) {
-                        const result = await orderResponse.json();
-                        console.log(result.message);
-                        const successMessage = document.createElement('div');
-                        successMessage.className = 'success-message';
-                        successMessage.textContent = 'Order successfully placed✅';
-                        document.querySelector('.container').appendChild(successMessage);
-
-                        setTimeout(() => {
-                            successMessage.style.display = 'none';
-                            window.open(`print-bill.html?orderNumber=${result.orderId}`, '_blank');
-
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1000);
-
-                        }, 2000);
-                    } else {
-                        throw new Error('Failed to generate order');
-                    }
-                } catch (error) {
-                    console.error('🚨 Error:', error);
-                    alert('Failed to create order. Please try again.');
-                }
-            }
-            finalizeOrderButton.addEventListener('click', finalizeOrder);
-        });
     </script>
+    <style>
+        /* General body styling for a professional, dark look */
+        body {
+            background-color: #030712;
+            color: #d1d5db;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+        }
+
+        /* Style for all input/select/textarea elements */
+        input:not([type="checkbox"]),
+        select,
+        textarea {
+            border: 1px solid #4b5563;
+            background-color: #1f2937;
+            color: #f3f4f6;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #ffb703;
+            ring: 2px;
+            ring-color: #ffb703;
+            outline: none;
+        }
+
+        /* Table styling */
+        #orderSummary th {
+            background-color: #374151;
+            color: #f3f4f6;
+            padding: 12px 10px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #4b5563;
+        }
+
+        #orderSummary td {
+            padding: 8px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid #4b5563;
+        }
+
+        /* Image Upload Button Styling for consistency */
+        .upload-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .upload-btn:hover {
+            background-color: #2563eb;
+        }
+
+        /* Modal Keyframes for custom styles in JS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes popUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <header>
-        <h1>New Order Slip</h1>
-        <a href="order-slip.html" class="back-button">Back</a>
+<body class="p-4 md:p-8">
+
+    <header class="mb-8 pb-4 border-b-2 border-accent-gold">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-accent-gold">New Order Slip</h1>
+           <!-- Navigation Buttons -->
+<div class="flex flex-wrap justify-center md:justify-end gap-3 mb-6">
+  <a href="order-slip.html"
+     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 shadow-md text-sm md:text-base font-medium">
+    Back
+  </a>
+  <a href="/admin-welcome.html"
+     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 shadow-md text-sm md:text-base font-medium">
+    Home
+  </a>
+</div>
+
+        </div>
     </header>
 
-    <div class="container">
-        <div id="nextOrderNumber"
-            style="font-size: 2.2em; font-weight: 700; margin: 30px 0; color: #1a237e; text-shadow: 2px 2px 8px rgba(0,0,0,0.15); padding: 20px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-left: 6px solid #2962ff; border-radius: 12px; box-shadow: 0 8px 16px rgba(41,98,255,0.15); position: relative; overflow: hidden; transition: all 0.3s ease;">
-            <div
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%); background-size: 30px 30px; animation: shine 2s linear infinite;">
+    <div class="max-w-7xl mx-auto p-6 bg-primary-dark rounded-xl shadow-2xl">
+
+        <h2 class="text-2xl font-semibold mb-4 text-text-light border-b border-gray-700 pb-2">Customer Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-4 bg-secondary-dark rounded-lg">
+            <div class="md:col-span-1 flex items-center">
+                <span id="nextOrderNumber" class="text-xl font-bold text-accent-gold">Order Number: LOADING...</span>
             </div>
-            <span style="position: relative; z-index: 1;">Order Number:</span>
-        </div>
-        <style>
-            @keyframes shine {
-                0% {
-                    background-position: 0 0;
-                }
-
-                100% {
-                    background-position: 60px 0;
-                }
-            }
-        </style>
-        <h2>Customer Details</h2>
-        <form id="customerForm">
-            <label for="customerName">Customer Name</label>
-            <input type="text" id="customerName" name="customerName" required>
-
-            <label for="customerPhone">Customer Phone</label>
-            <input type="text" id="customerPhone" name="customerPhone" required>
-        </form>
-
-        <h2>Order Details <span id="orderNumber">Order 1</span></h2>
-        <form id="orderForm">
-            <label for="itemType">Item Type</label>
-            <select id="itemType" name="itemType" required>
-                <option value="">Select Item Type</option>
-                <option value="gold">Gold</option>
-                <option value="silver">Silver</option>
-                <option value="Other">Other</option>
-            </select>
-
-            <label for="itemName">Item Name</label>
-            <input type="text" id="itemName" name="itemName" required>
-
-            <label for="quantity">Quantity</label>
-            <input type="number" id="quantity" name="quantity" min="1" step="0.01" required>
-
-            <label for="amountPerGram">Amount per Gram</label>
-            <input type="number" id="amountPerGram" name="amountPerGram" min="0" step="0.01" required>
-
-            <label for="makingCharges">Making Charges</label>
-            <input type="number" id="makingCharges" name="makingCharges" min="0" step="0.01">
-
-            <label for="wastage">Wastage (%)</label>
-            <input type="number" id="wastage" name="wastage" min="0" step="0.01">
-
-            <label for="itemDescription">Item Description</label>
-            <input type="text" id="itemDescription" name="itemDescription">
-
-            <button type="button" id="submitOrderButton">Add Item</button>
-        </form>
-
-
-        <h2>Order Summary</h2>
-        <table id="orderSummary">
-            <thead>
-                <tr>
-                    <th>Sub item id</th>
-                    <th>Item Type</th>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Amount per Gram</th>
-                    <th>Making Charges</th>
-                    <th>Wastage</th>
-                    <th>Total Amount</th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Items will be added here -->
-            </tbody>
-        </table>
-
-        <div class="order-total">
-            <div>
-                <strong>Total Amount:</strong>
-                <span id="totalAmount">₹0.00</span>
-            </div>
-            <div>
-                <strong>Advance Payment:</strong>
-                <span id="advancePaymentDisplay">₹0.00</span>
-            </div>
-            <div>
-                <strong>Balance Amount:</strong>
-                <span id="balanceAmountDisplay">₹0.00</span>
-            </div>
+            <form id="customerForm" class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label for="customerName" class="text-sm text-gray-400">Customer Name <span class="text-accent-red">*</span></label>
+                    <input type="text" id="customerName" name="customerName" required class="w-full">
+                </div>
+                <div class="space-y-1">
+                    <label for="customerPhone" class="text-sm text-gray-400">Customer Phone <span class="text-accent-red">*</span></label>
+                    <input type="tel" id="customerPhone" name="customerPhone" required class="w-full">
+                </div>
+                <div class="space-y-1 sm:col-span-2">
+                    <label for="orderDeadline" class="text-sm text-gray-400">Order Deadline <span class="text-accent-red">*</span></label>
+                    <input type="date" id="orderDeadline" name="orderDeadline" required class="w-full">
+                </div>
+            </form>
         </div>
 
-        <div class="button-container">
-            <button type="button" id="advancePaymentButton">Advance Payment</button>
-            <button type="button" id="finalizeOrderButton">Finalize Order</button>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+            <div class="lg:col-span-1 p-6 border border-gray-700 rounded-xl bg-secondary-dark h-fit">
+                <h2 class="text-xl font-semibold mb-5 text-accent-gold">New Item Details</h2>
+                <form id="orderForm" class="space-y-4">
+                    <div class="space-y-1">
+                        <label for="itemType" class="text-sm text-gray-400">Item Type <span class="text-accent-red">*</span></label>
+                        <select id="itemType" name="itemType" class="w-full" required>
+                            <option value="">Select Metal</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Silver">Silver</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label for="itemName" class="text-sm text-gray-400">Item Name <span class="text-accent-red">*</span></label>
+                        <input type="text" id="itemName" name="itemName" required class="w-full">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label for="quantity" class="text-sm text-gray-400">Weight (gm) <span class="text-accent-red">*</span></label>
+                            <input type="number" id="quantity" name="quantity" step="0.01" required class="w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label for="amountPerGram" class="text-sm text-gray-400">Amt/Gram (₹) <span class="text-accent-red">*</span></label>
+                            <input type="number" id="amountPerGram" name="amountPerGram" step="0.01" required class="w-full">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label for="makingCharges" class="text-sm text-gray-400">Making Charges (₹) <span class="text-accent-red">*</span></label>
+                            <input type="number" id="makingCharges" name="makingCharges" step="0.01" value="0" required class="w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label for="wastage" class="text-sm text-gray-400">Wastage (%)</label>
+                            <input type="number" id="wastage" name="wastage" step="0.01" value="0" class="w-full">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label for="itemDescription" class="text-sm text-gray-400">Special Instructions / Description</label>
+                        <textarea id="itemDescription" name="itemDescription" rows="3" class="w-full"></textarea>
+                    </div>
+                    <button type="button" id="submitOrderButton" class="w-full bg-accent-blue hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md">
+                        ➕ Add Item to Order
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-semibold mb-4 text-text-light border-b border-gray-700 pb-2">Order Summary</h2>
+                
+                <div class="overflow-x-auto border border-gray-700 rounded-xl mb-6">
+                    <table id="orderSummary" class="min-w-full divide-y divide-gray-700">
+                        <thead>
+                            <tr>
+                                <th class="whitespace-nowrap">ID</th>
+                                <th class="whitespace-nowrap">Type</th>
+                                <th class="whitespace-nowrap">Name/Desc</th>
+                                <th class="whitespace-nowrap text-right">Weight (g)</th>
+                                <th class="whitespace-nowrap text-right">Amt/g (₹)</th>
+                                <th class="whitespace-nowrap text-right">M. Charges (₹)</th>
+                                <th class="whitespace-nowrap text-right">Wastage</th>
+                                <th class="whitespace-nowrap text-right text-accent-gold">Total (₹)</th>
+                                <th class="whitespace-nowrap text-center">Image</th>
+                                <th class="whitespace-nowrap text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700 bg-primary-dark">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end">
+                    <div class="space-y-3 p-6 bg-secondary-dark rounded-xl w-full max-w-md shadow-inner">
+                        <div class="flex justify-between items-center text-xl font-medium border-b border-gray-600 pb-2">
+                            <span>Grand Total:</span>
+                            <span id="totalAmount" class="font-extrabold text-2xl text-accent-gold">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Advance Payment:</span>
+                            <span id="advancePaymentDisplay" class="font-bold text-lg text-green-500">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-gray-600 pt-3">
+                            <span>Balance Due:</span>
+                            <span id="balanceAmountDisplay" class="font-extrabold text-2xl text-accent-blue">₹0.00</span>
+                        </div>
+                        <div class="flex justify-center pt-4 space-x-4">
+                            <button type="button" id="advancePaymentButton" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg">
+                                💰 Enter Advance Payment
+                            </button>
+                            <button id="finalizeOrderButton" class="flex-1 bg-accent-gold hover:bg-yellow-600 text-primary-dark font-extrabold py-3 px-8 rounded-lg transition duration-200 shadow-xl">
+                                Finalize Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+    // ---------------------------------------------------------------------
+    // Global State Variables (accessible throughout the script)
+    // ---------------------------------------------------------------------
+    let orderItems = [];
+    let totalOrderAmount = 0;
+    let advancePayment = 0;
+    let pendingImages = []; // Stores the File objects and their metadata for later upload
+    let subItemCounter = 1;
+
+    // ---------------------------------------------------------------------
+    // DOMContentLoaded Setup
+    // ---------------------------------------------------------------------
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #4CAF50, #2E8B57); /* Green Gradient */
+            color: white;
+            padding: 30px 60px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            z-index: 100000; /* Ensure it's on top of everything */
+            opacity: 0;
+            animation: fadeInOut 4s forwards;
+            text-align: center;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+        }
+    `;
+    document.head.appendChild(style);
+    document.addEventListener('DOMContentLoaded', async function () {
+        const customerForm = document.getElementById('customerForm');
+        const orderForm = document.getElementById('orderForm');
+        const submitOrderButton = document.getElementById('submitOrderButton');
+        const orderSummary = document.getElementById('orderSummary').getElementsByTagName('tbody')[0];
+        const finalizeOrderButton = document.getElementById('finalizeOrderButton');
+        const advancePaymentButton = document.getElementById('advancePaymentButton');
+
+        // Get next order number
+        try {
+            const response = await fetch('/get-next-order-number');
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('nextOrderNumber').textContent = `Order Number: ${data.nextOrderNumber}`;
+            }
+        } catch (error) {
+            console.error('Error fetching order number:', error);
+        }
+
+        // ---------------------------------------------------------------------
+        // Event Listeners
+        // ---------------------------------------------------------------------
+
+        // 1. Add item to order listener
+        submitOrderButton.addEventListener('click', function () {
+            const itemType = document.getElementById('itemType').value;
+            const itemName = document.getElementById('itemName').value;
+            const quantity = parseFloat(document.getElementById('quantity').value);
+            const amountPerGram = parseFloat(document.getElementById('amountPerGram').value);
+            const makingCharges = parseFloat(document.getElementById('makingCharges').value) || 0;
+            const wastage = parseFloat(document.getElementById('wastage').value) || 0;
+            const itemDescription = document.getElementById('itemDescription').value;
+
+            if (!itemType || !itemName || !quantity || !amountPerGram) {
+                showWarning("Please fill in all required fields (Item Type, Name, Weight, Amt/Gram).");
+                return;
+            }
+            const subItemId = `a${subItemCounter++}`;
+            const totalAmount = calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage);
+
+            const item = {
+                subItemId,
+                itemType,
+                itemName,
+                quantity,
+                amountPerGram,
+                makingCharges,
+                wastage,
+                itemDescription,
+                totalAmount,
+            };
+
+            orderItems.push(item);
+            addItemToTable(item);
+            updateTotalAmount();
+            orderForm.reset();
+        });
+
+        // 2. Advance Payment listener
+        advancePaymentButton.addEventListener('click', function () {
+            // Create modal elements
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.85);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                backdrop-filter: blur(12px);
+                animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: linear-gradient(165deg, #ffffff, #f5f7fa);
+                padding: 48px;
+                border-radius: 32px;
+                text-align: center;
+                max-width: 520px;
+                width: 94%;
+                box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3),
+                            0 12px 32px -8px rgba(0,0,0,0.2),
+                            inset 0 2px 6px rgba(255,255,255,0.9);
+                transform: translateY(0);
+                animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                border: 1px solid rgba(255,255,255,0.22);
+            `;
+
+            modalContent.innerHTML = `
+                <style>
+                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes slideIn { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                    .payment-input {
+                        width: 100%; padding: 16px; border: 2px solid #e1e8ed; border-radius: 16px; font-size: 18px; margin: 24px 0; outline: none; transition: all 0.3s;
+                    }
+                    .payment-input:focus {
+                        border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+                    }
+                    .modal-btn {
+                        padding: 16px 32px; border: none; border-radius: 100px; cursor: pointer; font-weight: 700; font-size: 17px; transition: all 0.3s; margin: 0 8px;
+                    }
+                    .modal-btn:hover {
+                        transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+                    }
+                </style>
+                <h3 style="margin: 0 0 24px 0; font-size: 32px; color: #2d3436; font-weight: 800;">Enter Advance Payment</h3>
+                <input type="number" class="payment-input" id="advancePaymentInput" placeholder="Enter amount" value="${advancePayment > 0 ? advancePayment : ''}">
+                <div>
+                    <button id="confirmPayment" class="modal-btn" style="background: linear-gradient(145deg, #2ecc71, #27ae60); color: white;">
+                        Confirm
+                    </button>
+                    <button id="cancelPayment" class="modal-btn" style="background: linear-gradient(145deg, #f5f6fa, #e9ecef); color: #2d3436;">
+                        Cancel
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(modalOverlay);
+            modalOverlay.appendChild(modalContent);
+
+            const closeModal = () => modalOverlay.remove();
+
+            document.getElementById('cancelPayment').onclick = closeModal;
+
+            document.getElementById('confirmPayment').onclick = () => {
+                const input = document.getElementById('advancePaymentInput');
+                const amount = parseFloat(input.value);
+
+                if (amount >= 0 && !isNaN(amount)) {
+                    advancePayment = amount;
+                    document.getElementById('advancePaymentDisplay').textContent = `₹${formatNumber(advancePayment.toFixed(2))}`;
+                    updateBalanceAmount();
+                    closeModal();
+                } else {
+                    input.style.borderColor = '#f44336';
+                    input.placeholder = 'Please enter a valid amount';
+                }
+            };
+
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) closeModal();
+            };
+        });
+
+
+        // 3. Finalize Order listener (CRITICAL FIX)
+        finalizeOrderButton.addEventListener('click', async function () {
+            if (orderItems.length === 0) {
+                showWarning("Please add items to the order before finalizing.");
+                return;
+            }
+
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const orderDate = new Date().toISOString().split('T')[0];
+            const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+            
+            if (!customerName || !customerPhone || !orderId) {
+                showWarning("Customer Name, Phone, and Order Number must be present.");
+                return;
+            }
+
+            const orderData = {
+                orderId,
+                customerName,
+                customerPhone,
+                orderDate,
+                totalAmount: totalOrderAmount,
+                advancePayment: advancePayment,
+                balanceAmount: totalOrderAmount - advancePayment,
+                items: orderItems.map(item => ({
+                    ...item,
+                    // Send a placeholder path to the server to indicate an image exists
+                    imagePath: pendingImages.find(img => img.subItemId === item.subItemId) ? `/images/${orderId}/${item.subItemId}.png` : null 
+                }))
+            };
+
+            // Disable button to prevent double-click
+            finalizeOrderButton.disabled = true;
+            finalizeOrderButton.textContent = 'Processing...';
+
+            try {
+    // 1️⃣ Upload images first (Only if there are pending images)
+    for (const { file, subItemId } of pendingImages) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('subItemId', subItemId);
+        formData.append('orderId', orderId); // Assuming orderId is defined outside this loop
+
+        const imgResponse = await fetch('/upload-item-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!imgResponse.ok) {
+            // Read response for detailed error message
+            let errorMessage = `Image upload failed for ${subItemId}. Status: ${imgResponse.status}`;
+            try {
+                const errorData = await imgResponse.json();
+                errorMessage += ` - Server Message: ${errorData.message || JSON.stringify(errorData)}`;
+            } catch (e) {
+                const errorText = await imgResponse.text();
+                errorMessage += ` - Server Response: ${errorText.substring(0, 100)}...`;
+            }
+            console.error('🚨 Image Upload Error:', errorMessage);
+            throw new Error(errorMessage);
+            // The console.error(error) you had was unreachable, so it's removed here.
+        }
+        console.log(`✅ Image uploaded for ${subItemId}`);
+    }
+
+    // 2️⃣ Submit order after successful image uploads
+    const orderResponse = await fetch('/generate-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    });
+
+    if (orderResponse.ok) {
+        const result = await orderResponse.json();
+        console.log(result.message);
+
+        // Display success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = 'Order successfully placed✅';
+        
+        // 👇 CORRECTED: Append to the body to prevent 'Cannot read properties of null'
+        document.body.appendChild(successMessage); 
+
+        // Clear application state after successful finalization
+        pendingImages = [];
+        orderItems = [];
+
+        setTimeout(() => {
+            // Ensure the message is still in the DOM before trying to hide it
+            if (successMessage.parentNode) {
+                 successMessage.style.display = 'none';
+            }
+           
+            // Open print bill
+            window.open(`print-bill.html?orderNumber=${result.orderId}`, '_blank');
+
+            // Reload after a short delay
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+
+        }, 2000);
+    } else {
+        const errorText = await orderResponse.text();
+        console.error('🚨 Order Generation Server Error:', errorText);
+        throw new Error(`Failed to generate order (${orderResponse.status}). Server response: ${errorText.substring(0, 100)}...`);
+    }
+} catch (error) {
+    console.error('🚨 Final Operation Failure:', error);
+    alert(`Failed to create order. ${error.message || 'Please check console for details.'}`);
+} finally {
+    // Re-enable button regardless of success or failure
+    finalizeOrderButton.disabled = false;
+    finalizeOrderButton.textContent = 'Finalize Order';
+}
+        });
+        
+    });
+
+
+    function calculateTotalAmount(quantity, amountPerGram, makingCharges, wastage) {
+        const baseAmount = quantity * amountPerGram;
+        const wastageAmount = (baseAmount * wastage) / 100;
+        return baseAmount + wastageAmount + makingCharges;
+    }
+    function formatNumber(num) {
+  return new Intl.NumberFormat("en-IN").format(num);
+}
+
+    function addItemToTable(item) {
+        const orderSummary = document.getElementById('orderSummary').getElementsByTagName('tbody')[0];
+        const row = orderSummary.insertRow();
+        row.setAttribute('data-subitem-id', item.subItemId);
+
+        row.innerHTML = `
+            <td class="whitespace-nowrap">${item.subItemId}</td>
+            <td class="whitespace-nowrap">${item.itemType}</td>
+            <td class="whitespace-nowrap">${item.itemName}<br><small class="text-xs text-gray-400">${item.itemDescription}</small></td>
+            <td class="whitespace-nowrap text-right">${item.quantity.toFixed(2)}</td>
+            <td class="whitespace-nowrap text-right">₹${formatNumber(item.amountPerGram.toFixed(2))}</td>
+            <td class="whitespace-nowrap text-right">₹${formatNumber(item.makingCharges.toFixed(2))}</td>
+            <td class="whitespace-nowrap text-right">${item.wastage !== 0 ? item.wastage + '%' : '-'}</td>
+            <td class="whitespace-nowrap text-right font-bold text-accent-gold" data-total="${item.totalAmount.toFixed(2)}">₹${item.totalAmount.toFixed(2)}</td>
+            <td class="whitespace-nowrap text-center">
+                <button onclick="openImageOptions('${item.subItemId}')" class="upload-btn">Upload Image</button>
+                <input type="file" id="file-input-${item.subItemId}" accept="image/*" style="display: none;" onchange="handleImageSelection(event, '${item.subItemId}')">
+                <img id="preview-${item.subItemId}" style="max-width: 50px; height: 50px; object-fit: cover; border-radius: 4px; display: none; margin-top: 5px; margin-left: auto; margin-right: auto;">
+            </td>
+            <td class="whitespace-nowrap text-center">
+                <button onclick="removeItem(this)" class="bg-accent-red hover:bg-red-600 text-white p-1 rounded text-xs transition duration-150">Remove</button>
+            </td>
+        `;
+    }
+
+    window.removeItem = function (button) {
+        const row = button.parentNode.parentNode;
+        const subItemId = row.getAttribute("data-subitem-id") || row.cells[0].textContent.trim();
+        
+        // Remove from orderItems
+        const index = orderItems.findIndex(item => item.subItemId === subItemId);
+        if (index > -1) {
+            orderItems.splice(index, 1);
+        }
+
+        // Remove from pendingImages
+        pendingImages = pendingImages.filter(img => img.subItemId !== subItemId);
+
+        row.remove();
+        updateTotalAmount();
+    };
+
+    function updateTotalAmount() {
+        totalOrderAmount = orderItems.reduce((sum, item) => sum + item.totalAmount, 0);
+        document.getElementById('totalAmount').textContent = `₹${formatNumber(totalOrderAmount.toFixed(2))}`;
+        updateBalanceAmount();
+    }
+
+    function updateBalanceAmount() {
+        const balanceAmount = totalOrderAmount - advancePayment;
+        document.getElementById('balanceAmountDisplay').textContent = `₹${formatNumber(balanceAmount.toFixed(2))}`;
+        document.getElementById('balanceAmountDisplay').classList.toggle('text-accent-red', balanceAmount < 0);
+        document.getElementById('balanceAmountDisplay').classList.toggle('text-accent-blue', balanceAmount >= 0);
+    }
+    
+    // Convert base64 string from camera capture into a File object for FormData
+    function base64ToFile(base64String, fileName) {
+        const parts = base64String.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        return new File([uInt8Array], fileName, { type: contentType });
+    }
+
+    // ---------------------------------------------------------------------
+    // Image Handling Functions (Modals & Capture)
+    // ---------------------------------------------------------------------
+
+    window.openImageOptions = function (subItemId) {
+        const overlay = document.createElement("div");
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10000;";
+        const modal = document.createElement("div");
+        modal.style.cssText = "background: #fff; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);";
+
+        const title = document.createElement("h2");
+        title.innerText = "Choose an option:";
+        modal.appendChild(title);
+
+        // Camera Option
+        const cameraButton = document.createElement("button");
+        cameraButton.innerText = "📸 Open Camera";
+        styleButton(cameraButton, "#4CAF50");
+        cameraButton.onclick = () => {
+            document.body.removeChild(overlay);
+            openCamera(subItemId);
+        };
+        modal.appendChild(cameraButton);
+
+        // Upload from Device Option
+        const uploadButton = document.createElement("button");
+        uploadButton.innerText = "📁 Upload from Device";
+        styleButton(uploadButton, "#2196F3");
+        uploadButton.onclick = () => {
+            document.body.removeChild(overlay);
+            document.getElementById(`file-input-${subItemId}`).click();
+        };
+        modal.appendChild(uploadButton);
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        });
+    };
+
+    window.openCamera = function (subItemId) {
+        const cameraOverlay = document.createElement("div");
+        cameraOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10000;";
+        const cameraModal = document.createElement("div");
+        cameraModal.style.cssText = "background: #fff; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);";
+        
+        const video = document.createElement("video");
+        video.style.cssText = "width: 100%; max-width: 400px; height: auto;";
+        video.setAttribute("autoplay", "");
+        cameraModal.appendChild(video);
+
+        const captureButton = document.createElement("button");
+        captureButton.innerText = "📸 Capture";
+        styleButton(captureButton, "#f44336");
+        captureButton.onclick = async () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL("image/png");
+
+            video.srcObject.getTracks().forEach(track => track.stop()); // Stop camera stream
+
+            showCaptureConfirmation(imageData, subItemId, cameraOverlay);
+        };
+        cameraModal.appendChild(captureButton);
+
+        cameraOverlay.appendChild(cameraModal);
+        document.body.appendChild(cameraOverlay);
+
+        cameraOverlay.addEventListener("click", (event) => {
+            if (event.target === cameraOverlay) {
+                if (video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                }
+                document.body.removeChild(cameraOverlay);
+            }
+        });
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => { video.srcObject = stream; })
+            .catch((error) => {
+                console.error("Camera access denied:", error);
+                alert("Failed to access camera.");
+                document.body.removeChild(cameraOverlay);
+            });
+    };
+
+    function showCaptureConfirmation(imageData, subItemId, cameraOverlay) {
+        document.body.removeChild(cameraOverlay);
+
+        const confirmOverlay = document.createElement("div");
+        confirmOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10000;";
+        const confirmModal = document.createElement("div");
+        confirmModal.style.cssText = "background: #fff; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);";
+
+        const previewImage = document.createElement("img");
+        previewImage.src = imageData;
+        previewImage.style.cssText = "max-width: 100%; border-radius: 8px;";
+        confirmModal.appendChild(previewImage);
+
+        // Retake Button
+        const retakeButton = document.createElement("button");
+        retakeButton.innerText = "🔄 Retake";
+        styleButton(retakeButton, "#ff9800");
+        retakeButton.onclick = () => {
+            document.body.removeChild(confirmOverlay);
+            openCamera(subItemId);
+        };
+        confirmModal.appendChild(retakeButton);
+
+        // Upload Button
+        const uploadButton = document.createElement("button");
+        uploadButton.innerText = "✅ Confirm Image";
+        styleButton(uploadButton, "#4CAF50");
+        uploadButton.onclick = () => {
+            const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+            const imageFile = base64ToFile(imageData, `image-${subItemId}.png`);
+
+            // Clear any existing image for this subItemId and push the new one
+            pendingImages = pendingImages.filter(img => img.subItemId !== subItemId);
+            pendingImages.push({
+                file: imageFile,
+                subItemId,
+                orderId
+            });
+
+            document.body.removeChild(confirmOverlay);
+            document.getElementById(`preview-${subItemId}`).src = imageData;
+            document.getElementById(`preview-${subItemId}`).style.display = "block";
+            showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
+        };
+        confirmModal.appendChild(uploadButton);
+
+        confirmOverlay.appendChild(confirmModal);
+        document.body.appendChild(confirmOverlay);
+
+        confirmOverlay.addEventListener("click", (event) => {
+            if (event.target === confirmOverlay) {
+                document.body.removeChild(confirmOverlay);
+            }
+        });
+    }
+
+    window.handleImageSelection = function (event, subItemId) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imageData = e.target.result;
+            showImageConfirmation(imageData, file, subItemId);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    function showImageConfirmation(imageData, file, subItemId) {
+        const confirmOverlay = document.createElement("div");
+        confirmOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10000;";
+        const confirmModal = document.createElement("div");
+        confirmModal.style.cssText = "background: #fff; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);";
+
+        const previewImage = document.createElement("img");
+        previewImage.src = imageData;
+        previewImage.style.cssText = "max-width: 400px; border-radius: 8px;";
+        confirmModal.appendChild(previewImage);
+
+        // Cancel Button
+        const cancelButton = document.createElement("button");
+        cancelButton.innerText = "❌ Cancel";
+        styleButton(cancelButton, "#f44336");
+        cancelButton.onclick = () => document.body.removeChild(confirmOverlay);
+        confirmModal.appendChild(cancelButton);
+
+        // Confirm Button
+        const confirmButton = document.createElement("button");
+        confirmButton.innerText = "✅ Confirm Upload";
+        styleButton(confirmButton, "#4CAF50");
+        confirmButton.onclick = () => {
+            document.body.removeChild(confirmOverlay);
+            document.getElementById(`preview-${subItemId}`).src = imageData;
+            document.getElementById(`preview-${subItemId}`).style.display = "block";
+
+            const orderId = document.getElementById('nextOrderNumber').textContent.split(': ')[1];
+            
+            // Clear any existing image for this subItemId and push the new one
+            pendingImages = pendingImages.filter(img => img.subItemId !== subItemId);
+            pendingImages.push({
+                file,
+                subItemId,
+                orderId
+            });
+
+            showCustomAlert("Image confirmed. It will be uploaded when the order is finalized.", subItemId);
+        };
+        confirmModal.appendChild(confirmButton);
+
+        confirmOverlay.appendChild(confirmModal);
+        document.body.appendChild(confirmOverlay);
+    }
+
+    // ---------------------------------------------------------------------
+    // Utility and UI Functions
+    // ---------------------------------------------------------------------
+
+    function showCustomAlert(message, subItemId, type = "success") {
+        const existingAlert = document.getElementById("custom-alert");
+        if (existingAlert) {
+            document.body.removeChild(existingAlert);
+        }
+
+        const alertBox = document.createElement("div");
+        alertBox.id = "custom-alert";
+        alertBox.style.cssText = `
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px; 
+            background: ${type === "success" ? "#4CAF50" : "#f44336"}; color: #fff;
+            border-radius: 8px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+            font-size: 16px; font-weight: bold; display: flex; align-items: center; 
+            z-index: 10000; transition: all 0.3s ease-in-out; opacity: 0; transform: translateY(-50px);
+        `;
+
+        setTimeout(() => {
+            alertBox.style.opacity = "1";
+            alertBox.style.transform = "translateY(0)";
+        }, 10);
+
+        const icon = document.createElement("span");
+        icon.innerHTML = type === "success" ? "✅" : "❌";
+        icon.style.marginRight = "10px";
+        icon.style.fontSize = "18px";
+        alertBox.appendChild(icon);
+
+        const alertText = document.createElement("span");
+        alertText.innerHTML = `${message} <span style="color: ${type === "success" ? "#FFD700" : "#ADD8E6"};">(${subItemId || 'N/A'})</span>`;
+        alertBox.appendChild(alertText);
+
+        document.body.appendChild(alertBox);
+
+        setTimeout(() => {
+            alertBox.style.opacity = "0";
+            alertBox.style.transform = "translateY(-50px)";
+            setTimeout(() => {
+                if (alertBox.parentNode) {
+                    document.body.removeChild(alertBox);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    function showWarning(message) {
+        const existingModal = document.getElementById("warning-modal");
+        if (existingModal) existingModal.remove();
+
+        const overlay = document.createElement("div");
+        overlay.id = "warning-modal";
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); 
+            display: flex; justify-content: center; align-items: center; z-index: 10000; animation: fadeIn 0.3s ease-in-out;
+        `;
+        const modal = document.createElement("div");
+        modal.style.cssText = `
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); color: #fff; padding: 30px; 
+            border-radius: 15px; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3); text-align: center; 
+            font-size: 18px; max-width: 400px; position: relative; border: 1px solid rgba(255, 255, 255, 0.3); 
+            animation: popUp 0.3s ease-out forwards;
+        `;
+        modal.innerHTML = `
+            <p style="margin-bottom: 20px;">⚠️ ${message}</p>
+            <button onclick="document.getElementById('warning-modal').remove()" style="padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    }
+    
+    function styleButton(button, bgColor) {
+        button.style.cssText = `
+            padding: 15px 30px; font-size: 18px; margin: 10px; width: 250px; border: none; 
+            background: ${bgColor}; color: #fff; border-radius: 8px; cursor: pointer; 
+            font-weight: bold; transition: 0.3s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        `;
+        button.onmouseover = () => (button.style.opacity = "0.8");
+        button.onmouseout = () => (button.style.opacity = "1");
+    }
+
+    // This is the function you asked about. It's now empty because the image flow is handled by 
+    // openImageOptions, openCamera, and handleImageSelection.
+    window.uploadImage = function (event, subItemId) { 
+        // Logic handled by event listeners and modal functions above.
+    };
+    
+</script>
 </body>
 
 </html>
