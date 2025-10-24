@@ -548,12 +548,12 @@
             }
            
             // Open print bill
-            window.open(`print-bill.html?orderNumber=${result.orderId}`, '_blank');
-
+            // window.open(`print-bill.html?orderNumber=${result.orderId}`, '_blank');
+window.location.href = `print-bill.html?orderNumber=${result.orderId}`;
             // Reload after a short delay
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            // setTimeout(() => {
+            //     location.reload();
+            // }, 1000);
 
         }, 2000);
     } else {

@@ -247,7 +247,8 @@
         }
 
         function viewOrder(orderId) {
-            window.open(`print-bill.html?orderNumber=${orderId}`, '_blank');
+            // window.open(`print-bill.html?orderNumber=${orderId}`, '_blank');
+            window.location.href="print-bill.html?orderNumber=" + orderId;
         }
 
         function closeItemsModal() {
